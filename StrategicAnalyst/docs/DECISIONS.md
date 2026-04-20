@@ -82,3 +82,11 @@ Option 1 — **monorepo, code trong `/app/` tại root của THE-INVESTIGATOR-TE
 ```
 
 Dùng cho: chọn thư viện nhỏ, đổi naming convention, chốt config nhỏ. KHÔNG dùng cho decision ảnh hưởng ≥2 task — cái đó phải dùng format đầy đủ.
+
+---
+
+### D-003: Astro 6.x — `output: 'hybrid'` removed, dùng `output: 'static'` thay thế
+- **Date:** 2026-04-20 | **Author:** antigravity | **Status:** active
+- **Why:** Astro 6.1.8 (scaffold'd tại T-001) đã remove option `output: 'hybrid'`. `output: 'static'` giờ là default và hoạt động như hybrid cũ: SSG toàn bộ trừ route nào có `export const prerender = false` → SSR. Hành vi giống hệt D-001 intent.
+- **Alternatives rejected:** `output: 'server'` (toàn SSR, mất S1/S2 metrics); downgrade về Astro 4 (không nhận security updates).
+- **Affects:** T-001 (astro.config.mjs), T-020/T-021/T-022 (cần `export const prerender = true` nếu muốn explicit), T-031 (API route cần `export const prerender = false`)
