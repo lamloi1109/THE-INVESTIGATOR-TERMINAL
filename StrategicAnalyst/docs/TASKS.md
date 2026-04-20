@@ -54,20 +54,20 @@ Updated:    2026-04-20 20:51 by antigravity (review — all ACs done)
 ```
 Task ID:    T-002
 Title:      Cấu hình Vercel deployment + Fluid Compute
-Status:     todo
-Owner:      —
-Branch:     —
+Status:     review
+Owner:      human
+Branch:     human/T-002-vercel-setup
 Assigned:   MANUAL
 Files:      app/vercel.json, app/.env.example
 Acceptance:
-  [ ] app/vercel.json có cấu hình fluid compute (nếu cần)
-  [ ] app/.env.example liệt kê tất cả env vars cần thiết
-  [ ] Deploy thử lên Vercel thành công, trả về 200 OK
+  [x] app/vercel.json có cấu hình fluid compute (nếu cần)
+  [x] app/.env.example liệt kê tất cả env vars cần thiết
+  [x] Deploy thử lên Vercel thành công, trả về 200 OK
 Verification:
   vercel deploy --prod (từ app/) → URL live trả 200
 Depends on: T-001
 Complexity: S
-Updated:    2026-04-20 by human (initial seed)
+Updated:    2026-04-20 21:30 by human (verified by antigravity)
 ```
 
 ---
@@ -369,7 +369,7 @@ Depends on: T-040, T-041, T-042
 Complexity: M
 Updated:    2026-04-20 by human (initial seed)
 ```
-
+ 
 ---
 
 ## Dependency Graph
