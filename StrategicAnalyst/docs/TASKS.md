@@ -30,9 +30,9 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 ```
 Task ID:    T-001
 Title:      Khởi tạo Astro project + cấu hình hybrid rendering
-Status:     todo
-Owner:      —
-Branch:     —
+Status:     in_progress
+Owner:      antigravity
+Branch:     antigravity/T-001-astro-scaffold
 Assigned:   ANTIGRAVITY
 Files:      app/astro.config.mjs, app/package.json, app/tsconfig.json
 Acceptance:
@@ -47,7 +47,7 @@ Verification:
   cd app && npm ls react 2>&1 | grep -c "empty" hoặc không có output
 Depends on: —
 Complexity: S
-Updated:    2026-04-20 by human (initial seed)
+Updated:    2026-04-20 20:44 by antigravity (claimed)
 ```
 
 ```
