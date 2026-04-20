@@ -4,9 +4,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-This directory (`StrategicAnalyst/`) is the **planning + documentation hub** for **"THE INVESTIGATOR TERMINAL"** — PhuocLoi's AI Engineer portfolio site. It contains **no application code**; the implementation lives in a separate repo/directory.
+This directory (`StrategicAnalyst/`) is the **planning + coordination hub** for **"THE INVESTIGATOR TERMINAL"** — PhuocLoi's AI Engineer portfolio site.
 
-Use this folder to maintain PRDs, task breakdowns, schema specs, risk registers, and architectural decisions. When a user asks to "do a task" here, default to writing or updating documentation. If a task requires running/scaffolding code (e.g. T-001), confirm the target code directory with the user before creating files outside `StrategicAnalyst/`.
+Per **D-002** (see `docs/DECISIONS.md`), application code lives in `../app/` at the repo root (monorepo layout). `StrategicAnalyst/` contains PRDs, task breakdowns with state machine, decision log, agent onboarding protocol, and session reports.
+
+## Before you start — Agent Onboarding Protocol
+
+Any agent (Antigravity, Claude Code, or PhuocLoi) opening a new session MUST read `docs/AGENT_ONBOARDING.md` first. It covers: context loading order, task claim protocol, git branch convention, commit rules, session report format, and project-specific hard rules (no React, no vector DB, no visual gimmicks).
+
+The 5 files to load (in order) at every session start:
+1. `StrategicAnalyst/CLAUDE.md` (this file)
+2. `StrategicAnalyst/docs/PRD.md`
+3. `StrategicAnalyst/docs/TASKS.md`
+4. `StrategicAnalyst/docs/DECISIONS.md` (last 5 entries)
+5. `StrategicAnalyst/docs/reports/{your-agent}.md`
 
 ## The Product — Core Context
 
