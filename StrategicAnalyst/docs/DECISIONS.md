@@ -90,3 +90,12 @@ Dùng cho: chọn thư viện nhỏ, đổi naming convention, chốt config nh�
 - **Why:** Astro 6.1.8 (scaffold'd tại T-001) đã remove option `output: 'hybrid'`. `output: 'static'` giờ là default và hoạt động như hybrid cũ: SSG toàn bộ trừ route nào có `export const prerender = false` → SSR. Hành vi giống hệt D-001 intent.
 - **Alternatives rejected:** `output: 'server'` (toàn SSR, mất S1/S2 metrics); downgrade về Astro 4 (không nhận security updates).
 - **Affects:** T-001 (astro.config.mjs), T-020/T-021/T-022 (cần `export const prerender = true` nếu muốn explicit), T-031 (API route cần `export const prerender = false`)
+
+---
+
+### D-004: Sheets schema — song ngữ qua cột `_vi` / `_en`
+- **Date:** 2026-04-21 | **Author:** human | **Status:** active
+- **Why:** Portfolio target cả nhà tuyển dụng VN và quốc tế. Tách locale vào cột riêng đơn giản hơn runtime translation; không cần i18n library; app chỉ cần toggle state để đổi ngôn ngữ.
+- **Alternatives rejected:** Single-column tiếng Việt (mất tiếp cận QT); single-column tiếng Anh (mất màu sắc cá nhân VN); i18n JSON external (thêm build step, phân mảnh content).
+- **Affects:** T-010 (schema đã áp dụng); T-011 (fetchSheet response có field `_vi`/`_en`); T-020/T-021/T-022 (render theo locale state); T-042 (fallback content cần cả 2 ngôn ngữ).
+- **Deviation từ AC gốc:** TASKS.md T-010 liệt kê cột `title`, `description`, `highlights` single-column. AC gốc được coi là "superseded by D-004" — schema thực tế theo `SHEETS_SCHEMA.md`.

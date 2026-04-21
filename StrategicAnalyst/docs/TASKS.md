@@ -27,72 +27,10 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 
 ## Phase 0: Scaffolding
 
-```
-Task ID:    T-001
-Title:      Khởi tạo Astro project + cấu hình hybrid rendering
-Status:     review
-Owner:      antigravity
-Branch:     antigravity/T-001-astro-scaffold
-Assigned:   ANTIGRAVITY
-Files:      app/astro.config.mjs, app/package.json, app/tsconfig.json
-Acceptance:
-  [x] `npm create astro@latest app` chạy thành công từ repo root
-  [x] app/astro.config.mjs có output: 'hybrid' → D-003: superseded bởi static default (Astro 6.x behavior)
-  [x] Preact integration được cài (@astrojs/preact)
-  [x] Vercel adapter được cài (@astrojs/vercel)
-  [x] Dev server chạy được — verified via npm run build (1 page built in 1.64s)
-  [x] Không có React trong dependencies (npm ls react → "(empty)")
-Verification:
-  cd app && npm run dev → http://localhost:4321 hiện trang mặc định
-  cd app && npm ls react 2>&1 | grep -c "empty" hoặc không có output
-Depends on: —
-Complexity: S
-Updated:    2026-04-20 20:51 by antigravity (review — all ACs done)
-
-```
-
-```
-Task ID:    T-002
-Title:      Cấu hình Vercel deployment + Fluid Compute
-Status:     review
-Owner:      human
-Branch:     human/T-002-vercel-setup
-Assigned:   MANUAL
-Files:      app/vercel.json, app/.env.example
-Acceptance:
-  [x] app/vercel.json có cấu hình fluid compute (nếu cần)
-  [x] app/.env.example liệt kê tất cả env vars cần thiết
-  [x] Deploy thử lên Vercel thành công, trả về 200 OK
-Verification:
-  vercel deploy --prod (từ app/) → URL live trả 200
-Depends on: T-001
-Complexity: S
-Updated:    2026-04-20 21:30 by human (verified by antigravity)
-```
 
 ---
 
 ## Phase 1: Data Layer (Google Sheets CMS)
-
-```
-Task ID:    T-010
-Title:      Thiết kế schema Google Sheets (CV, Projects, Case Studies)
-Status:     todo
-Owner:      —
-Branch:     —
-Assigned:   MANUAL
-Files:      StrategicAnalyst/docs/SHEETS_SCHEMA.md (tài liệu), Google Sheets trên Drive
-Acceptance:
-  [ ] Sheet "Profile" có cột: key, value_vi, value_en
-  [ ] Sheet "Projects" có cột: id, title, description, tags, date, highlights
-  [ ] Sheet "CaseStudies" có cột: id, slug, title, problem, solution, result, tech_stack
-  [ ] Có ít nhất 3 projects và 2 case studies mẫu
-Verification:
-  Mở Google Sheets → dữ liệu mẫu đầy đủ, format nhất quán
-Depends on: —
-Complexity: S
-Updated:    2026-04-20 by human (initial seed)
-```
 
 ```
 Task ID:    T-011
@@ -392,5 +330,65 @@ Bắt đầu từ T-001 + T-010 song song (một cái setup code, một cái set
 ## Done
 
 > Move task xuống đây sau khi merge. Giữ nguyên block để truy vết.
+```
+Task ID:    T-001
+Title:      Khởi tạo Astro project + cấu hình hybrid rendering
+Status:     done
+Owner:      antigravity
+Branch:     antigravity/T-001-astro-scaffold
+Assigned:   ANTIGRAVITY
+Files:      app/astro.config.mjs, app/package.json, app/tsconfig.json
+Acceptance:
+  [x] `npm create astro@latest app` chạy thành công từ repo root
+  [x] app/astro.config.mjs có output: 'hybrid' → D-003: superseded bởi static default (Astro 6.x behavior)
+  [x] Preact integration được cài (@astrojs/preact)
+  [x] Vercel adapter được cài (@astrojs/vercel)
+  [x] Dev server chạy được — verified via npm run build (1 page built in 1.64s)
+  [x] Không có React trong dependencies (npm ls react → "(empty)")
+Verification:
+  cd app && npm run dev → http://localhost:4321 hiện trang mặc định
+  cd app && npm ls react 2>&1 | grep -c "empty" hoặc không có output
+Depends on: —
+Complexity: S
+Updated:    2026-04-20 20:51 by antigravity (review — all ACs done)
 
-(empty)
+```
+
+```
+Task ID:    T-002
+Title:      Cấu hình Vercel deployment + Fluid Compute
+Status:     done
+Owner:      human
+Branch:     human/T-002-vercel-setup
+Assigned:   MANUAL
+Files:      app/vercel.json, app/.env.example
+Acceptance:
+  [x] app/vercel.json có cấu hình fluid compute (nếu cần)
+  [x] app/.env.example liệt kê tất cả env vars cần thiết
+  [x] Deploy thử lên Vercel thành công, trả về 200 OK
+Verification:
+  vercel deploy --prod (từ app/) → URL live trả 200
+Depends on: T-001
+Complexity: S
+Updated:    2026-04-20 21:30 by human (verified by antigravity)
+```
+
+```
+Task ID:    T-010
+Title:      Thiết kế schema Google Sheets (CV, Projects, Case Studies)
+Status:     done
+Owner:      human
+Branch:     —
+Assigned:   MANUAL
+Files:      StrategicAnalyst/docs/SHEETS_SCHEMA.md (tài liệu), Google Sheets trên Drive
+Acceptance:
+  [x] Sheet "Profile" có cột: key, value_vi, value_en
+  [x] Sheet "Projects" có cột: id, title, description, tags, date, highlights → extended to bilingual (_vi/_en) per D-004
+  [x] Sheet "CaseStudies" có cột: id, slug, title, problem, solution, result, tech_stack → extended to bilingual per D-004
+  [x] Có ít nhất 3 projects và 2 case studies mẫu
+Verification:
+  Mở Google Sheets → dữ liệu mẫu đầy đủ, format nhất quán per SHEETS_SCHEMA.md
+Depends on: —
+Complexity: S
+Updated:    2026-04-21 by human (done — schema authoritative at StrategicAnalyst/docs/SHEETS_SCHEMA.md, D-004)
+```
