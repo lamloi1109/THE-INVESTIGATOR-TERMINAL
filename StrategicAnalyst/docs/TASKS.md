@@ -35,22 +35,25 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 ```
 Task ID:    T-011
 Title:      Google Sheets API client + SWR caching
-Status:     todo
-Owner:      —
+Status:     in_progress
+Owner:      human
 Branch:     —
-Assigned:   ANTIGRAVITY
+Assigned:   ANTIGRAVITY/Human
 Files:      app/src/lib/sheets.ts, app/src/lib/cache.ts
 Acceptance:
-  [ ] Hàm fetchSheet(sheetName) trả về JSON array
-  [ ] SWR cache: maxAge=300s (5 phút), staleWhileRevalidate=3600s (1 giờ)
-  [ ] Xử lý lỗi 429 với exponential backoff (base 1s, max 3 retries)
-  [ ] Typed response (TypeScript interfaces cho mỗi sheet)
+  [ ] Hàm fetchSheet(sheetName) trả về JSON array với schema bilingual (_vi/_en) theo SHEETS_SCHEMA.md
+  [x] SWR cache: maxAge=300s (5 phút), staleWhileRevalidate=3600s (1 giờ)
+  [x] Xử lý lỗi 429 với exponential backoff (base 1s, max 3 retries)
+  [ ] Typed response: ProfileConfig/ProjectData/CaseStudyData với field _vi/_en (per D-004)
+  [ ] Parse multi-value fields: tags/tech_stack (comma-split), highlights_* (newline-split)
+  [ ] encodeURIComponent(sheetName) trong URL để defensive
 Verification:
   Viết test script gọi fetchSheet('Profile') → trả về data đúng schema
+  Gọi fetchSheet('Projects') → ProjectData phải có title_vi, title_en (không phải title)
   Gọi 2 lần liên tiếp → lần 2 trả từ cache (log "cache hit")
 Depends on: T-010
 Complexity: M
-Updated:    2026-04-20 by human (initial seed)
+Updated:    2026-04-21 by human (in_progress — rewrite sheets.ts cho bilingual per SHEETS_SCHEMA.md. cache.ts ở commit cf97be2 đã OK, giữ nguyên. Review notes: commit cf97be2 vi phạm D-004 — single-column types, thiếu parsing, skip feature branch convention.)
 ```
 
 ---
