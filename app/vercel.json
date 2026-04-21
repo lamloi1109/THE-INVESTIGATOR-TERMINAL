@@ -1,10 +1,4 @@
 {
   "version": 2,
-  "functions": {
-    "src/pages/api/*": {
-      "maxDuration": 60,
-      "memory": 1024
-    }
-  },
   "regions": ["sin1"]
 }
