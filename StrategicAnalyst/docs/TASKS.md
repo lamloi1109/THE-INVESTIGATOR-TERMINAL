@@ -45,7 +45,7 @@ Status:     in_progress
 Owner:      antigravity
 Branch:     antigravity/T-020-home-hero
 Assigned:   ANTIGRAVITY
-Files:      app/src/pages/index.astro, app/src/components/Hero.astro, app/src/components/Summary.astro
+Files:      app/src/pages/index.astro, app/src/components/Hero.astro
 Acceptance:
   [ ] Trang SSG (prerender = true)
   [ ] Hiển thị tên, title, summary từ Google Sheets data
@@ -57,7 +57,7 @@ Verification:
   Lighthouse audit ≥ 95
 Depends on: T-011
 Complexity: S
-Updated:    2026-04-22 15:06 by antigravity (claimed)
+Updated:    2026-04-22 22:15 by antigravity (claimed)
 ```
 
 ```
