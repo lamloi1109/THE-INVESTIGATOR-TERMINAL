@@ -41,11 +41,11 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 ```
 Task ID:    T-020
 Title:      Trang chủ — Hero + Summary (SSG)
-Status:     todo
-Owner:      —
-Branch:     —
+Status:     in_progress
+Owner:      antigravity
+Branch:     antigravity/T-020-home-hero
 Assigned:   ANTIGRAVITY
-Files:      app/src/pages/index.astro, app/src/components/Hero.astro
+Files:      app/src/pages/index.astro, app/src/components/Hero.astro, app/src/components/Summary.astro
 Acceptance:
   [ ] Trang SSG (prerender = true)
   [ ] Hiển thị tên, title, summary từ Google Sheets data
@@ -57,7 +57,7 @@ Verification:
   Lighthouse audit ≥ 95
 Depends on: T-011
 Complexity: S
-Updated:    2026-04-20 by human (initial seed)
+Updated:    2026-04-22 15:06 by antigravity (claimed)
 ```
 
 ```
