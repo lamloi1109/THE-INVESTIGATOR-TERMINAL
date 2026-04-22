@@ -14,7 +14,9 @@
   "dependencies": {
     "@astrojs/preact": "^5.1.1",
     "@astrojs/vercel": "^10.0.4",
+    "@tailwindcss/vite": "^4.2.4",
     "astro": "^6.1.8",
-    "preact": "^10.29.1"
+    "preact": "^10.29.1",
+    "tailwindcss": "^4.2.4"
   }
 }

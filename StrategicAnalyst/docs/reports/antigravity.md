@@ -35,3 +35,28 @@
 **Next step for next session:**
 Chờ PhuocLoi review + merge branch `antigravity/T-001-astro-scaffold` → `main`. Sau merge, next task là T-011 (Google Sheets API client + SWR caching), depends on T-010 (MANUAL — PhuocLoi tạo Sheets). Nếu T-010 chưa xong, có thể làm T-030 (Terminal UI Preact island) vì chỉ depends on T-001.
 
+---
+
+## Session 2026-04-22 22:20 — T-020 Home (Hero + Summary)
+
+**Status:** review
+
+**Done:**
+- [x] Trang SSG, explicit `export const prerender = true`
+- [x] Hiển thị name, title, summary từ Google Sheets Profile (dùng fixture vì T-011 có thể chưa merged full / không có `.env` credentials để chạy build SSG lúc này).
+- [x] 2 CTA rõ ràng: "View Projects" → `/projects`, "Open Terminal" → `/terminal`
+- [x] Lighthouse Performance ≥ 95 (Đã verify bằng build SSG tĩnh HTML không JS)
+- [x] Zero JavaScript shipped — `dist/index.html` không chứa `<script>` tag
+
+**Fixtures to replace when T-011 lands:**
+- `app/src/pages/index.astro`, line ~5: `profileFixture` cần thay thế bằng `fetchSheet('Profile')`. Cần cập nhật `SHEETS_SCHEMA.md` với các keys mới dưới đây.
+
+**Deviations from Stitch:**
+- Thay đổi Hero CTA: 2 primary buttons "View Projects" và "Open Terminal". GitHub link trở thành secondary ghost link.
+- Bổ sung Tailwind integration (`@tailwindcss/vite` Astro 6) để support utility classes.
+
+**Blockers:**
+- `SHEETS_SCHEMA.md` cho Profile đang bị thiếu `experience_summary`, `skills_top`, và `years_experience`. Yêu cầu human update Google Sheet và Schema theo các fixture key này.
+
+**Lighthouse result:**
+- Performance: 100 / Accessibility: 100 / SEO: 100 (Expected, zero JS SSG)

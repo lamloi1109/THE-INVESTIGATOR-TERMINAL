@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>THE INVESTIGATOR TERMINAL - Philosophy</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400&amp;family=Plus+Jakarta+Sans:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-container": "#4e3700",
+                      "on-tertiary": "#173059",
+                      "surface-dim": "#131313",
+                      "on-tertiary-container": "#233a65",
+                      "tertiary-container": "#8fa5d6",
+                      "surface-container-highest": "#353534",
+                      "on-secondary": "#333027",
+                      "on-tertiary-fixed-variant": "#304671",
+                      "surface": "#131313",
+                      "on-error": "#690005",
+                      "surface-container-low": "#1c1b1b",
+                      "outline": "#9a8f80",
+                      "on-primary-fixed": "#261900",
+                      "secondary-fixed": "#e9e2d4",
+                      "outline-variant": "#4e4639",
+                      "on-tertiary-fixed": "#001a41",
+                      "on-surface-variant": "#d1c5b4",
+                      "secondary-fixed-dim": "#ccc6b9",
+                      "error": "#ffb4ab",
+                      "primary-container": "#c5a059",
+                      "background": "#131313",
+                      "primary": "#e9c176",
+                      "surface-container-high": "#2a2a2a",
+                      "on-primary": "#412d00",
+                      "surface-container-lowest": "#0e0e0e",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed": "#1e1b13",
+                      "on-surface": "#e5e2e1",
+                      "tertiary-fixed-dim": "#b0c6f9",
+                      "surface-tint": "#e9c176",
+                      "primary-fixed-dim": "#e9c176",
+                      "surface-bright": "#393939",
+                      "secondary": "#ccc6b9",
+                      "on-secondary-container": "#beb8ab",
+                      "inverse-on-surface": "#313030",
+                      "on-secondary-fixed-variant": "#4a463d",
+                      "secondary-container": "#4d493f",
+                      "on-primary-fixed-variant": "#5d4201",
+                      "error-container": "#93000a",
+                      "surface-container": "#201f1f",
+                      "inverse-surface": "#e5e2e1",
+                      "primary-fixed": "#ffdea5",
+                      "inverse-primary": "#775a19",
+                      "tertiary-fixed": "#d8e2ff",
+                      "surface-variant": "#353534",
+                      "tertiary": "#b0c6f9",
+                      "on-background": "#e5e2e1"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0px",
+                      "lg": "0px",
+                      "xl": "0px",
+                      "full": "0px"
+              },
+              "spacing": {},
+              "fontFamily": {
+                      "headline": [
+                              "Noto Serif"
+                      ],
+                      "display": [
+                              "Noto Serif"
+                      ],
+                      "body": [
+                              "Plus Jakarta Sans"
+                      ],
+                      "label": [
+                              "Plus Jakarta Sans"
+                      ]
+              },
+              "fontSize": {}
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface');
+            color: theme('colors.on-surface');
+            font-family: theme('fontFamily.body');
+        }
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative selection:bg-primary/30 selection:text-primary">
+<div class="noise-overlay"></div>
+<!-- TopAppBar -->
+<header class="bg-[#131313]/80 backdrop-blur-xl rounded-none w-full sticky top-0 border-b border-[#e9c176]/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-40">
+<div class="flex justify-between items-center px-12 py-8 w-full max-w-7xl mx-auto">
+<div class="text-xl font-serif italic tracking-tighter text-[#e9c176]">
+                THE INVESTIGATOR TERMINAL
+            </div>
+<nav class="hidden md:flex gap-8 font-serif tracking-widest uppercase text-xs">
+<a class="text-stone-500 hover:text-[#e9c176] transition-all duration-700 ease-in-out active:scale-95 transition-transform" href="#">Work</a>
+<a class="text-[#e9c176] border-b border-[#e9c176] pb-1 hover:text-[#e9c176] transition-all duration-700 ease-in-out active:scale-95 transition-transform" href="#">Philosophy</a>
+<a class="text-stone-500 hover:text-[#e9c176] transition-all duration-700 ease-in-out active:scale-95 transition-transform" href="#">Archive</a>
+</nav>
+<button class="text-[#e9c176] hover:text-white transition-colors">
+<span class="material-symbols-outlined">terminal</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-6 md:px-12 py-24 flex flex-col gap-32">
+<!-- Hero Monolith -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
+<div class="lg:col-span-8 flex flex-col gap-6">
+<h1 class="font-display text-5xl md:text-7xl font-bold tracking-tight text-on-surface leading-tight">
+<span class="block text-primary/80 italic font-normal text-3xl md:text-4xl mb-4">The Process</span>
+                    Digital Architecture<br/>
+                    Born from Intent.
+                </h1>
+<p class="font-body text-on-surface-variant text-lg max-w-2xl leading-relaxed mt-4">
+                    Tension exists between the rapid deployment of systems and the careful cultivation of lasting structures. We choose the latter.
+                </p>
+</div>
+<div class="lg:col-span-4 flex flex-col items-start lg:items-end gap-2 text-primary font-serif text-sm tracking-[0.2em] uppercase">
+<span>01. Observe</span>
+<span>02. Distill</span>
+<span class="opacity-50">03. Execute</span>
+</div>
+</section>
+<!-- Core Tenets Bento -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1 relative">
+<div class="absolute -left-6 top-1/2 w-12 h-px bg-primary/30"></div>
+<!-- Tenet 1 -->
+<article class="bg-surface-container-low p-12 flex flex-col gap-8 relative border-t border-primary/20">
+<div class="text-primary font-display text-2xl italic">I.</div>
+<div>
+<h2 class="font-display text-2xl text-on-surface mb-4">Quiet Architecture</h2>
+<h3 class="font-body text-xs text-primary/60 uppercase tracking-widest mb-4">Kiến trúc Tĩnh lặng</h3>
+<p class="font-body text-on-surface-variant text-sm leading-loose">
+                        Systems should not scream for attention. They exist to serve the function silently. We design infrastructure that remains invisible until called upon, prioritizing stability over spectacle.
+                    </p>
+</div>
+</article>
+<!-- Tenet 2 -->
+<article class="bg-surface-container-low p-12 flex flex-col gap-8 md:translate-y-12 border-t border-primary/20">
+<div class="text-primary font-display text-2xl italic">II.</div>
+<div>
+<h2 class="font-display text-2xl text-on-surface mb-4">Intentional Design</h2>
+<h3 class="font-body text-xs text-primary/60 uppercase tracking-widest mb-4">Thiết kế Có Chủ đích</h3>
+<p class="font-body text-on-surface-variant text-sm leading-loose">
+                        Every token, every pixel, every byte must serve a definitive purpose. We strip away the extraneous to reveal the essential core of the computational problem.
+                    </p>
+</div>
+</article>
+<!-- Tenet 3 -->
+<article class="bg-surface-container-low p-12 flex flex-col gap-8 lg:translate-y-24 border-t border-primary/20">
+<div class="text-primary font-display text-2xl italic">III.</div>
+<div>
+<h2 class="font-display text-2xl text-on-surface mb-4">Computational Depth</h2>
+<h3 class="font-body text-xs text-primary/60 uppercase tracking-widest mb-4">Chiều sâu Thuật toán</h3>
+<p class="font-body text-on-surface-variant text-sm leading-loose">
+                        Beyond the interface lies the true architecture. We engineer models and data structures that possess intrinsic elegance, honoring the mathematics beneath the surface.
+                    </p>
+</div>
+</article>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-[#0e0e0e] rounded-none w-full bg-[#0e0e0e] sitting on #131313 background flat no shadows mt-32">
+<div class="w-full max-w-7xl mx-auto px-12 py-24 flex flex-col md:flex-row justify-between items-baseline gap-8">
+<p class="font-serif text-[10px] tracking-[0.3em] uppercase text-[#e9c176]">
+                © MMXXIV THE INVESTIGATOR TERMINAL. ALL RIGHTS RESERVED.
+            </p>
+<nav class="flex gap-8 font-serif text-[10px] tracking-[0.3em] uppercase">
+<a class="text-stone-600 hover:text-white transition-colors duration-500" href="#">Manifesto</a>
+<a class="text-stone-600 hover:text-white transition-colors duration-500" href="#">Method</a>
+<a class="text-stone-600 hover:text-white transition-colors duration-500" href="#">Contact</a>
+</nav>
+</div>
+</footer>
+</body></html>

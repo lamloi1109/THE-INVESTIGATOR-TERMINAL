@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh pr create --base main --title 'docs: split plan into RISKS.md + add session HANDOFF.md' --body ' *)",
+      "PowerShell(gh --version)"
+    ]
+  }
+}
