@@ -16,10 +16,20 @@ const { title = "THE INVESTIGATOR TERMINAL" } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content="AI Engineer Portfolio showcasing system architecture, RAG, and structured outputs." />
+		<meta name="description" content="AI Engineer Portfolio — building quiet, intentional digital experiences." />
 		<title>{title}</title>
+
+		<!-- Kintsugi Noir typography: Noto Serif (headline) + Plus Jakarta Sans (body) -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="stylesheet"
+			href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:wght@200..800&display=swap"
+		/>
 	</head>
-	<body class="bg-white text-zinc-900 font-sans antialiased selection:bg-zinc-200 selection:text-zinc-900">
+	<body class="bg-surface text-on-surface font-body antialiased min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-on-primary">
+		<!-- Film-grain overlay — fixed, non-interactive, sits above content -->
+		<div class="fixed inset-0 noise-overlay z-50"></div>
 		<slot />
 	</body>
 </html>

@@ -1,4 +1,8 @@
 ---
+/**
+ * Summary.astro — Kintsugi Noir translation
+ * Bonus section under Hero. Editorial asymmetric grid.
+ */
 interface Props {
   experienceSummary_vi: string;
   experienceSummary_en: string;
@@ -20,60 +24,60 @@ const {
 const experienceSummary = lang === "en" ? experienceSummary_en : experienceSummary_vi;
 const skillsTop = lang === "en" ? skillsTop_en : skillsTop_vi;
 
-const summaryTitle = lang === "en" ? "Summary" : "Tóm tắt";
-const skillsTitle = lang === "en" ? "Top Skills" : "Kỹ năng chính";
+const summaryTitle = lang === "en" ? "Summary" : "Tóm Tắt";
+const skillsTitle = lang === "en" ? "Top Skills" : "Kỹ Năng Chính";
 const experienceLabel = lang === "en" ? "Years Experience" : "Năm Kinh Nghiệm";
 ---
 
-<section 
-  class="bg-white py-12 md:py-16 px-6 md:px-16 flex flex-col items-start max-w-7xl mx-auto border-t border-zinc-100"
+<section
+  class="py-20 md:py-28 px-6 md:px-12 lg:px-24 max-w-screen-2xl mx-auto bg-surface-container-low"
   aria-labelledby="summary-title"
 >
   <div class="grid grid-cols-1 md:grid-cols-12 gap-12 w-full">
-    
-    <!-- Left Column: Title & Stats -->
+    <!-- Left: editorial title + stat -->
     <div class="md:col-span-4 flex flex-col items-start">
-      <h2 
+      <h2
         id="summary-title"
-        class="text-2xl md:text-3xl font-medium tracking-tight text-zinc-900 mb-8"
+        class="font-headline text-3xl md:text-4xl font-light tracking-tight text-on-surface mb-8"
       >
         {summaryTitle}
       </h2>
-      
-      <div class="mt-auto pt-8 md:pt-0">
+
+      <div class="w-12 h-[1px] bg-primary mb-10"></div>
+
+      <div class="mt-auto">
         <div class="flex items-baseline gap-2">
-          <span class="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-900">{yearsExperience}</span>
-          <span class="text-lg text-emerald-500 font-medium">+</span>
+          <span class="font-headline text-5xl md:text-6xl font-light tracking-tight text-primary">
+            {yearsExperience}
+          </span>
+          <span class="font-headline text-2xl text-primary/70">+</span>
         </div>
-        <p class="text-sm font-medium tracking-wide uppercase text-zinc-500 mt-2">
+        <p class="font-label text-xs tracking-[0.2em] uppercase text-on-surface-variant mt-3">
           {experienceLabel}
         </p>
       </div>
     </div>
 
-    <!-- Right Column: Content & Skills -->
-    <div class="md:col-span-8 flex flex-col gap-10">
-      
-      <div class="prose prose-zinc prose-lg max-w-none font-light text-zinc-600 leading-relaxed">
+    <!-- Right: prose + skills -->
+    <div class="md:col-span-8 flex flex-col gap-12">
+      <div class="font-body text-lg text-on-surface-variant leading-relaxed font-light space-y-6 max-w-2xl">
         {experienceSummary.split('\n\n').map((paragraph) => (
           <p>{paragraph}</p>
         ))}
       </div>
 
       <div>
-        <h3 class="text-sm font-medium tracking-wide uppercase text-zinc-400 mb-4">
+        <h3 class="font-label text-xs tracking-[0.2em] uppercase text-on-surface-variant/70 mb-5">
           {skillsTitle}
         </h3>
         <div class="flex flex-wrap gap-2">
           {skillsTop.map((skill) => (
-            <span class="inline-flex items-center px-3 py-1.5 rounded-md bg-zinc-50 border border-zinc-200 text-sm font-medium text-zinc-700">
+            <span class="inline-flex items-center px-3 py-2 bg-surface-container-highest font-label text-xs tracking-[0.05em] text-on-surface-variant">
               {skill}
             </span>
           ))}
         </div>
       </div>
-      
     </div>
-    
   </div>
 </section>

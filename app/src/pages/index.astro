@@ -37,8 +37,8 @@ const currentLang = 'vi';
 ---
 
 <Layout title={`${profileFixture.name[currentLang]} — ${profileFixture.title[currentLang]}`}>
-  <main class="w-full bg-white min-h-screen">
-    <Hero 
+  <main class="w-full">
+    <Hero
       name={profileFixture.name[currentLang]}
       title_vi={profileFixture.title.vi}
       title_en={profileFixture.title.en}
@@ -47,6 +47,8 @@ const currentLang = 'vi';
       status_vi={profileFixture.status.vi}
       status_en={profileFixture.status.en}
       githubLink={profileFixture.github.vi}
+      portraitSrc="/portrait.jpg"
+      portraitAlt={profileFixture.name[currentLang]}
       lang={currentLang}
     />
     

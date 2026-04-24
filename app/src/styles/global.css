@@ -1,1 +1,39 @@
 @import "tailwindcss";
+
+/* ==========================================================================
+   Kintsugi Noir — "Temporal Elegance" design tokens
+   Source: stitch_the_investigator_terminal_hero/kintsugi_noir/DESIGN.md
+   ========================================================================== */
+@theme {
+  /* Surface hierarchy (dark) */
+  --color-surface: #131313;
+  --color-surface-container-lowest: #0e0e0e;
+  --color-surface-container-low: #1c1b1b;
+  --color-surface-container: #201f1f;
+  --color-surface-container-high: #2a2a2a;
+  --color-surface-container-highest: #353534;
+  --color-surface-bright: #393939;
+
+  /* Primary — aged gold, surgical accent */
+  --color-primary: #e9c176;
+  --color-on-primary: #412d00;
+
+  /* Text tokens */
+  --color-on-surface: #e5e2e1;
+  --color-on-surface-variant: #d1c5b4;
+  --color-outline: #9a8f80;
+  --color-outline-variant: #4e4639;
+
+  /* Typography */
+  --font-headline: "Noto Serif", ui-serif, Georgia, serif;
+  --font-body: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-label: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Film-grain noise overlay — prevents dark surfaces feeling "flat" */
+.noise-overlay {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
