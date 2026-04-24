@@ -62,7 +62,7 @@ const tGithub = lang === "en" ? "View on GitHub" : "Xem trên GitHub";
         class="inline-flex items-center gap-3 px-4 py-2 bg-surface-container-lowest border border-outline-variant/30 relative overflow-hidden group"
       >
         <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-xs tracking-[0.1em] text-on-surface-variant uppercase font-label">
+        <span class="text-xs tracking-[0.1em] text-primary font-medium uppercase font-label">
           {status}
         </span>
         <div
@@ -74,21 +74,15 @@ const tGithub = lang === "en" ? "View on GitHub" : "Xem trên GitHub";
       <div class="space-y-6">
         <h1
           id="hero-title"
-          class="font-headline text-5xl md:text-7xl lg:text-8xl font-light text-on-surface tracking-tight leading-[1.1]"
+          class="font-headline text-5xl md:text-7xl lg:text-8xl font-light text-on-surface tracking-tighter leading-[1.1]"
         >
           {name}
         </h1>
 
-        {title && (
-          <p class="font-label text-xs md:text-sm text-primary tracking-[0.2em] uppercase">
-            {title}
-          </p>
-        )}
-
         <!-- Gold micro-accent divider -->
         <div class="w-12 h-[1px] bg-primary"></div>
 
-        <p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl leading-relaxed font-light">
+        <p class="font-body text-lg md:text-xl text-neutral-200 max-w-2xl leading-relaxed font-light">
           {bio}
         </p>
       </div>
@@ -144,9 +138,9 @@ const tGithub = lang === "en" ? "View on GitHub" : "Xem trên GitHub";
     <div class="lg:col-span-4 hidden lg:flex justify-end items-center relative h-full">
       <div class="w-full relative flex items-center justify-center">
         <div class="relative w-full max-w-[360px]">
-          <!-- Double ghost border — outer -->
-          <div class="absolute -inset-6 border border-primary/20" aria-hidden="true"></div>
-          <!-- Double ghost border — inner -->
+          <!-- Asymmetric outer ghost frame — signature "off-grid" gesture (DESIGN.md §1) -->
+          <div class="absolute -top-2 -left-2 -right-8 -bottom-8 border border-primary/20" aria-hidden="true"></div>
+          <!-- Inner tight ghost border -->
           <div class="absolute -inset-2 border border-primary/30" aria-hidden="true"></div>
           <!-- Portrait (grayscale → color on hover) -->
           <img
@@ -156,7 +150,7 @@ const tGithub = lang === "en" ? "View on GitHub" : "Xem trên GitHub";
             height="360"
             loading="eager"
             decoding="async"
-            class="w-full aspect-square object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative z-10 bg-surface-container-lowest"
+            class="w-full aspect-square object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative z-10 bg-surface-container-lowest shadow-2xl"
           />
           <!-- Kanji 無 (mu — emptiness/nothingness) watermark -->
           <span
@@ -170,9 +164,9 @@ const tGithub = lang === "en" ? "View on GitHub" : "Xem trên GitHub";
     </div>
   </div>
 
-  <!-- Bottom vertical accent — signature architectural gesture -->
+  <!-- Bottom vertical accent — gradient fade (signature architectural gesture) -->
   <div
     aria-hidden="true"
-    class="absolute bottom-0 left-6 md:left-12 lg:left-24 w-[1px] h-24 bg-primary/30"
+    class="absolute bottom-0 left-6 md:left-12 lg:left-24 w-[1px] h-32 bg-gradient-to-b from-primary/60 to-transparent"
   ></div>
 </section>
