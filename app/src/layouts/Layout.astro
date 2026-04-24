@@ -1,11 +1,13 @@
 ---
 import '../styles/global.css';
+import Header from '../components/Header.astro';
 
 interface Props {
 	title?: string;
+	lang?: 'vi' | 'en';
 }
 
-const { title = "THE INVESTIGATOR TERMINAL" } = Astro.props;
+const { title = "THE INVESTIGATOR TERMINAL", lang = 'vi' } = Astro.props;
 ---
 
 <!doctype html>
@@ -30,6 +32,7 @@ const { title = "THE INVESTIGATOR TERMINAL" } = Astro.props;
 	<body class="bg-surface text-on-surface font-body antialiased min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-on-primary">
 		<!-- Film-grain overlay — fixed, non-interactive, sits above content -->
 		<div class="fixed inset-0 noise-overlay z-50"></div>
+		<Header lang={lang} />
 		<slot />
 	</body>
 </html>
