@@ -1,7 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
-import Summary from '../components/Summary.astro';
 
 // FIXTURE — replace with fetchSheet('Profile') when T-011 lands
 // import { fetchSheet } from '../lib/sheets';
@@ -49,15 +48,6 @@ const currentLang = 'vi';
       githubLink={profileFixture.github.vi}
       portraitSrc="/portrait.jpg"
       portraitAlt={profileFixture.name[currentLang]}
-      lang={currentLang}
-    />
-    
-    <Summary 
-      experienceSummary_vi={profileFixture.experience_summary.vi}
-      experienceSummary_en={profileFixture.experience_summary.en}
-      skillsTop_vi={profileFixture.skills_top.vi.split(',').map(s => s.trim())}
-      skillsTop_en={profileFixture.skills_top.en.split(',').map(s => s.trim())}
-      yearsExperience={Number(profileFixture.years_experience.vi)}
       lang={currentLang}
     />
   </main>
