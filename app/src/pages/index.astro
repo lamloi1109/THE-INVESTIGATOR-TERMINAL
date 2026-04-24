@@ -36,7 +36,7 @@ const profileFixture = {
 const currentLang = 'vi';
 ---
 
-<Layout title={`${profileFixture.name[currentLang]} — ${profileFixture.title[currentLang]}`}>
+<Layout title={`${profileFixture.name[currentLang]} — ${profileFixture.title[currentLang]}`} lang={currentLang}>
   <main class="w-full">
     <Hero
       name={profileFixture.name[currentLang]}

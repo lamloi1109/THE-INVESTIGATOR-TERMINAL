@@ -1,0 +1,95 @@
+---
+/**
+ * Header.astro — TopAppBar (Kintsugi Noir "MONOLITH")
+ * Source mockup: hero.astro_wabi_sabi_with_personal_image_3/code.html (lines 92-104)
+ *
+ * Fixed top, glassmorphic (bg-neutral-950/80 + backdrop-blur), serif brand,
+ * uppercase nav labels with hover underline, terminal icon on the right.
+ * Nav items map to actual project routes (Portfolio -> /, Archive -> /projects, etc).
+ */
+interface Props {
+  lang?: 'vi' | 'en';
+}
+
+const { lang = 'vi' } = Astro.props;
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => {
+  if (href === '/') return path === '/';
+  return path.startsWith(href);
+};
+
+const brand = 'MONOLITH';
+
+const nav = [
+  { href: '/',          label_vi: 'Portfolio',  label_en: 'Portfolio' },
+  { href: '/philosophy',label_vi: 'Triết Lý',   label_en: 'Philosophy' },
+  { href: '/projects',  label_vi: 'Dự Án',      label_en: 'Archive' },
+  { href: '/contact',   label_vi: 'Liên Hệ',    label_en: 'Contact' },
+];
+
+const terminalLabel = lang === 'en' ? 'Open Terminal' : 'Mở Terminal';
+---
+
+<header
+  class="fixed inset-x-0 top-0 z-40 bg-surface/80 backdrop-blur-lg"
+  aria-label={lang === 'en' ? 'Primary' : 'Điều hướng chính'}
+>
+  <div class="max-w-screen-2xl mx-auto flex justify-between items-center px-6 md:px-12 lg:px-24 py-5 md:py-6">
+    <!-- Brand -->
+    <a
+      href="/"
+      class="font-headline text-2xl font-light tracking-tight text-primary"
+      aria-label={brand}
+    >
+      {brand}
+    </a>
+
+    <!-- Desktop nav -->
+    <nav class="hidden md:flex gap-8" aria-label="Primary">
+      {nav.map((item) => {
+        const label = lang === 'en' ? item.label_en : item.label_vi;
+        const active = isActive(item.href);
+        return (
+          <a
+            href={item.href}
+            aria-current={active ? 'page' : undefined}
+            class:list={[
+              'font-label text-xs tracking-[0.2em] uppercase transition-all duration-500 hover:text-primary',
+              active
+                ? 'text-primary border-b border-primary/40 pb-1'
+                : 'text-on-surface-variant/70',
+            ]}
+          >
+            {label}
+          </a>
+        );
+      })}
+    </nav>
+
+    <!-- Terminal shortcut -->
+    <a
+      href="/terminal"
+      aria-label={terminalLabel}
+      class="text-primary/90 hover:text-primary transition-colors duration-500"
+    >
+      <!-- Heroicons command-line outline (inline, no font download) -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="square"
+        stroke-linejoin="miter"
+        class="w-6 h-6"
+        aria-hidden="true"
+      >
+        <path d="M6.75 7.5l3 2.25-3 2.25M12.75 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
+      </svg>
+    </a>
+  </div>
+
+  <!-- Hairline gold separator (ghost, felt more than seen) -->
+  <div aria-hidden="true" class="h-[1px] bg-outline-variant/20"></div>
+</header>
