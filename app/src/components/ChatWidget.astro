@@ -1,0 +1,273 @@
+---
+/**
+ * ChatWidget.astro — Floating chat FAB + slide-in panel (UI-only)
+ * Source: design/index.html lines 472-647 (CSS), 804-? (markup), 929-998 (script)
+ *
+ * Vanilla open/close only — NO AI wire. T-031 (real Gemini stream) takes over later.
+ * Dummy welcome message + disabled send button until then.
+ *
+ * T-024, D-005. Budget: ~2KB gzipped (vanilla, no Preact runtime).
+ */
+interface Props {
+  lang?: 'vi' | 'en';
+}
+
+const { lang = 'en' } = Astro.props;
+
+const t = {
+  open: lang === 'vi' ? 'Mở chat' : 'Chat with Agent',
+  agentName: lang === 'vi' ? 'Investigator Agent' : 'Investigator Agent',
+  status: lang === 'vi' ? 'AI · Đang chờ' : 'AI · Online',
+  placeholder: lang === 'vi' ? 'Đang khởi tạo... (AI sẽ wire ở T-031)' : 'Initializing… (AI wires at T-031)',
+  welcome: lang === 'vi'
+    ? 'Xin chào — đây là Investigator Agent. Tính năng AI sẽ kích hoạt ở task T-031. Hiện tại UI đang ở mode preview.'
+    : "Hi — I'm the Investigator Agent. AI activates at T-031. UI is in preview mode for now.",
+  close: lang === 'vi' ? 'Đóng' : 'Close',
+};
+---
+
+<button
+  type="button"
+  id="chatFab"
+  class="chat-fab"
+  aria-label={t.open}
+  aria-controls="chatPanel"
+  aria-expanded="false"
+  title={t.open}
+>
+  <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+</button>
+
+<div
+  id="chatPanel"
+  class="chat-panel"
+  role="dialog"
+  aria-modal="false"
+  aria-labelledby="chat-header-name"
+>
+  <div class="chat-header">
+    <div class="chat-header-dot fx-pulse-dot" aria-hidden="true"></div>
+    <div class="chat-header-info">
+      <div id="chat-header-name" class="chat-header-name gradient-text font-headline text-[15px] font-bold leading-tight">
+        {t.agentName}
+      </div>
+      <div class="text-[11px] text-text-secondary tracking-[0.05em] mt-px">{t.status}</div>
+    </div>
+    <button type="button" id="chatClose" class="chat-close" aria-label={t.close} title={t.close}>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 3l8 8M11 3l-8 8" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="chat-messages" id="chatMessages">
+    <div class="msg msg-agent">{t.welcome}</div>
+  </div>
+
+  <form class="chat-input-row" id="chatForm" aria-label="Chat input">
+    <input
+      type="text"
+      id="chatInput"
+      class="chat-input"
+      placeholder={t.placeholder}
+      autocomplete="off"
+      disabled
+    />
+    <button type="submit" class="chat-send" id="chatSend" disabled aria-label="Send">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M2 7l10-5-3 5 3 5z" />
+      </svg>
+    </button>
+  </form>
+</div>
+
+<style>
+  /* FAB — gradient circle, bottom-right */
+  .chat-fab {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    z-index: 2000;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #0A0A0A;
+    background: linear-gradient(135deg, #00FF9F, #00E5FF, #FF00FF);
+    box-shadow: 0 0 24px rgba(0,255,159,0.4);
+    transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s;
+  }
+  .chat-fab:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 40px rgba(0,255,159,0.6);
+  }
+  .chat-fab svg { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
+  .chat-fab.open svg { transform: rotate(45deg); }
+
+  /* Panel */
+  .chat-panel {
+    position: fixed;
+    bottom: 100px;
+    right: 32px;
+    z-index: 1999;
+    width: min(380px, calc(100vw - 32px));
+    height: 520px;
+    max-height: calc(100vh - 130px);
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,229,255,0.18);
+    border-radius: 20px;
+    box-shadow: 0 0 60px rgba(0,229,255,0.08), 0 24px 48px rgba(0,0,0,0.6);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s;
+    transform-origin: bottom right;
+  }
+  .chat-panel.open {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .chat-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(0,229,255,0.1);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .chat-header-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #00FF9F;
+    box-shadow: 0 0 8px #00FF9F;
+    flex-shrink: 0;
+  }
+  .chat-header-info { flex: 1; min-width: 0; }
+
+  .chat-close {
+    background: transparent;
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 8px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    color: #9CA3AF;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .chat-close:hover {
+    color: #00E5FF;
+    border-color: rgba(0,229,255,0.5);
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,229,255,0.2) transparent;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.2); border-radius: 4px; }
+
+  .msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .msg-agent {
+    background: rgba(17,24,39,0.8);
+    border: 1px solid rgba(0,229,255,0.12);
+    color: #D1D5DB;
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+  }
+  .msg-user {
+    background: rgba(0,255,159,0.1);
+    border: 1px solid rgba(0,255,159,0.2);
+    color: #fff;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+  }
+
+  .chat-input-row {
+    flex-shrink: 0;
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px 16px;
+    border-top: 1px solid rgba(0,229,255,0.08);
+  }
+  .chat-input {
+    flex: 1;
+    min-width: 0;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(17,24,39,0.6);
+    border: 1px solid rgba(0,229,255,0.18);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+  }
+  .chat-input::placeholder { color: #6b7280; }
+  .chat-input:focus { border-color: rgba(0,229,255,0.5); box-shadow: 0 0 12px rgba(0,229,255,0.15); }
+
+  .chat-send {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, #00FF9F, #00E5FF);
+    color: #0A0A0A;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .chat-send:hover:not(:disabled) {
+    transform: scale(1.08);
+    box-shadow: 0 0 16px rgba(0,255,159,0.4);
+  }
+  .chat-send:disabled, .chat-input:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const fab = document.getElementById('chatFab');
+    const panel = document.getElementById('chatPanel');
+    const closeBtn = document.getElementById('chatClose');
+    if (!fab || !panel) return;
+
+    function setOpen(open) {
+      panel.classList.toggle('open', open);
+      fab.classList.toggle('open', open);
+      fab.setAttribute('aria-expanded', String(open));
+    }
+
+    fab.addEventListener('click', () => {
+      setOpen(!panel.classList.contains('open'));
+    });
+    closeBtn?.addEventListener('click', () => setOpen(false));
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && panel.classList.contains('open')) setOpen(false);
+    });
+  })();
+</script>

@@ -1,0 +1,99 @@
+---
+/**
+ * CustomCursor.astro — Neon dot + cyan ring with lag follow
+ * Source: design/index.html lines 653-682, 1008-1037
+ *
+ * Hover-capable + fine-pointer only. Touch devices get native cursor.
+ * Mousedown switches to pink. Reduced-motion users skip entirely.
+ *
+ * T-023, D-005. Budget: ~1KB gzipped.
+ */
+---
+
+<div id="cursor-dot" aria-hidden="true"></div>
+<div id="cursor-ring" aria-hidden="true"></div>
+
+<style>
+  /* Hide system cursor only on hover-capable + fine-pointer devices */
+  @media (hover: hover) and (pointer: fine) {
+    *, *::before, *::after { cursor: none !important; }
+  }
+  @media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+    #cursor-dot, #cursor-ring { display: none !important; }
+  }
+
+  #cursor-dot {
+    position: fixed;
+    top: 0; left: 0;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #00FF9F;
+    box-shadow: 0 0 12px #00FF9F, 0 0 24px rgba(0,255,159,0.5);
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: width 0.15s, height 0.15s, background 0.15s, box-shadow 0.15s;
+    will-change: left, top;
+  }
+
+  #cursor-ring {
+    position: fixed;
+    top: 0; left: 0;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,229,255,0.7);
+    pointer-events: none;
+    z-index: 99998;
+    transform: translate(-50%, -50%);
+    transition: transform 0.08s linear, border-color 0.15s;
+    box-shadow: 0 0 10px rgba(0,229,255,0.3);
+    will-change: left, top, transform;
+  }
+
+  body:has(a:hover) #cursor-dot,
+  body:has(button:hover) #cursor-dot {
+    width: 14px; height: 14px;
+    background: #00E5FF;
+    box-shadow: 0 0 18px #00E5FF, 0 0 36px rgba(0,229,255,0.5);
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    if (!dot || !ring) return;
+
+    let dotX = 0, dotY = 0, ringX = 0, ringY = 0;
+
+    window.addEventListener('mousemove', (e) => {
+      dotX = e.clientX; dotY = e.clientY;
+      dot.style.left = dotX + 'px';
+      dot.style.top = dotY + 'px';
+    });
+
+    (function tick() {
+      ringX += (dotX - ringX) * 0.12;
+      ringY += (dotY - ringY) * 0.12;
+      ring.style.left = ringX + 'px';
+      ring.style.top = ringY + 'px';
+      requestAnimationFrame(tick);
+    })();
+
+    window.addEventListener('mousedown', () => {
+      ring.style.transform = 'translate(-50%,-50%) scale(0.6)';
+      ring.style.borderColor = 'rgba(0,255,159,0.9)';
+      dot.style.background = '#FF00FF';
+      dot.style.boxShadow = '0 0 16px #FF00FF, 0 0 32px rgba(255,0,255,0.5)';
+    });
+    window.addEventListener('mouseup', () => {
+      ring.style.transform = 'translate(-50%,-50%) scale(1)';
+      ring.style.borderColor = 'rgba(0,229,255,0.7)';
+      dot.style.background = '#00FF9F';
+      dot.style.boxShadow = '0 0 12px #00FF9F, 0 0 24px rgba(0,255,159,0.5)';
+    });
+  })();
+</script>

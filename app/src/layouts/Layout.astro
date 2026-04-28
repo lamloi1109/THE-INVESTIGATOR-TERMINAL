@@ -1,6 +1,9 @@
 ---
 import '../styles/global.css';
 import Header from '../components/Header.astro';
+import PlexusBackground from '../components/PlexusBackground.astro';
+import CustomCursor from '../components/CustomCursor.astro';
+import ChatWidget from '../components/ChatWidget.astro';
 
 interface Props {
 	title?: string;
@@ -30,11 +33,14 @@ const { title = "The Investigator Terminal", lang = 'en' } = Astro.props;
 		/>
 	</head>
 	<body class="bg-bg text-text-primary font-body antialiased min-h-screen relative overflow-x-hidden selection:bg-green/30 selection:text-text-primary">
-		<!--
-			Plexus particle canvas slot — populated by T-023 island.
-			Layout reserves the fixed inset z-0 layer; canvas sits below vignette (z-1).
-		-->
+		<!-- Background FX (z-0, below vignette z-1) -->
+		<PlexusBackground />
+
 		<Header lang={lang} />
 		<slot />
+
+		<!-- Foreground FX (z high) -->
+		<ChatWidget lang={lang} />
+		<CustomCursor />
 	</body>
 </html>
