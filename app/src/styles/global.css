@@ -97,3 +97,25 @@ body::before {
   z-index: 1;
   pointer-events: none;
 }
+
+/* CRT scan-line overlay — sits ABOVE content (z:3) but below cursor (z:99998+).
+   Source: design/index.html lines 692-706. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(0, 0, 0, 0.03) 3px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Reduced-motion users get cleaner backdrop — drop scan-lines */
+@media (prefers-reduced-motion: reduce) {
+  body::after { display: none; }
+}
