@@ -99,3 +99,36 @@ Dùng cho: chọn thư viện nhỏ, đổi naming convention, chốt config nh�
 - **Alternatives rejected:** Single-column tiếng Việt (mất tiếp cận QT); single-column tiếng Anh (mất màu sắc cá nhân VN); i18n JSON external (thêm build step, phân mảnh content).
 - **Affects:** T-010 (schema đã áp dụng); T-011 (fetchSheet response có field `_vi`/`_en`); T-020/T-021/T-022 (render theo locale state); T-042 (fallback content cần cả 2 ngôn ngữ).
 - **Deviation từ AC gốc:** TASKS.md T-010 liệt kê cột `title`, `description`, `highlights` single-column. AC gốc được coi là "superseded by D-004" — schema thực tế theo `SHEETS_SCHEMA.md`.
+
+---
+
+## D-005: Design pivot — "The Investigator" cyberpunk thay Kintsugi Noir
+
+- **Date:** 2026-04-28
+- **Author:** human (decision) + claude_code (implementation)
+- **Status:** active
+- **Supersedes:** mọi visual decision ngầm trong T-020 lần 1 (Kintsugi Noir merge `2a64687` → `c013ab8`)
+
+**Context:**
+T-020 lần 1 đã merge implementation Kintsugi Noir (dark serif gold, Noto Serif + Plus Jakarta Sans, asymmetric grid + portrait + kanji watermark). Sau khi review trên live preview, anh quyết định pivot 180° sang aesthetic mới: cyberpunk/AI-terminal — nền `#0A0A0A`, neon green `#00FF9F` + cyan `#00E5FF` + pink `#FF00FF`, font Rajdhani + Inter, có particle plexus + lightning canvas + custom cursor + chat FAB widget. Reference: `design/index.html` (157KB).
+
+**Options considered:**
+1. **Polish Kintsugi tiếp** — đầu tư thêm để thật sát mockup wabi_sabi. Nhanh nhưng không đúng identity hướng tới.
+2. **Pivot sang The Investigator** — viết lại Hero/Header/Layout, cập nhật rules. Mất công nhưng identity portfolio = "AI Engineer làm tech sản phẩm" thay vì "editorial gallery".
+3. **Hybrid** — giữ Kintsugi typography + thêm neon highlight. Rối, không tối ưu cho ngách nào.
+
+**Decision:**
+Option 2 — wipe Kintsugi assets + re-implement based on `design/index.html`.
+
+**Rationale:**
+- Portfolio identity phải telegraph "AI Engineer" trong 5 giây đầu. Cyberpunk terminal = visual signal phù hợp; Kintsugi editorial = visual signal sai (gợi designer/curator hơn engineer).
+- Particle FX + chat widget = chính cái "chứng minh năng lực" mà PRD đặt ra (interactive RAG demo). Kintsugi static không show được.
+- User đã chốt: implement đầy đủ FX (plexus + fx-canvas + custom cursor), accept JS budget mới.
+
+**Consequences:**
+- **CLAUDE.md non-goals đổi**: bỏ rule "no particles, no visual gimmick" → particle islands là intentional. Rule mới: tổng JS gửi client < 60KB gzipped (S4 hard cap mới cho FE).
+- **T-020 AC đổi**: bỏ "Zero JavaScript shipped" → cho phép JS islands cho Phase B/C. AC giữ Lighthouse ≥ 95 nhưng nay khó hơn — flag risk.
+- **Lighthouse S1 ≥ 95 risk tăng**: particle canvas + animated SVG gradient có thể tốn paint budget. Phase B sẽ cần `prefers-reduced-motion` opt-out + `client:visible` lazy-load.
+- Tasks mới: **T-023** (Background FX islands), **T-024** (Chat FAB UI scaffold). Chèn vào critical path sau T-020-reset.
+- `stitch_the_investigator_terminal_hero/` (40 file Kintsugi mockup) xóa hẳn — git history vẫn truy ngược được qua commit `2a64687`.
+- Sheets schema D-004 không đổi. Bilingual props giữ nguyên.

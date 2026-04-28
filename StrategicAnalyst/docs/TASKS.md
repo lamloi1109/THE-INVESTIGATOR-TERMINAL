@@ -39,6 +39,34 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 ## Phase 2: Static Pages (SSG)
 
 ```
+Task ID:    T-020-reset
+Title:      Trang chủ — "The Investigator" cyberpunk redesign (Hero + Header + Layout)
+Status:     in_progress
+Owner:      claude_code
+Branch:     claude/T-020-cyberpunk-reset
+Assigned:   CLAUDE_CODE
+Files:      app/src/components/Hero.astro, app/src/components/Header.astro,
+            app/src/layouts/Layout.astro, app/src/styles/global.css,
+            app/src/pages/index.astro
+Acceptance:
+  [x] Wipe Kintsugi assets (stitch_the_investigator_terminal_hero/, T-020-antigravity handoff)
+  [x] global.css: cyberpunk @theme tokens (#0A0A0A bg, neon green/cyan/pink, Rajdhani+Inter, fadeUp/pulse/blink keyframes)
+  [x] Layout.astro: Rajdhani+Inter via Google Fonts preconnect, dark body, vignette ::before, lang prop pass-through
+  [x] Header.astro: glassmorphic fixed top, "The Investigator" gradient + blinking cursor, 6 nav links, Resume DL + Settings icon buttons
+  [x] Hero.astro: badge -> gradient name -> subtitle -> info-card (about + portrait status-ring) -> 3 CTAs -> scroll indicator. Bilingual props preserved (D-004)
+  [x] index.astro: minimal fixture (just `name`), portrait /portrait.png
+  [x] Phase A is zero-JS (FX islands deferred to T-023, chat to T-024)
+Verification:
+  cd app && npm run build -> exit 0
+  grep -c '<script' dist/index.html -> 0
+  dist/index.html contains: "The Investigator", gradient-text class, "About Me", "View Projects"
+  No leftover Kintsugi terms (MONOLITH/Noto Serif/Plus Jakarta) in dist
+Depends on: T-011 (props could later swap to fetchSheet); D-005 (design pivot)
+Complexity: M
+Updated:    2026-04-28 by claude_code (in_progress -> review pending merge)
+```
+
+```
 Task ID:    T-021
 Title:      Trang Projects listing (SSG)
 Status:     todo
@@ -79,9 +107,61 @@ Complexity: M
 Updated:    2026-04-20 by human (initial seed)
 ```
 
+```
+Task ID:    T-023
+Title:      Background FX islands (plexus + fx-canvas + custom cursor)
+Status:     todo
+Owner:      —
+Branch:     —
+Assigned:   CLAUDE_CODE
+Files:      app/src/components/PlexusBackground.astro,
+            app/src/components/FxCanvas.astro,
+            app/src/components/CustomCursor.astro,
+            app/src/layouts/Layout.astro (wire islands)
+Acceptance:
+  [ ] PlexusBackground.astro: vanilla `<script is:inline>` particle network (~72 dots, mouse-repel). Source: design/index.html lines 836-927
+  [ ] FxCanvas.astro: comet/spark/star FX layer for hover-driven effects. Source: design/index.html lines 1891-end
+  [ ] CustomCursor.astro: cursor-dot + cursor-ring follow mouse with smooth lag
+  [ ] Tất cả opt-out qua `prefers-reduced-motion: reduce` -> render nothing
+  [ ] Total client JS budget < 60KB gzipped (CLAUDE.md hard cap, D-005)
+  [ ] Lighthouse Performance ≥ 95 (S1) — measure on production preview
+Verification:
+  npm run build && du -h dist/_astro/*.js | awk '{s+=$1}END{print s"KB"}' < 60
+  Open DevTools Performance: page idle CPU < 5% with reduced-motion off
+  Toggle prefers-reduced-motion in DevTools -> canvas elements skip animation
+Depends on: T-020-reset
+Complexity: M
+Updated:    2026-04-28 by claude_code (initial seed per D-005)
+```
+
 ---
 
 ## Phase 3: Terminal UI (Interactive Island)
+
+```
+Task ID:    T-024
+Title:      Chat FAB UI scaffold (no AI wire)
+Status:     todo
+Owner:      —
+Branch:     —
+Assigned:   CLAUDE_CODE
+Files:      app/src/components/ChatWidget.tsx (Preact island),
+            app/src/layouts/Layout.astro (mount FAB)
+Acceptance:
+  [ ] Preact component, `client:visible` directive
+  [ ] FAB button bottom-right, gradient bg, opens/closes panel
+  [ ] Panel: glassmorphic, slide-in animation, header (Investigator Agent · AI Online), messages list (dummy), input + send button
+  [ ] Dummy messages render only — NO API call. T-031 wires real AI later
+  [ ] Bundle delta < 25KB gzipped (within FX budget under D-005)
+  [ ] Closing panel via FAB click OR Escape key
+Verification:
+  Click FAB -> panel slides up
+  Click FAB again or Escape -> panel slides down
+  Bundle: `du -sh dist/_astro/ChatWidget*.js` < 25KB
+Depends on: T-020-reset
+Complexity: M
+Updated:    2026-04-28 by claude_code (initial seed per D-005)
+```
 
 ```
 Task ID:    T-030
@@ -377,8 +457,8 @@ Updated:    2026-04-21 by human (done — review pass, all 6 AC verified. Nit: n
 
 ```
 Task ID:    T-020
-Title:      Trang chủ — Hero + Summary (SSG)
-Status:     done
+Title:      Trang chủ — Hero + Summary (SSG) [SUPERSEDED by T-020-reset per D-005]
+Status:     superseded
 Owner:      antigravity (polish by claude_code)
 Branch:     antigravity/T-020-home-hero → claude/T-020-design-polish
 Assigned:   ANTIGRAVITY
@@ -398,4 +478,5 @@ Verification:
 Depends on: T-011
 Complexity: S
 Updated:    2026-04-22 by claude_code (done — polish pass merged: animate-pulse fix, title typography align Korean minimalist, a11y on CTAs, GitHub demote icon-only. Summary.astro bonus component kept.)
+            2026-04-28 by claude_code (SUPERSEDED — D-005 design pivot to "The Investigator" cyberpunk. Implementation discarded; replaced by T-020-reset. History truy ngược qua merge commit `c013ab8` trên main.)
 ```

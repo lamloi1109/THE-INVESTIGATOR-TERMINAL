@@ -2,52 +2,27 @@
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 
-// FIXTURE — replace with fetchSheet('Profile') when T-011 lands
+// FIXTURE — replace with fetchSheet('Profile') when wiring lands.
 // import { fetchSheet } from '../lib/sheets';
 // const profiles = await fetchSheet('Profile');
-// Map the array to an object: const profileObj = profiles.reduce((acc, curr) => ({ ...acc, [curr.key]: curr }), {});
+// Map array -> object: profiles.reduce((acc, r) => ({ ...acc, [r.key]: r }), {});
 
 export const prerender = true;
 
-const profileFixture = {
-  name: { vi: 'Lâm Phước Lợi', en: 'Lam Phuoc Loi' },
-  title: { vi: 'Kỹ sư Phần mềm', en: 'Software Engineer' },
-  bio: { 
-    vi: 'Kỹ sư phần mềm tập trung vào kiến trúc hệ thống, AI Agent và dữ liệu lớn. Đam mê xây dựng các giải pháp tối giản nhưng có sức mạnh tính toán sâu.', 
-    en: 'Software engineer focused on system architecture, AI agents, and large-scale data. Passionate about building minimalist yet computationally deep solutions.' 
-  },
-  status: { vi: 'Đang mở cơ hội mới', en: 'Open to new opportunities' },
-  github: { vi: 'https://github.com/lamloi1109', en: 'https://github.com/lamloi1109' },
-  
-  // NOTE: These keys (experience_summary, skills_top, years_experience) need to be added to the Google Sheet Profile schema.
-  experience_summary: {
-    vi: 'Tôi có kinh nghiệm xây dựng các hệ thống có khả năng mở rộng cao, tích hợp AI workflow và tối ưu hóa hiệu suất ứng dụng. Từng tham gia thiết kế kiến trúc và triển khai các dự án thực tế với sự tập trung vào mã nguồn sạch, dễ bảo trì và kiến trúc zero-JS/hybrid.\n\nMục tiêu của tôi là giải quyết các vấn đề phức tạp thông qua giao diện thanh lịch và hệ thống backend mạnh mẽ.',
-    en: 'I have experience building highly scalable systems, integrating AI workflows, and optimizing application performance. Involved in architectural design and implementation of real-world projects focusing on clean, maintainable code and zero-JS/hybrid architectures.\n\nMy goal is to solve complex problems through elegant interfaces and robust backend systems.'
-  },
-  skills_top: {
-    vi: 'Astro, Preact, TypeScript, Tailwind CSS, System Architecture, Generative AI',
-    en: 'Astro, Preact, TypeScript, Tailwind CSS, System Architecture, Generative AI'
-  },
-  years_experience: { vi: '3', en: '3' }
-};
+// Default UI language for the home page. Bilingual props are still wired
+// through Hero/Layout/Header so flipping this swaps all copy at once.
+const currentLang: 'vi' | 'en' = 'en';
 
-// Hardcode lang="vi" for now per T-020 requirements. No language toggle UI yet.
-const currentLang = 'vi';
+const profileFixture = {
+  // 'name' is a proper noun — no i18n.
+  name: 'Lam Phuoc Loi',
+};
 ---
 
-<Layout title={`${profileFixture.name[currentLang]} — ${profileFixture.title[currentLang]}`} lang={currentLang}>
-  <main class="w-full">
+<Layout title={`${profileFixture.name} — The Investigator`} lang={currentLang}>
+  <main class="relative z-[2] w-full">
     <Hero
-      name={profileFixture.name[currentLang]}
-      title_vi={profileFixture.title.vi}
-      title_en={profileFixture.title.en}
-      bio_vi={profileFixture.bio.vi}
-      bio_en={profileFixture.bio.en}
-      status_vi={profileFixture.status.vi}
-      status_en={profileFixture.status.en}
-      githubLink={profileFixture.github.vi}
-      portraitSrc="/portrait.jpg"
-      portraitAlt={profileFixture.name[currentLang]}
+      name={profileFixture.name}
       lang={currentLang}
     />
   </main>
