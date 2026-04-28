@@ -1,17 +1,20 @@
 ---
 /**
- * Header.astro — TopAppBar (Kintsugi Noir "MONOLITH")
- * Source mockup: hero.astro_wabi_sabi_with_personal_image_3/code.html (lines 92-104)
+ * Header.astro — "The Investigator" cyberpunk navbar
+ * Source: design/index.html lines 718-744
  *
- * Fixed top, glassmorphic (bg-neutral-950/80 + backdrop-blur), serif brand,
- * uppercase nav labels with hover underline, terminal icon on the right.
- * Nav items map to actual project routes (Portfolio -> /, Archive -> /projects, etc).
+ * Glassmorphic fixed top bar. Brand = "The Investigator" (Rajdhani gradient)
+ * + blinking text-cursor. Nav center: Home/Projects/Tech Stack/Experience/
+ * Education/Contact (Rajdhani 500). Right: 2 icon buttons (Resume DL,
+ * Settings) — surface bg, cyan-tinted border, hover glow.
+ *
+ * Zero JS. Active link state via aria-current from Astro.url.pathname.
  */
 interface Props {
   lang?: 'vi' | 'en';
 }
 
-const { lang = 'vi' } = Astro.props;
+const { lang = 'en' } = Astro.props;
 
 const path = Astro.url.pathname;
 const isActive = (href: string) => {
@@ -19,77 +22,78 @@ const isActive = (href: string) => {
   return path.startsWith(href);
 };
 
-const brand = 'MONOLITH';
-
 const nav = [
-  { href: '/',          label_vi: 'Portfolio',  label_en: 'Portfolio' },
-  { href: '/philosophy',label_vi: 'Triết Lý',   label_en: 'Philosophy' },
-  { href: '/projects',  label_vi: 'Dự Án',      label_en: 'Archive' },
-  { href: '/contact',   label_vi: 'Liên Hệ',    label_en: 'Contact' },
+  { href: '/',           label_vi: 'Trang chủ',  label_en: 'Home' },
+  { href: '/projects',   label_vi: 'Dự án',      label_en: 'Projects' },
+  { href: '/tech-stack', label_vi: 'Tech Stack', label_en: 'Tech Stack' },
+  { href: '/experience', label_vi: 'Kinh nghiệm',label_en: 'Experience' },
+  { href: '/education',  label_vi: 'Học vấn',    label_en: 'Education' },
+  { href: '/contact',    label_vi: 'Liên hệ',    label_en: 'Contact' },
 ];
-
-const terminalLabel = lang === 'en' ? 'Open Terminal' : 'Mở Terminal';
 ---
 
-<header
-  class="fixed inset-x-0 top-0 z-40 bg-surface/80 backdrop-blur-lg"
-  aria-label={lang === 'en' ? 'Primary' : 'Điều hướng chính'}
+<nav
+  class="fx-fade-up-delay-1 fixed inset-x-0 top-0 z-[1000] h-16 flex items-center justify-between px-6 md:px-12 bg-[rgba(10,10,10,0.8)] backdrop-blur-md border-b border-[rgba(0,229,255,0.08)]"
+  aria-label={lang === 'vi' ? 'Điều hướng chính' : 'Primary'}
 >
-  <div class="max-w-screen-2xl mx-auto flex justify-between items-center px-6 md:px-12 lg:px-24 py-5 md:py-6">
-    <!-- Brand -->
-    <a
-      href="/"
-      class="font-headline text-2xl font-light tracking-tight text-primary"
-      aria-label={brand}
-    >
-      {brand}
-    </a>
+  <!-- Brand: gradient "The Investigator" + blinking cursor -->
+  <a href="/" class="flex items-center gap-0.5 no-underline" aria-label="The Investigator — Home">
+    <span class="font-headline text-xl font-bold tracking-tight gradient-text">The Investigator</span>
+    <span class="fx-blink inline-block w-[2px] h-[18px] bg-green ml-[3px] align-middle" aria-hidden="true"></span>
+  </a>
 
-    <!-- Desktop nav -->
-    <nav class="hidden md:flex gap-8" aria-label="Primary">
-      {nav.map((item) => {
-        const label = lang === 'en' ? item.label_en : item.label_vi;
-        const active = isActive(item.href);
-        return (
+  <!-- Nav links (desktop) -->
+  <ul class="hidden md:flex items-center gap-8 list-none">
+    {nav.map((item) => {
+      const label = lang === 'vi' ? item.label_vi : item.label_en;
+      const active = isActive(item.href);
+      return (
+        <li>
           <a
             href={item.href}
             aria-current={active ? 'page' : undefined}
             class:list={[
-              'font-headline text-xs tracking-widest uppercase transition-all duration-700 ease-in-out hover:text-primary',
-              active
-                ? 'text-primary border-b border-primary/40 pb-1'
-                : 'text-neutral-400',
+              'group relative font-headline text-[15px] font-medium pb-1 transition-colors duration-300 hover:text-green no-underline',
+              active ? 'text-green' : 'text-text-primary',
             ]}
           >
             {label}
+            <span
+              aria-hidden="true"
+              class:list={[
+                'absolute left-1/2 -translate-x-1/2 bottom-0 h-[2px] rounded-sm bg-green transition-transform duration-300 origin-center w-full',
+                active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100',
+              ]}
+            ></span>
           </a>
-        );
-      })}
-    </nav>
+        </li>
+      );
+    })}
+  </ul>
 
-    <!-- Terminal shortcut -->
+  <!-- Right action icons -->
+  <div class="flex gap-3">
     <a
-      href="/terminal"
-      aria-label={terminalLabel}
-      class="text-primary/90 hover:text-primary transition-colors duration-500"
+      href="/resume.pdf"
+      title={lang === 'vi' ? 'Tải CV' : 'Download Resume'}
+      aria-label={lang === 'vi' ? 'Tải CV' : 'Download Resume'}
+      class="w-9 h-9 rounded-lg border border-border bg-surface backdrop-blur-sm flex items-center justify-center text-text-secondary hover:text-cyan hover:border-border-hover hover:shadow-[0_0_12px_rgba(0,229,255,0.2)] transition-all duration-300"
     >
-      <!-- Heroicons command-line outline (inline, no font download) -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="1.5"
-        stroke-linecap="square"
-        stroke-linejoin="miter"
-        class="w-6 h-6"
-        aria-hidden="true"
-      >
-        <path d="M6.75 7.5l3 2.25-3 2.25M12.75 15h3.75M4.5 19.5h15a2.25 2.25 0 002.25-2.25V6.75A2.25 2.25 0 0019.5 4.5h-15A2.25 2.25 0 002.25 6.75v10.5A2.25 2.25 0 004.5 19.5z" />
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 1v8M4 6l3 3 3-3M2 11h10" />
       </svg>
     </a>
-  </div>
 
-  <!-- Hairline gold separator (ghost, felt more than seen) -->
-  <div aria-hidden="true" class="h-[1px] bg-outline-variant/20"></div>
-</header>
+    <button
+      type="button"
+      title={lang === 'vi' ? 'Cài đặt' : 'Settings'}
+      aria-label={lang === 'vi' ? 'Cài đặt' : 'Settings'}
+      class="w-9 h-9 rounded-lg border border-border bg-surface backdrop-blur-sm flex items-center justify-center text-text-secondary hover:text-cyan hover:border-border-hover hover:shadow-[0_0_12px_rgba(0,229,255,0.2)] transition-all duration-300 cursor-pointer"
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M7 2l1 2h2l-1.5 1.5.5 2L7 6.5 5 7.5l.5-2L4 4h2z" />
+        <circle cx="7" cy="7" r="5.5" />
+      </svg>
+    </button>
+  </div>
+</nav>

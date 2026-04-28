@@ -39,7 +39,9 @@ The 5 files to load (in order) at every session start:
 
 ## Non-Goals (explicit "do not build")
 
-No auth, no paid DBs, no admin CMS UI, **no React** (use Preact — 3KB vs 40KB), no 3D/particles, no multi-language UI, no self-hosted vector DB (use Gemini 1M-token in-context RAG instead).
+No auth, no paid DBs, no admin CMS UI, **no React** (use Preact — 3KB vs 40KB), no multi-language UI, no self-hosted vector DB (use Gemini 1M-token in-context RAG instead).
+
+**Particle FX, custom cursor, chat widget UI ARE intentional** for "The Investigator" cyberpunk identity (D-005). Each FX must ship as an Astro island (`client:visible` or `is:inline`) and the **total client JS budget must stay < 60KB gzipped** across all islands combined. Lighthouse S1 ≥ 95 still applies; opt-out via `prefers-reduced-motion` is required for canvas animations.
 
 ## Tech Stack + Rationale
 
@@ -83,7 +85,7 @@ T-001 (code scaffold) and T-010 (Sheets schema) can start in parallel.
 1. **Gemini 250 req/day ceiling** — client-side limit 20 req/min/IP, graceful static fallback when quota exhausted. Do NOT propose features that multiply requests per session (e.g. autocomplete-as-you-type).
 2. **Vercel Hobby cold start** — stream chunks immediately, single-turn inference only. Do NOT propose multi-step agent loops.
 3. **50MB bundle cap** — NEVER add React to deps. Audit every new package with `du -sh node_modules/<pkg>`. The 50MB limit is tighter than Vercel's 250MB ceiling, chosen as a quality bar.
-4. **"Gimmick" perception** — static homepage comes FIRST; terminal is a bonus feature. Do NOT propose making the terminal the entry point.
+4. **FX bundle creep** (replaces old "gimmick perception" risk per D-005) — plexus + fx-canvas + custom cursor + chat-fab can compound. Hard cap: total client JS < 60KB gzipped across all islands. Each new island must come with a measured bundle delta in its PR description. `prefers-reduced-motion` opt-out is mandatory for canvas effects.
 5. **Sheets API downtime** — SWR cache (5min fresh / 1hr stale) plus a committed JSON snapshot fallback at build time.
 
 ## Documentation Conventions

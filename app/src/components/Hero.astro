@@ -1,172 +1,164 @@
 ---
 /**
- * Hero.astro — "The Quiet Monolith" (Kintsugi Noir)
- * Design source: stitch_the_investigator_terminal_hero/kintsugi_noir/DESIGN.md
- * Reference mockup: hero.astro_wabi_sabi_with_personal_image_1/code.html
+ * Hero.astro — "The Investigator" cyberpunk hero
+ * Source: design/index.html lines 747-797
  *
- * Rules enforced:
- *   - 0px corners (except status dot + kanji background)
- *   - Tonal shifts + ghost borders, no solid 1px zinc borders
- *   - Noto Serif display, Plus Jakarta Sans body/label
- *   - Gold accent (#e9c176) surgical only
- *   - Asymmetric 12-col grid (text 8 / portrait 4)
- *   - Zero client-side JS
+ * Centered single-column hero. Badge -> gradient name -> subtitle ->
+ * glassmorphic info-card (about + portrait status-ring) -> 3 CTAs ->
+ * scroll indicator. All animations CSS-only via fx-fade-up-delay-* classes.
+ *
+ * Bilingual props preserved (D-004). English defaults match design copy.
  */
 interface Props {
-  name: string;
-  title_vi?: string;
-  title_en?: string;
-  bio_vi: string;
-  bio_en: string;
-  status_vi: string;
-  status_en: string;
-  githubLink: string;
-  portraitSrc?: string;        // path under /public, e.g. "/portrait.jpg"
+  name: string;                  // Display name (no i18n — proper noun)
+  badge_vi?: string;             // "AI Engineer & Fullstack Developer"
+  badge_en?: string;
+  tagline_vi?: string;           // Subtitle under name
+  tagline_en?: string;
+  aboutLabel_vi?: string;        // "About Me" / "Giới thiệu"
+  aboutLabel_en?: string;
+  aboutBody_vi?: string;         // Plain text — strong emphasis applied via separate aboutHighlights
+  aboutBody_en?: string;
+  status_vi?: string;            // "● Available for work"
+  status_en?: string;
+  projectsHref?: string;         // Default /projects
+  contactHref?: string;          // Default /contact
+  resumeHref?: string;           // Default /resume.pdf
+  portraitSrc?: string;          // Default /portrait.png
   portraitAlt?: string;
   lang?: 'vi' | 'en';
 }
 
 const {
   name,
-  title_vi = "",
-  title_en = "",
-  bio_vi,
-  bio_en,
-  status_vi,
-  status_en,
-  githubLink,
-  portraitSrc = "/portrait.jpg",
+  badge_vi = "Kỹ sư AI & Lập trình Fullstack",
+  badge_en = "AI Engineer & Fullstack Developer",
+  tagline_vi = "Xây dựng tương lai với AI và phát triển Full-Stack",
+  tagline_en = "Building the Future with AI & Full-Stack Development",
+  aboutLabel_vi = "Giới thiệu",
+  aboutLabel_en = "About Me",
+  aboutBody_vi = "Tôi là một <strong>Kỹ sư AI & Full-Stack Developer</strong> đam mê xây dựng các hệ thống thông minh giải quyết vấn đề thực tế. Chuyên sâu về <strong>tích hợp LLM, agentic pipelines</strong>, và ứng dụng web có khả năng mở rộng — nơi nghiên cứu chuyên sâu gặp gỡ code production.",
+  aboutBody_en = "I'm an <strong>AI Engineer &amp; Full-Stack Developer</strong> passionate about building intelligent systems that solve real-world problems. I specialise in <strong>LLM integrations, agentic pipelines</strong>, and scalable web applications — where deep research meets production-grade code.",
+  status_vi = "● Sẵn sàng làm việc",
+  status_en = "● Available for work",
+  projectsHref = "/projects",
+  contactHref = "/contact",
+  resumeHref = "/resume.pdf",
+  portraitSrc = "/portrait.png",
   portraitAlt = "",
-  lang = "vi",
+  lang = "en",
 } = Astro.props;
 
-const bio = lang === "en" ? bio_en : bio_vi;
-const status = lang === "en" ? status_en : status_vi;
-const title = lang === "en" ? title_en : title_vi;
+const badge = lang === "vi" ? badge_vi : badge_en;
+const tagline = lang === "vi" ? tagline_vi : tagline_en;
+const aboutLabel = lang === "vi" ? aboutLabel_vi : aboutLabel_en;
+const aboutBody = lang === "vi" ? aboutBody_vi : aboutBody_en;
+const status = lang === "vi" ? status_vi : status_en;
 
-const tProjects = lang === "en" ? "View Projects" : "Xem Dự Án";
-const tTerminal = lang === "en" ? "Open Terminal" : "Mở Terminal";
-const tGithub = lang === "en" ? "View on GitHub" : "Xem trên GitHub";
+const tProjects = lang === "vi" ? "Xem dự án" : "View Projects";
+const tContact = lang === "vi" ? "Liên hệ" : "Contact Me";
+const tResume = lang === "vi" ? "CV" : "Resume";
+const tScroll = lang === "vi" ? "Cuộn" : "Scroll";
 ---
 
 <section
-  class="pt-32 pb-24 px-6 md:px-12 lg:px-24 max-w-screen-2xl mx-auto relative min-h-[80vh] flex flex-col justify-center"
-  aria-labelledby="hero-title"
+  class="hero relative z-[2] min-h-screen flex flex-col items-center justify-center px-6 pt-20 pb-16 text-center"
+  aria-labelledby="hero-name"
 >
-  <!-- Asymmetric 12-col grid — text left (8), portrait right (4) -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-    <!-- Left: headline block -->
-    <div class="lg:col-span-8 flex flex-col items-start space-y-12">
-      <!-- Status badge — sharp 0px, ghost border, animated underline -->
-      <div
-        class="inline-flex items-center gap-3 px-4 py-2 bg-surface-container-lowest border border-outline-variant/30 relative overflow-hidden group"
-      >
-        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        <span class="text-xs tracking-[0.1em] text-primary font-medium uppercase font-label">
-          {status}
-        </span>
-        <div
-          class="absolute bottom-0 left-0 h-[1px] w-0 bg-primary transition-all duration-700 group-hover:w-full"
-        ></div>
-      </div>
-
-      <!-- Headline cluster -->
-      <div class="space-y-6">
-        <h1
-          id="hero-title"
-          class="font-headline text-5xl md:text-7xl lg:text-8xl font-light text-on-surface tracking-tighter leading-[1.1]"
-        >
-          {name}
-        </h1>
-
-        <!-- Gold micro-accent divider -->
-        <div class="w-12 h-[1px] bg-primary"></div>
-
-        <p class="font-body text-lg md:text-xl text-neutral-200 max-w-2xl leading-relaxed font-light">
-          {bio}
-        </p>
-      </div>
-
-      <!-- CTAs: Kintsugi Noir translation of TASKS.md AC (3 buttons, sharp 0px, gold accents) -->
-      <div class="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center w-full sm:w-auto">
-        <!-- Primary — solid gold monolith -->
-        <a
-          href="/projects"
-          aria-label={tProjects}
-          class="group inline-flex items-center justify-between gap-4 px-8 py-4 bg-primary text-on-primary hover:bg-primary-fixed transition-colors duration-500"
-        >
-          <span class="font-label text-sm tracking-[0.1em] uppercase">
-            {tProjects}
-          </span>
-          <svg viewBox="0 0 24 24" class="w-4 h-4 fill-current transition-transform duration-500 group-hover:translate-x-1" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="square" />
-          </svg>
-        </a>
-
-        <!-- Secondary — ghost-bordered gold -->
-        <a
-          href="/terminal"
-          aria-label={tTerminal}
-          class="group inline-flex items-center justify-between gap-4 px-8 py-4 border border-primary/30 hover:border-primary bg-surface-container-lowest transition-colors duration-500"
-        >
-          <span class="font-label text-sm tracking-[0.1em] text-primary uppercase">
-            {tTerminal}
-          </span>
-          <svg viewBox="0 0 24 24" class="w-4 h-4 text-primary transition-transform duration-500 group-hover:translate-x-1" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="square" />
-          </svg>
-        </a>
-
-        <!-- Tertiary — plain text + expanding underline -->
-        <a
-          href={githubLink}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={tGithub}
-          class="group relative inline-flex items-center gap-2 px-2 py-4 text-primary self-center sm:self-auto"
-        >
-          <svg viewBox="0 0 24 24" class="w-4 h-4 fill-current" aria-hidden="true">
-            <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
-          </svg>
-          <span class="font-label text-sm tracking-[0.1em] uppercase">GitHub</span>
-          <span class="absolute bottom-2 left-2 right-2 h-[1px] bg-primary/40 scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-500"></span>
-        </a>
-      </div>
+  <div class="hero-inner w-full max-w-[800px] flex flex-col items-center">
+    <!-- Badge -->
+    <div
+      class="fx-fade-up-delay-2 inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[rgba(0,255,159,0.08)] border border-[rgba(0,255,159,0.3)] text-sm font-medium text-green tracking-[0.02em]"
+    >
+      <span class="fx-pulse-dot w-[7px] h-[7px] rounded-full bg-green flex-shrink-0" style="box-shadow: 0 0 8px var(--color-green);" aria-hidden="true"></span>
+      {badge}
     </div>
 
-    <!-- Right: portrait column with double ghost frame + kanji 無 watermark -->
-    <div class="lg:col-span-4 hidden lg:flex justify-end items-center relative h-full">
-      <div class="w-full relative flex items-center justify-center">
-        <div class="relative w-full max-w-[360px]">
-          <!-- Asymmetric outer ghost frame — signature "off-grid" gesture (DESIGN.md §1) -->
-          <div class="absolute -top-2 -left-2 -right-8 -bottom-8 border border-primary/20" aria-hidden="true"></div>
-          <!-- Inner tight ghost border -->
-          <div class="absolute -inset-2 border border-primary/30" aria-hidden="true"></div>
-          <!-- Portrait (grayscale → color on hover) -->
+    <!-- Name (gradient) -->
+    <h1
+      id="hero-name"
+      class="fx-fade-up-delay-3 gradient-text font-headline font-bold leading-[1.05] mt-6 tracking-[-0.01em]"
+      style="font-size: clamp(48px, 4.5vw, 64px);"
+    >
+      {name}
+    </h1>
+
+    <!-- Subtitle -->
+    <p class="fx-fade-up-delay-4 text-lg font-normal text-text-secondary max-w-[520px] leading-relaxed tracking-[0.03em] mt-4">
+      {tagline}
+    </p>
+
+    <!-- Info card -->
+    <div
+      class="fx-fade-up-delay-5 group w-full max-w-[680px] mt-8 px-8 py-7 rounded-2xl bg-surface backdrop-blur-lg border border-border shadow-[0_0_30px_rgba(0,229,255,0.05)] flex items-center justify-between gap-6 text-left transition-[border-color,transform,box-shadow] duration-300 hover:border-border-hover hover:scale-[1.01] hover:shadow-[0_0_40px_rgba(0,229,255,0.1)]"
+    >
+      <div class="flex-1 min-w-0">
+        <div class="font-label text-[11px] font-semibold text-cyan tracking-[0.15em] uppercase mb-2.5">
+          {aboutLabel}
+        </div>
+        <p class="text-[15px] leading-[1.75] text-text-body font-normal" set:html={aboutBody} />
+      </div>
+
+      <div class="flex flex-col items-center gap-2.5 flex-shrink-0">
+        <div
+          class="fx-ring-pulse w-16 h-16 rounded-full border-2 border-green flex items-center justify-center bg-[rgba(0,255,159,0.05)] overflow-hidden"
+        >
           <img
             src={portraitSrc}
             alt={portraitAlt || name}
-            width="360"
-            height="360"
+            width="64"
+            height="64"
             loading="eager"
             decoding="async"
-            class="w-full aspect-square object-cover grayscale opacity-80 hover:grayscale-0 hover:opacity-100 transition-all duration-700 relative z-10 bg-surface-container-lowest shadow-2xl"
+            class="w-full h-full object-cover rounded-full block"
           />
-          <!-- Kanji 無 (mu — emptiness/nothingness) watermark -->
-          <span
-            aria-hidden="true"
-            class="font-headline text-surface-bright text-9xl select-none opacity-20 transform -rotate-90 origin-center absolute -right-24 top-1/2 -translate-y-1/2 z-0 pointer-events-none"
-          >
-            無
-          </span>
+        </div>
+        <div class="text-[11px] font-semibold text-green tracking-[0.05em] whitespace-nowrap text-center">
+          {status}
         </div>
       </div>
     </div>
+
+    <!-- Buttons -->
+    <div class="fx-fade-up-delay-6 flex flex-wrap items-center justify-center gap-3.5 mt-10">
+      <!-- Secondary: View Projects -->
+      <a
+        href={projectsHref}
+        aria-label={tProjects}
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-strong border border-[rgba(0,229,255,0.2)] text-text-primary font-body text-[15px] font-semibold tracking-[0.02em] no-underline whitespace-nowrap hover:text-cyan hover:border-[rgba(0,229,255,0.5)] hover:shadow-[0_0_16px_rgba(0,229,255,0.15)] hover:-translate-y-0.5 transition-all duration-200"
+      >
+        {tProjects} &nbsp;→
+      </a>
+
+      <!-- Primary: Contact (gradient) -->
+      <a
+        href={contactHref}
+        aria-label={tContact}
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-bg font-body text-[15px] font-semibold tracking-[0.02em] no-underline whitespace-nowrap shadow-[0_0_20px_rgba(0,255,159,0.3)] hover:shadow-[0_0_36px_rgba(0,255,159,0.5)] hover:scale-[1.04] hover:-translate-y-px transition-all duration-200"
+        style="background: linear-gradient(135deg, #00FF9F, #00E5FF, #FF00FF);"
+      >
+        {tContact}
+      </a>
+
+      <!-- Secondary: Resume -->
+      <a
+        href={resumeHref}
+        target={resumeHref.endsWith('.pdf') ? '_blank' : undefined}
+        rel={resumeHref.endsWith('.pdf') ? 'noopener noreferrer' : undefined}
+        aria-label={tResume}
+        class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface-strong border border-[rgba(0,229,255,0.2)] text-text-primary font-body text-[15px] font-semibold tracking-[0.02em] no-underline whitespace-nowrap hover:text-cyan hover:border-[rgba(0,229,255,0.5)] hover:shadow-[0_0_16px_rgba(0,229,255,0.15)] hover:-translate-y-0.5 transition-all duration-200"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 1v8M4 6l3 3 3-3M2 11h10" />
+        </svg>
+        {tResume}
+      </a>
+    </div>
   </div>
 
-  <!-- Bottom vertical accent — gradient fade (signature architectural gesture) -->
-  <div
-    aria-hidden="true"
-    class="absolute bottom-0 left-6 md:left-12 lg:left-24 w-[1px] h-32 bg-gradient-to-b from-primary/60 to-transparent"
-  ></div>
+  <!-- Scroll indicator (absolute bottom) -->
+  <div class="fx-fade-in-late absolute bottom-9 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-text-secondary text-xs tracking-[0.08em]">
+    <span class="fx-bounce-arrow text-lg leading-none" aria-hidden="true">↓</span>
+    <span>{tScroll}</span>
+  </div>
 </section>

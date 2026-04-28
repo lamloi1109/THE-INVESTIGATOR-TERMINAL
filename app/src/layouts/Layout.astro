@@ -7,31 +7,33 @@ interface Props {
 	lang?: 'vi' | 'en';
 }
 
-const { title = "THE INVESTIGATOR TERMINAL", lang = 'vi' } = Astro.props;
+const { title = "The Investigator Terminal", lang = 'en' } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang === 'vi' ? 'vi' : 'en'}>
 	<head>
 		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<meta name="description" content="AI Engineer Portfolio — building quiet, intentional digital experiences." />
+		<meta name="description" content="AI Engineer & Full-Stack Developer — building intelligent systems that solve real-world problems." />
 		<title>{title}</title>
 
-		<!-- Kintsugi Noir typography: Noto Serif (headline) + Plus Jakarta Sans (body) -->
+		<!-- The Investigator typography: Rajdhani (display) + Inter (body) -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
 			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Plus+Jakarta+Sans:wght@200..800&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
 		/>
 	</head>
-	<body class="bg-surface text-on-surface font-body antialiased min-h-screen relative overflow-x-hidden selection:bg-primary selection:text-on-primary">
-		<!-- Film-grain overlay — fixed, non-interactive, sits above content -->
-		<div class="fixed inset-0 noise-overlay z-50"></div>
+	<body class="bg-bg text-text-primary font-body antialiased min-h-screen relative overflow-x-hidden selection:bg-green/30 selection:text-text-primary">
+		<!--
+			Plexus particle canvas slot — populated by T-023 island.
+			Layout reserves the fixed inset z-0 layer; canvas sits below vignette (z-1).
+		-->
 		<Header lang={lang} />
 		<slot />
 	</body>
