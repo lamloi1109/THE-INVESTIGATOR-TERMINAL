@@ -118,4 +118,72 @@ body::after {
 /* Reduced-motion users get cleaner backdrop — drop scan-lines */
 @media (prefers-reduced-motion: reduce) {
   body::after { display: none; }
+  .reveal { transition: none; opacity: 1; transform: none; }
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Section scaffolding — shared across Experience/Projects/Tech/
+   Education/Contact. Source: design/index.html lines 1453-1483.
+   ────────────────────────────────────────────────────────────── */
+.section {
+  position: relative; z-index: 2;
+  padding: 100px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+@media (max-width: 768px) {
+  .section { padding: 64px 24px; }
+}
+.section-label {
+  font-family: var(--font-body);
+  font-size: 11px; font-weight: 600;
+  color: var(--color-cyan);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 24px; height: 1px;
+  background: var(--color-cyan);
+  opacity: 0.6;
+}
+.section-title {
+  font-family: var(--font-headline);
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 700;
+  line-height: 1.1;
+  background: linear-gradient(90deg, #fff 60%, rgba(0,229,255,0.6));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 48px;
+  max-width: 600px;
+}
+.divider {
+  width: 100%; height: 1px;
+  position: relative; z-index: 2;
+  background: linear-gradient(90deg, transparent, rgba(0,229,255,0.15), transparent);
+}
+.footer {
+  text-align: center;
+  padding: 40px 24px;
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  border-top: 1px solid rgba(255,255,255,0.04);
+  position: relative; z-index: 2;
+  letter-spacing: 0.05em;
+}
+
+/* Reveal-on-scroll — toggled by RevealOnScroll IntersectionObserver */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
