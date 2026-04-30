@@ -1,0 +1,118 @@
+---
+/**
+ * Education.astro — "Học vấn" section, 2 cards
+ * Source: design/index.html lines 1705-1727 (markup) + 1545-1556 + 1841-1844 (CSS).
+ *
+ * Each card: emoji icon (cyan or green tint) + degree (Rajdhani 19px) +
+ * school (cyan 14px) + year (secondary 12px). Hover triggers an orbital
+ * ring outline via stacked box-shadows.
+ */
+
+interface Edu {
+  icon: string;
+  iconVariant: 'cyan' | 'green';
+  degree: string;
+  school: string;
+  year: string;
+}
+
+const items: Edu[] = [
+  {
+    icon: '🎓',
+    iconVariant: 'cyan',
+    degree: 'Kỹ thuật / Công nghệ thông tin',
+    school: 'Đại học — Việt Nam',
+    year: 'Đã tốt nghiệp',
+  },
+  {
+    icon: '⚡',
+    iconVariant: 'green',
+    degree: 'Self-taught AI Engineer',
+    school: 'Online Resources, Research Papers & Production Experience',
+    year: '2022 – Present · Ongoing',
+  },
+];
+---
+
+<section class="section" id="education" aria-labelledby="education-title">
+  <div class="reveal">
+    <div class="section-label">Background</div>
+    <div class="section-title" id="education-title">Học vấn</div>
+  </div>
+  {items.map((e) => (
+    <div class="edu-card reveal">
+      <div class={`edu-icon edu-icon-${e.iconVariant}`} aria-hidden="true">{e.icon}</div>
+      <div>
+        <div class="edu-degree">{e.degree}</div>
+        <div class="edu-school">{e.school}</div>
+        <div class="edu-year">{e.year}</div>
+      </div>
+    </div>
+  ))}
+</section>
+
+<style>
+  .edu-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 28px 32px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin-bottom: 16px;
+    position: relative;
+  }
+  .edu-card:hover {
+    border-color: rgba(0, 229, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 1px rgba(0, 229, 255, 0.15),
+      0 0 0 4px rgba(0, 229, 255, 0.04),
+      0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+
+  .edu-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .edu-icon-cyan {
+    background: rgba(0, 229, 255, 0.08);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+  }
+  .edu-icon-green {
+    background: rgba(0, 255, 159, 0.08);
+    border: 1px solid rgba(0, 255, 159, 0.2);
+  }
+
+  .edu-degree {
+    font-family: var(--font-headline);
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 4px;
+  }
+  .edu-school {
+    font-size: 14px;
+    color: var(--color-cyan);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .edu-year {
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .edu-card { transition: none; }
+    .edu-card:hover { transform: none; box-shadow: none; }
+  }
+</style>

@@ -4,6 +4,7 @@ import Header from '../components/Header.astro';
 import PlexusBackground from '../components/PlexusBackground.astro';
 import CustomCursor from '../components/CustomCursor.astro';
 import ChatWidget from '../components/ChatWidget.astro';
+import RevealOnScroll from '../components/RevealOnScroll.astro';
 
 interface Props {
 	title?: string;
@@ -42,5 +43,6 @@ const { title = "The Investigator Terminal", lang = 'en' } = Astro.props;
 		<!-- Foreground FX (z high) -->
 		<ChatWidget lang={lang} />
 		<CustomCursor />
+		<RevealOnScroll />
 	</body>
 </html>

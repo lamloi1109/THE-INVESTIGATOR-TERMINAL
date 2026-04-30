@@ -1,0 +1,169 @@
+---
+/**
+ * TechStack.astro — "Tech Stack" section, 4 categorised pill groups
+ * Source: design/index.html lines 1652-1701 (markup) + 1527-1543 + 1813-1824 (CSS).
+ *
+ * Each pill is a glass-morph chip with a coloured glow dot. Variant dot
+ * colour signals category: green (AI/ML), cyan (Backend), pink (Frontend),
+ * white (Tools). On hover, a radial-gradient halo follows the cursor inside
+ * the pill (CSS vars --mx/--my updated by mousemove listener).
+ */
+
+interface Pill { label: string; variant: 'g' | 'c' | 'p' | 'w'; }
+interface Group { label: string; pills: Pill[]; }
+
+const groups: Group[] = [
+  {
+    label: 'AI / ML',
+    pills: [
+      { label: 'vLLM',              variant: 'g' },
+      { label: 'LangGraph',         variant: 'g' },
+      { label: 'LightRAG',          variant: 'g' },
+      { label: 'OpenWebUI',         variant: 'g' },
+      { label: 'Docling',           variant: 'g' },
+      { label: 'LLM Integration',   variant: 'g' },
+      { label: 'Agentic Pipelines', variant: 'g' },
+    ],
+  },
+  {
+    label: 'Backend & Infrastructure',
+    pills: [
+      { label: 'Python',    variant: 'c' },
+      { label: 'C# / .NET', variant: 'c' },
+      { label: 'Redis',     variant: 'c' },
+      { label: 'Qdrant',    variant: 'c' },
+      { label: 'MinIO',     variant: 'c' },
+      { label: 'WebSocket', variant: 'c' },
+      { label: 'REST API',  variant: 'c' },
+    ],
+  },
+  {
+    label: 'Frontend',
+    pills: [
+      { label: 'JavaScript', variant: 'p' },
+      { label: 'HTML / CSS', variant: 'p' },
+      { label: 'Canvas API', variant: 'p' },
+      { label: 'React',      variant: 'p' },
+    ],
+  },
+  {
+    label: 'Tools & Practices',
+    pills: [
+      { label: 'Git',           variant: 'w' },
+      { label: 'Docker',        variant: 'w' },
+      { label: 'Linux',         variant: 'w' },
+      { label: 'Vibe Coding',   variant: 'w' },
+      { label: 'Self-research', variant: 'w' },
+    ],
+  },
+];
+---
+
+<section class="section" id="tech" aria-labelledby="tech-title">
+  <div class="reveal">
+    <div class="section-label">Skills</div>
+    <div class="section-title" id="tech-title">Tech Stack</div>
+  </div>
+  {groups.map((group) => (
+    <div class="tech-group reveal">
+      <div class="tech-group-label">{group.label}</div>
+      <div class="tech-pills">
+        {group.pills.map((p) => (
+          <div class="tech-pill" data-glow>
+            <span class={`tech-dot dot-${p.variant}`} aria-hidden="true"></span>
+            {p.label}
+          </div>
+        ))}
+      </div>
+    </div>
+  ))}
+</section>
+
+<style>
+  .tech-group { margin-bottom: 36px; }
+  .tech-group-label {
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .tech-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 12px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-body);
+    transition: border-color 0.25s ease, color 0.25s ease, transform 0.25s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .tech-pill:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-cyan);
+    transform: translateY(-2px);
+  }
+
+  /* Radial glow follows cursor inside pill */
+  .tech-pill::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at var(--mx, 50%) var(--my, 50%),
+      rgba(0, 229, 255, 0.12),
+      transparent 60%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: -1;
+  }
+  .tech-pill:hover::before { opacity: 1; }
+
+  .tech-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-g { background: var(--color-green); box-shadow: 0 0 6px var(--color-green); }
+  .dot-c { background: var(--color-cyan);  box-shadow: 0 0 6px var(--color-cyan); }
+  .dot-p { background: var(--color-pink);  box-shadow: 0 0 6px var(--color-pink); }
+  .dot-w { background: #fff;               box-shadow: 0 0 6px rgba(255, 255, 255, 0.5); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tech-pill { transition: none; }
+    .tech-pill:hover { transform: none; }
+    .tech-pill::before { display: none; }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const pills = document.querySelectorAll('.tech-pill[data-glow]');
+    pills.forEach((pill) => {
+      pill.addEventListener('mousemove', (e) => {
+        const rect = pill.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        pill.style.setProperty('--mx', x + '%');
+        pill.style.setProperty('--my', y + '%');
+      });
+    });
+  })();
+</script>
