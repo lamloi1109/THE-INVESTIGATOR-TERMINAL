@@ -1,0 +1,319 @@
+---
+/**
+ * ShapeGestureFX.astro — Shape gesture detection + visual effects
+ * Source: design/index.html lines 1039-1317
+ *
+ * Detects closed shapes drawn with mouse drag:
+ *   - Circle → spiral vortex burst
+ *   - Triangle → energy prism beam upward
+ *   - Square → matrix digital rain (Japanese chars)
+ *   - Star/freeform → 8-arm lightning nova (pink)
+ *
+ * Uses #lightning-canvas context for rendering. DRAG_THRESHOLD_SQ = 900
+ * (30px minimum drag) to avoid conflicts with card click handlers.
+ *
+ * prefers-reduced-motion: script exits early.
+ * Budget: ~3KB gzipped (vanilla, no deps).
+ */
+---
+
+<script is:inline>
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var gc = document.getElementById('lightning-canvas');
+  if (!gc) return;
+  var gx = gc.getContext('2d');
+
+  var drawing = false;
+  var gesturePoints = [];
+  var dragStartX = 0, dragStartY = 0;
+  var DRAG_THRESHOLD_SQ = 900; // 30px minimum drag distance
+
+  window.addEventListener('mousedown', function(e) {
+    dragStartX = e.clientX;
+    dragStartY = e.clientY;
+    drawing = false; // don't start recording until threshold met
+    gesturePoints = [{ x: e.clientX, y: e.clientY }];
+  });
+
+  window.addEventListener('mousemove', function(e) {
+    if (gesturePoints.length === 0) return;
+
+    // Check if drag threshold met
+    if (!drawing) {
+      var ddx = e.clientX - dragStartX, ddy = e.clientY - dragStartY;
+      if (ddx * ddx + ddy * ddy >= DRAG_THRESHOLD_SQ) {
+        drawing = true;
+      } else {
+        return;
+      }
+    }
+
+    var last = gesturePoints[gesturePoints.length - 1];
+    var dx = e.clientX - last.x, dy = e.clientY - last.y;
+    if (dx * dx + dy * dy > 64) {
+      gesturePoints.push({ x: e.clientX, y: e.clientY });
+    }
+  });
+
+  window.addEventListener('mouseup', function() {
+    if (!drawing) { gesturePoints = []; drawing = false; return; }
+    drawing = false;
+    if (gesturePoints.length < 10) { gesturePoints = []; return; }
+    var shape = detectShape(gesturePoints);
+    if (shape) triggerEffect(shape, gesturePoints);
+    gesturePoints = [];
+  });
+
+  function detectShape(pts) {
+    var n = pts.length;
+    var first = pts[0], last = pts[n - 1];
+    var cx = 0, cy = 0;
+    for (var i = 0; i < n; i++) { cx += pts[i].x; cy += pts[i].y; }
+    cx /= n; cy /= n;
+
+    var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (var i = 0; i < n; i++) {
+      if (pts[i].x < minX) minX = pts[i].x;
+      if (pts[i].x > maxX) maxX = pts[i].x;
+      if (pts[i].y < minY) minY = pts[i].y;
+      if (pts[i].y > maxY) maxY = pts[i].y;
+    }
+    var w = maxX - minX, h = maxY - minY;
+    if (w < 40 || h < 40) return null;
+
+    var closeDist = Math.hypot(last.x - first.x, last.y - first.y);
+    var perimeter = 0;
+    for (var i = 1; i < n; i++) {
+      perimeter += Math.hypot(pts[i].x - pts[i-1].x, pts[i].y - pts[i-1].y);
+    }
+    var isClosed = closeDist < perimeter * 0.25;
+    if (!isClosed) return null;
+
+    // Circle check
+    var avgR = 0;
+    for (var i = 0; i < n; i++) avgR += Math.hypot(pts[i].x - cx, pts[i].y - cy);
+    avgR /= n;
+    var variance = 0;
+    for (var i = 0; i < n; i++) {
+      var d = Math.hypot(pts[i].x - cx, pts[i].y - cy) - avgR;
+      variance += d * d;
+    }
+    variance /= n;
+    var circularity = variance / (avgR * avgR);
+    if (circularity < 0.08) return { type: 'circle', cx: cx, cy: cy, r: avgR };
+
+    // Corner detection
+    var corners = countCorners(pts);
+    if (corners >= 3 && corners <= 4) {
+      var aspect = w / h;
+      if (corners === 3) return { type: 'triangle', cx: cx, cy: cy, w: w, h: h };
+      if (aspect > 0.6 && aspect < 1.6) return { type: 'square', cx: cx, cy: cy, w: w, h: h };
+      return { type: 'rectangle', cx: cx, cy: cy, w: w, h: h };
+    }
+
+    return { type: 'star', cx: cx, cy: cy, r: avgR };
+  }
+
+  function countCorners(pts) {
+    var step = Math.max(1, Math.floor(pts.length / 30));
+    var corners = 0;
+    for (var i = step; i < pts.length - step; i += step) {
+      var ax = pts[i].x - pts[i - step].x, ay = pts[i].y - pts[i - step].y;
+      var bx = pts[i + step].x - pts[i].x, by = pts[i + step].y - pts[i].y;
+      var dot = ax * bx + ay * by;
+      var cross = Math.abs(ax * by - ay * bx);
+      var angle = Math.atan2(cross, dot) * (180 / Math.PI);
+      if (angle > 45) corners++;
+    }
+    return Math.round(corners / 2);
+  }
+
+  function triggerEffect(shape, pts) {
+    switch (shape.type) {
+      case 'circle':    effectCircle(shape); break;
+      case 'triangle':  effectTriangle(shape); break;
+      case 'square':
+      case 'rectangle': effectSquare(shape); break;
+      default:          effectStar(shape); break;
+    }
+    showLabel(shape.type, shape.cx, shape.cy);
+  }
+
+  // CIRCLE → Spiral vortex burst
+  function effectCircle(s) {
+    var sparks = [];
+    var count = 24;
+    for (var i = 0; i < count; i++) {
+      var angle = (i / count) * Math.PI * 2;
+      sparks.push({
+        x: s.cx + Math.cos(angle) * s.r,
+        y: s.cy + Math.sin(angle) * s.r,
+        vx: Math.cos(angle) * (3 + Math.random() * 4),
+        vy: Math.sin(angle) * (3 + Math.random() * 4),
+        life: 1.0, color: Math.random() < 0.5 ? '#00FF9F' : '#00E5FF'
+      });
+    }
+    var ringLife = 1.0, ringR = s.r;
+    function drawBurst() {
+      if (ringLife <= 0 && sparks.every(function(sp) { return sp.life <= 0; })) return;
+      if (ringLife > 0) {
+        gx.beginPath();
+        gx.arc(s.cx, s.cy, ringR, 0, Math.PI * 2);
+        gx.strokeStyle = 'rgba(0,229,255,' + (ringLife * 0.8) + ')';
+        gx.lineWidth = 3 * ringLife;
+        gx.shadowColor = '#00E5FF';
+        gx.shadowBlur = 20 * ringLife;
+        gx.stroke();
+        gx.shadowBlur = 0;
+        ringR += 6;
+        ringLife -= 0.04;
+      }
+      for (var i = 0; i < sparks.length; i++) {
+        var sp = sparks[i];
+        if (sp.life <= 0) continue;
+        gx.beginPath();
+        gx.arc(sp.x, sp.y, 3 * sp.life, 0, Math.PI * 2);
+        gx.fillStyle = sp.color;
+        gx.globalAlpha = sp.life;
+        gx.shadowColor = sp.color;
+        gx.shadowBlur = 12;
+        gx.fill();
+        gx.globalAlpha = 1;
+        gx.shadowBlur = 0;
+        sp.x += sp.vx; sp.y += sp.vy;
+        sp.vx *= 0.93; sp.vy *= 0.93;
+        sp.life -= 0.025;
+      }
+      requestAnimationFrame(drawBurst);
+    }
+    drawBurst();
+  }
+
+  // TRIANGLE → Energy prism beam upward
+  function effectTriangle(s) {
+    var beamLife = 1.0;
+    var beamH = s.h * 2.5;
+    function drawBeam() {
+      if (beamLife <= 0) return;
+      var grad = gx.createLinearGradient(s.cx, s.cy, s.cx, s.cy - beamH);
+      grad.addColorStop(0, 'rgba(255,0,255,' + beamLife + ')');
+      grad.addColorStop(0.4, 'rgba(0,229,255,' + (beamLife * 0.8) + ')');
+      grad.addColorStop(1, 'rgba(0,229,255,0)');
+      gx.beginPath();
+      gx.moveTo(s.cx - 4 * beamLife, s.cy);
+      gx.lineTo(s.cx + 4 * beamLife, s.cy);
+      gx.lineTo(s.cx + 1, s.cy - beamH * beamLife);
+      gx.lineTo(s.cx - 1, s.cy - beamH * beamLife);
+      gx.fillStyle = grad;
+      gx.fill();
+      gx.beginPath();
+      gx.moveTo(s.cx - 18 * beamLife, s.cy);
+      gx.lineTo(s.cx + 18 * beamLife, s.cy);
+      gx.lineTo(s.cx, s.cy - beamH * beamLife * 0.7);
+      gx.fillStyle = 'rgba(0,229,255,' + (beamLife * 0.08) + ')';
+      gx.fill();
+      beamLife -= 0.025;
+      requestAnimationFrame(drawBeam);
+    }
+    drawBeam();
+  }
+
+  // SQUARE → Matrix digital rain
+  function effectSquare(s) {
+    var chars = '01アイウエオカキクケコ∞∑∂∇';
+    var cols = Math.floor(s.w / 18);
+    var rows = 8;
+    var frame = 0, maxFrames = 60;
+    function drawMatrix() {
+      if (frame > maxFrames) return;
+      var alpha = frame < 30 ? frame / 30 : (maxFrames - frame) / 30;
+      gx.fillStyle = 'rgba(10,10,10,' + (alpha * 0.5) + ')';
+      gx.fillRect(s.cx - s.w / 2, s.cy - s.h / 2, s.w, s.h);
+      gx.strokeStyle = 'rgba(0,255,159,' + alpha + ')';
+      gx.lineWidth = 1.5;
+      gx.shadowColor = '#00FF9F';
+      gx.shadowBlur = 14;
+      gx.strokeRect(s.cx - s.w / 2, s.cy - s.h / 2, s.w, s.h);
+      gx.shadowBlur = 0;
+      gx.font = '13px monospace';
+      for (var c = 0; c < cols; c++) {
+        var rowCount = Math.floor(Math.random() * rows);
+        for (var r = 0; r < rowCount; r++) {
+          var ch = chars[Math.floor(Math.random() * chars.length)];
+          var a = (1 - r / rows) * alpha;
+          gx.fillStyle = r === 0 ? 'rgba(180,255,220,' + a + ')' : 'rgba(0,255,159,' + (a * 0.7) + ')';
+          gx.fillText(ch, s.cx - s.w / 2 + c * 18 + 2, s.cy - s.h / 2 + r * 18 + 18);
+        }
+      }
+      frame++;
+      requestAnimationFrame(drawMatrix);
+    }
+    drawMatrix();
+  }
+
+  // STAR/OTHER → Lightning nova
+  function effectStar(s) {
+    var arms = 8;
+    var life = 1.0;
+    var mkBolt = window.__makeBolt || makeBoltLocal;
+    function drawNova() {
+      if (life <= 0) return;
+      for (var i = 0; i < arms; i++) {
+        var angle = (i / arms) * Math.PI * 2 + life;
+        var segs = mkBolt(s.cx, s.cy, s.cx + Math.cos(angle) * s.r * 1.5 * (1 - life + 0.3), s.cy + Math.sin(angle) * s.r * 1.5 * (1 - life + 0.3), 3);
+        for (var j = 0; j < segs.length; j++) {
+          var seg = segs[j];
+          gx.beginPath();
+          gx.moveTo(seg.x1, seg.y1);
+          gx.lineTo(seg.x2, seg.y2);
+          gx.strokeStyle = 'rgba(255,0,255,' + (life * 0.9) + ')';
+          gx.lineWidth = 1.5;
+          gx.shadowColor = '#FF00FF';
+          gx.shadowBlur = 10;
+          gx.stroke();
+          gx.shadowBlur = 0;
+        }
+      }
+      life -= 0.03;
+      requestAnimationFrame(drawNova);
+    }
+    drawNova();
+  }
+
+  function makeBoltLocal(x1, y1, x2, y2, depth) {
+    if (depth === 0) return [{ x1: x1, y1: y1, x2: x2, y2: y2 }];
+    var mx = (x1 + x2) / 2 + (Math.random() - 0.5) * 20;
+    var my = (y1 + y2) / 2 + (Math.random() - 0.5) * 20;
+    return makeBoltLocal(x1, y1, mx, my, depth - 1).concat(makeBoltLocal(mx, my, x2, y2, depth - 1));
+  }
+
+  // Shape label popup
+  function showLabel(type, cx, cy) {
+    var labels = {
+      circle: '⭕ Circle!',
+      triangle: '🔺 Triangle!',
+      square: '⬛ Square!',
+      rectangle: '▬ Rectangle!',
+      star: '✦ Freeform!'
+    };
+    var el = document.createElement('div');
+    el.textContent = labels[type] || '✦';
+    el.style.cssText = 'position:fixed;left:' + cx + 'px;top:' + (cy - 60) + 'px;'
+      + 'transform:translate(-50%,-50%);font-family:Rajdhani,sans-serif;'
+      + 'font-size:18px;font-weight:700;pointer-events:none;z-index:99999;'
+      + 'opacity:1;transition:opacity 0.5s ease,transform 0.5s ease;'
+      + 'letter-spacing:0.05em;'
+      + 'background:linear-gradient(90deg,#00E5FF,#00FF9F);'
+      + '-webkit-background-clip:text;-webkit-text-fill-color:transparent;'
+      + 'background-clip:text;';
+    document.body.appendChild(el);
+    requestAnimationFrame(function() {
+      el.style.transform = 'translate(-50%,-80px)';
+      el.style.opacity = '0';
+    });
+    setTimeout(function() { el.remove(); }, 600);
+  }
+})();
+</script>
