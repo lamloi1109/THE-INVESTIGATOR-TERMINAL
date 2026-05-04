@@ -1,0 +1,128 @@
+---
+/**
+ * Experience.astro — "Kinh nghiệm làm việc" section
+ * Source: design/index.html lines 1579-1600 (markup) + 1485-1506 + 1783-1797 (CSS).
+ *
+ * Single card layout (1fr auto): role+achievements on left, employment-type
+ * badge on right. Bullets are terminal-log style (Inter 13.5px) with a
+ * green ▸ prefix and hover highlight.
+ *
+ * Content is hardcoded VI per user decision (T-025/handoff). Bilingual props
+ * can be added later when wiring Sheets fixtures.
+ */
+---
+
+<section class="section" id="experience" aria-labelledby="experience-title">
+  <div class="reveal">
+    <div class="section-label">Work</div>
+    <div class="section-title" id="experience-title">Kinh nghiệm làm việc</div>
+  </div>
+  <div class="exp-card reveal">
+    <div>
+      <div class="exp-company">Công ty hiện tại</div>
+      <div class="exp-role">AI Engineer &amp; Full-Stack Developer · 2023 – Present</div>
+      <ul class="exp-achievements">
+        <li>Fix hàng tá bug — từ khó tới dễ, trải đều mọi layer của hệ thống</li>
+        <li><strong>Excel Direct Read:</strong> đọc dữ liệu trực tiếp từ .xlsx không cần convert sang .txt — loại bỏ bước xử lý trung gian</li>
+        <li><strong>Multi-sheet XML Mail:</strong> gửi email kèm Excel multi-sheet dạng XML — vấn đề hơn <strong>10 năm chưa ai giải được</strong> (cách cũ: nhúng raw HTML vào body)</li>
+        <li><strong>Realtime Environment Monitor:</strong> thay thế sort toàn thư mục bằng Windows File Watcher API + WebSocket broadcast — không cần polling</li>
+        <li><strong>QR Production Scanner:</strong> ứng dụng quét QR quản lý sản xuất bình ắc quy, tích hợp tính hiệu suất theo ca/dây chuyền</li>
+        <li><strong>AI Internal Server:</strong> OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Redis · Qdrant · MinIO — vibe coding + self-research</li>
+        <li>Làm việc với user thật, mỗi lỗi ảnh hưởng trực tiếp đến dây chuyền sản xuất</li>
+      </ul>
+    </div>
+    <span class="exp-badge">● Full-time</span>
+  </div>
+</section>
+
+<style>
+  .exp-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 32px 36px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: start;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    margin-bottom: 16px;
+  }
+  .exp-card:hover {
+    border-color: rgba(0, 229, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+  }
+  @media (max-width: 640px) {
+    .exp-card { grid-template-columns: 1fr; padding: 24px; }
+  }
+
+  .exp-company {
+    font-family: var(--font-headline);
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(90deg, #00E5FF, #00FF9F);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+  .exp-role {
+    font-size: 14px;
+    color: var(--color-text-secondary);
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+  .exp-achievements {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0;
+    margin: 0;
+  }
+  .exp-achievements li {
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--color-text-body);
+    padding: 6px 8px 6px 28px;
+    border-radius: 6px;
+    position: relative;
+    border-left: 1px solid transparent;
+    transition: background 0.2s ease, color 0.2s ease, border-left-color 0.2s ease;
+  }
+  .exp-achievements li::before {
+    content: '▸';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    color: var(--color-green);
+    font-size: 12px;
+  }
+  .exp-achievements li:hover {
+    background: rgba(0, 255, 159, 0.04);
+    border-left-color: var(--color-green);
+    color: var(--color-text-primary);
+  }
+  .exp-achievements li strong {
+    color: var(--color-text-primary);
+    font-weight: 600;
+  }
+
+  .exp-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    height: fit-content;
+    background: rgba(0, 255, 159, 0.08);
+    border: 1px solid rgba(0, 255, 159, 0.25);
+    color: var(--color-green);
+  }
+</style>

@@ -1,0 +1,168 @@
+---
+/**
+ * Projects.astro — "Dự án nổi bật" section (6 cards)
+ * Source: design/index.html lines 1605-1648 (markup) + 1509-1525 + 1799-1811 (CSS).
+ *
+ * Auto-fill grid (min 320px). Each card: icon (cyan/green/pink variant) +
+ * name + description + tags. Hover triggers a horizontal cyan scan-line that
+ * sweeps top → bottom over 0.6s, plus card lift.
+ */
+
+interface Project {
+  icon: string;
+  iconVariant: 'cyan' | 'green' | 'pink';
+  name: string;
+  desc: string;
+  tags: string[];
+}
+
+const projects: Project[] = [
+  {
+    icon: '📡',
+    iconVariant: 'cyan',
+    name: 'Realtime Environment Monitor',
+    desc: 'App quan trắc realtime dùng Windows File Watcher + WebSocket. Dữ liệu từ datalogger hiển thị ngay khi file được ghi vào thư mục — không cần polling.',
+    tags: ['C# / .NET', 'WebSocket', 'File Watcher', 'Realtime'],
+  },
+  {
+    icon: '🤖',
+    iconVariant: 'green',
+    name: 'AI Internal Server',
+    desc: 'Hạ tầng AI nội bộ đầy đủ stack: OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Qdrant · MinIO · Redis. Tự research + vibe coding.',
+    tags: ['vLLM', 'LangGraph', 'LightRAG', 'Qdrant', 'MinIO'],
+  },
+  {
+    icon: '📱',
+    iconVariant: 'pink',
+    name: 'QR Production Scanner',
+    desc: 'Ứng dụng quét QR quản lý sản xuất bình ắc quy tại xưởng. Theo dõi công đoạn, tính hiệu suất theo ca/ngày/dây chuyền.',
+    tags: ['QR Code', 'Production', 'Analytics'],
+  },
+  {
+    icon: '📊',
+    iconVariant: 'green',
+    name: 'Excel Multi-Sheet Mailer',
+    desc: 'Gửi email kèm Excel multi-sheet qua XML — phá vỡ giới hạn 10+ năm của hệ thống cũ vốn chỉ nhúng HTML thô vào body mail.',
+    tags: ['XML', 'Excel', 'SMTP'],
+  },
+  {
+    icon: '📂',
+    iconVariant: 'cyan',
+    name: 'Excel Direct Import',
+    desc: 'Đọc dữ liệu trực tiếp từ .xlsx không qua bước convert trung gian, giảm sai sót và tăng tốc pipeline xử lý dữ liệu đầu vào.',
+    tags: ['Python', 'openpyxl', 'Data Pipeline'],
+  },
+  {
+    icon: '⚡',
+    iconVariant: 'pink',
+    name: 'The Investigator Terminal',
+    desc: 'Portfolio này — particle plexus, custom cursor, scan-lines, AI chat agent. Astro + Tailwind v4, vanilla canvas FX.',
+    tags: ['Astro', 'Canvas API', 'AI Agent'],
+  },
+];
+---
+
+<section class="section" id="projects" aria-labelledby="projects-title">
+  <div class="reveal">
+    <div class="section-label">Portfolio</div>
+    <div class="section-title" id="projects-title">Dự án nổi bật</div>
+  </div>
+  <div class="projects-grid">
+    {projects.map((p) => (
+      <article class="project-card reveal">
+        <div class={`project-icon pi-${p.iconVariant}`} aria-hidden="true">{p.icon}</div>
+        <div class="project-name">{p.name}</div>
+        <div class="project-desc">{p.desc}</div>
+        <div class="project-tags">
+          {p.tags.map((t) => (<span class="tag">{t}</span>))}
+        </div>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+  .project-card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 20px;
+    padding: 28px;
+    transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .project-card:hover {
+    border-color: rgba(0, 229, 255, 0.25);
+    transform: translateY(-4px);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+  }
+
+  /* Scan-line FX: horizontal cyan sweep top → bottom on hover */
+  .project-card::after {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(0, 229, 255, 0.5), transparent);
+    top: -2px;
+    transition: top 0.6s ease;
+    pointer-events: none;
+  }
+  .project-card:hover::after { top: 100%; }
+
+  .project-icon {
+    width: 48px; height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .pi-cyan  { background: rgba(0, 229, 255, 0.10); border: 1px solid rgba(0, 229, 255, 0.20); }
+  .pi-green { background: rgba(0, 255, 159, 0.10); border: 1px solid rgba(0, 255, 159, 0.20); }
+  .pi-pink  { background: rgba(255, 0, 255, 0.08); border: 1px solid rgba(255, 0, 255, 0.20); }
+
+  .project-name {
+    font-family: var(--font-headline);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-text-primary);
+  }
+  .project-desc {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--color-text-secondary);
+    flex: 1;
+  }
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-text-secondary);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card { transition: none; }
+    .project-card:hover { transform: none; }
+    .project-card::after { display: none; }
+  }
+</style>

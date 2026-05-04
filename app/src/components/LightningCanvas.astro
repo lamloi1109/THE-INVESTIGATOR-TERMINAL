@@ -1,0 +1,175 @@
+---
+/**
+ * LightningCanvas.astro — Cursor lightning trail + bolt FX
+ * Source: design/index.html lines 1318-1442 (boosted version)
+ *
+ * Canvas sits above plexus (z-4) but below cursor elements (z-99998+).
+ * Spawns recursive bolts along the mouse trail with 3-layer rendering
+ * (wide glow → mid body → core white-hot) for maximum visibility.
+ *
+ * prefers-reduced-motion: canvas hidden entirely.
+ * Budget: ~2KB gzipped (vanilla canvas, no deps).
+ */
+---
+
+<canvas id="lightning-canvas" aria-hidden="true"></canvas>
+
+<style>
+  #lightning-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #lightning-canvas { display: none !important; }
+  }
+</style>
+
+<script is:inline>
+(function() {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const lc = document.getElementById('lightning-canvas');
+  if (!lc) return;
+  const lx = lc.getContext('2d');
+  let lW, lH;
+
+  function resizeL() {
+    lW = lc.width = window.innerWidth;
+    lH = lc.height = window.innerHeight;
+  }
+  resizeL();
+  window.addEventListener('resize', resizeL);
+
+  const trail = [];
+  const MAX_TRAIL = 28;
+  let curX = -999, curY = -999;
+
+  window.addEventListener('mousemove', function(e) {
+    curX = e.clientX; curY = e.clientY;
+    trail.push({ x: curX, y: curY, life: 1.0 });
+    if (trail.length > MAX_TRAIL) trail.shift();
+  });
+
+  const bolts = [];
+
+  function makeBolt(x1, y1, x2, y2, depth) {
+    if (depth === 0) return [{ x1: x1, y1: y1, x2: x2, y2: y2 }];
+    var mx = (x1 + x2) / 2 + (Math.random() - 0.5) * 18 / (depth * 0.5);
+    var my = (y1 + y2) / 2 + (Math.random() - 0.5) * 18 / (depth * 0.5);
+    return makeBolt(x1, y1, mx, my, depth - 1).concat(makeBolt(mx, my, x2, y2, depth - 1));
+  }
+  // Expose makeBolt globally for ShapeGestureFX
+  window.__makeBolt = makeBolt;
+
+  var lastBoltTime = 0;
+
+  function spawnBolt() {
+    if (trail.length < 4) return;
+    var idx = Math.floor(Math.random() * (trail.length - 2));
+    var a = trail[idx], b = trail[idx + 1 + Math.floor(Math.random() * 2)];
+    if (!a || !b) return;
+    // Boosted: depth 4, life 1.0
+    var segs = makeBolt(a.x, a.y, b.x, b.y, 4);
+    bolts.push({
+      segs: segs,
+      life: 1.0,
+      decay: 0.08 + Math.random() * 0.06,
+      color: Math.random() < 0.5 ? '#00FF9F' : '#00E5FF'
+    });
+  }
+
+  function drawLightning() {
+    lx.clearRect(0, 0, lW, lH);
+    var now = performance.now();
+
+    // Boosted spawn: 85% chance every 60ms
+    if (trail.length >= 4 && now - lastBoltTime > 60) {
+      if (Math.random() < 0.85) spawnBolt();
+      lastBoltTime = now;
+    }
+
+    // Draw trail glow (boosted alpha + width)
+    for (var i = 1; i < trail.length; i++) {
+      var t = trail[i], p = trail[i - 1];
+      var alpha = (i / trail.length) * 0.45;
+      lx.beginPath();
+      lx.moveTo(p.x, p.y);
+      lx.lineTo(t.x, t.y);
+      lx.strokeStyle = 'rgba(0, 229, 255, ' + alpha + ')';
+      lx.lineWidth = 2.5;
+      lx.shadowColor = '#00E5FF';
+      lx.shadowBlur = 8;
+      lx.lineCap = 'round';
+      lx.stroke();
+    }
+    lx.shadowBlur = 0;
+
+    // Cursor spark (boosted radius + alpha)
+    if (trail.length) {
+      var last = trail[trail.length - 1];
+      var grad = lx.createRadialGradient(last.x, last.y, 0, last.x, last.y, 22);
+      grad.addColorStop(0, 'rgba(0,255,159,0.7)');
+      grad.addColorStop(0.4, 'rgba(0,229,255,0.2)');
+      grad.addColorStop(1, 'rgba(0,229,255,0)');
+      lx.beginPath();
+      lx.arc(last.x, last.y, 22, 0, Math.PI * 2);
+      lx.fillStyle = grad;
+      lx.fill();
+    }
+
+    // 3-layer bolt rendering
+    for (var i = bolts.length - 1; i >= 0; i--) {
+      var b = bolts[i];
+      b.life -= b.decay;
+      if (b.life <= 0) { bolts.splice(i, 1); continue; }
+
+      var al = b.life;
+      var isGreen = b.color === '#00FF9F';
+
+      for (var j = 0; j < b.segs.length; j++) {
+        var seg = b.segs[j];
+
+        // Layer 1: wide soft glow
+        lx.beginPath();
+        lx.moveTo(seg.x1, seg.y1);
+        lx.lineTo(seg.x2, seg.y2);
+        lx.strokeStyle = isGreen
+          ? 'rgba(0,255,159,' + (al * 0.15) + ')'
+          : 'rgba(0,229,255,' + (al * 0.15) + ')';
+        lx.lineWidth = 8;
+        lx.lineCap = 'round';
+        lx.stroke();
+
+        // Layer 2: mid colour body
+        lx.beginPath();
+        lx.moveTo(seg.x1, seg.y1);
+        lx.lineTo(seg.x2, seg.y2);
+        lx.strokeStyle = isGreen
+          ? 'rgba(0,255,159,' + (al * 0.7) + ')'
+          : 'rgba(0,229,255,' + (al * 0.7) + ')';
+        lx.lineWidth = 2.2;
+        lx.stroke();
+
+        // Layer 3: core white-hot
+        lx.beginPath();
+        lx.moveTo(seg.x1, seg.y1);
+        lx.lineTo(seg.x2, seg.y2);
+        lx.strokeStyle = isGreen
+          ? 'rgba(180,255,220,' + (al * 0.9) + ')'
+          : 'rgba(180,240,255,' + (al * 0.9) + ')';
+        lx.lineWidth = 1.2;
+        lx.stroke();
+      }
+    }
+
+    // Fade trail
+    for (var k = 0; k < trail.length; k++) trail[k].life -= 0.03;
+
+    requestAnimationFrame(drawLightning);
+  }
+
+  drawLightning();
+})();
+</script>

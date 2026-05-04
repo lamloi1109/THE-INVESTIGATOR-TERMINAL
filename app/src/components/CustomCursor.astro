@@ -14,10 +14,7 @@
 <div id="cursor-ring" aria-hidden="true"></div>
 
 <style>
-  /* Hide system cursor only on hover-capable + fine-pointer devices */
-  @media (hover: hover) and (pointer: fine) {
-    *, *::before, *::after { cursor: none !important; }
-  }
+  /* System cursor hidden via global.css (Astro scoped CSS can't apply * selector globally) */
   @media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
     #cursor-dot, #cursor-ring { display: none !important; }
   }

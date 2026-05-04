@@ -4,6 +4,9 @@ import Header from '../components/Header.astro';
 import PlexusBackground from '../components/PlexusBackground.astro';
 import CustomCursor from '../components/CustomCursor.astro';
 import ChatWidget from '../components/ChatWidget.astro';
+import RevealOnScroll from '../components/RevealOnScroll.astro';
+import LightningCanvas from '../components/LightningCanvas.astro';
+import ShapeGestureFX from '../components/ShapeGestureFX.astro';
 
 interface Props {
 	title?: string;
@@ -40,7 +43,10 @@ const { title = "The Investigator Terminal", lang = 'en' } = Astro.props;
 		<slot />
 
 		<!-- Foreground FX (z high) -->
+		<LightningCanvas />
+		<ShapeGestureFX />
 		<ChatWidget lang={lang} />
 		<CustomCursor />
+		<RevealOnScroll />
 	</body>
 </html>

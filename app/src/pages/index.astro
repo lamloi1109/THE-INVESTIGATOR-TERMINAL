@@ -1,6 +1,11 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
+import Experience from '../components/Experience.astro';
+import Projects from '../components/Projects.astro';
+import TechStack from '../components/TechStack.astro';
+import Education from '../components/Education.astro';
+import Contact from '../components/Contact.astro';
 
 // FIXTURE — replace with fetchSheet('Profile') when wiring lands.
 // import { fetchSheet } from '../lib/sheets';
@@ -9,9 +14,8 @@ import Hero from '../components/Hero.astro';
 
 export const prerender = true;
 
-// Default UI language for the home page. Bilingual props are still wired
-// through Hero/Layout/Header so flipping this swaps all copy at once.
-const currentLang: 'vi' | 'en' = 'en';
+// Default UI language. VI matches design/index.html mockup verbatim.
+const currentLang: 'vi' | 'en' = 'vi';
 
 const profileFixture = {
   // 'name' is a proper noun — no i18n.
@@ -25,5 +29,18 @@ const profileFixture = {
       name={profileFixture.name}
       lang={currentLang}
     />
+    <div class="divider"></div>
+    <Experience />
+    <div class="divider"></div>
+    <Projects />
+    <div class="divider"></div>
+    <TechStack />
+    <div class="divider"></div>
+    <Education />
+    <div class="divider"></div>
+    <Contact />
+    <footer class="footer">
+      Built with ⚡ by Lam Loi · The Investigator Terminal © 2026
+    </footer>
   </main>
 </Layout>

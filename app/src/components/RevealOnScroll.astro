@@ -1,0 +1,40 @@
+---
+/**
+ * RevealOnScroll.astro — Global IntersectionObserver for `.reveal` elements.
+ * Source: design/index.html lines 1767-1776.
+ *
+ * Adds `.visible` class to any `.reveal` element when it crosses 12% threshold,
+ * with a small staggered delay (i * 80ms) so groups animate as cascade.
+ * Mounted once in Layout — all sections benefit automatically.
+ */
+---
+
+<script is:inline>
+  (() => {
+    if (typeof window === 'undefined') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.reveal').forEach((el) => el.classList.add('visible'));
+      return;
+    }
+
+    const init = () => {
+      const els = document.querySelectorAll('.reveal:not(.visible)');
+      if (!els.length) return;
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+          if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach((el) => obs.observe(el));
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
