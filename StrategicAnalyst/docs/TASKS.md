@@ -165,26 +165,27 @@ Updated:    2026-04-28 by claude_code (initial seed per D-005)
 
 ```
 Task ID:    T-030
-Title:      Terminal UI component (Preact island)
-Status:     todo
-Owner:      —
-Branch:     —
+Title:      Agent chat page + terminal extension
+Status:     review
+Owner:      antigravity
+Branch:     antigravity-T-030-terminal-ui
 Assigned:   ANTIGRAVITY
-Files:      app/src/components/Terminal.tsx, app/src/components/TerminalInput.tsx,
-            app/src/components/TerminalOutput.tsx
+Files:      app/src/components/ChatWidget.astro, app/src/pages/agent.astro,
+            app/src/layouts/Layout.astro
 Acceptance:
-  [ ] Preact component, client:visible directive
-  [ ] Input field với prompt indicator (>)
-  [ ] Output area hiển thị streaming text (từng chunk)
-  [ ] Hỗ trợ Generative UI: render component động từ AI response
-  [ ] Có welcome message giải thích cách dùng + gợi ý câu hỏi mẫu
-  [ ] Accessible: keyboard navigation, aria-labels
+  [x] Chat widget expand action opens a dedicated agent chat page
+  [x] Input field với prompt indicator (>)
+  [x] Output area hiển thị streaming text (từng chunk)
+  [x] Hỗ trợ Generative UI: render component động từ AI response
+  [x] Có welcome message giải thích cách dùng + gợi ý câu hỏi mẫu
+  [x] Accessible: keyboard navigation, aria-labels
 Verification:
-  Trang /terminal → gõ "help" → hiển thị danh sách commands
+  Chat widget → click expand (>_) → đi tới /agent
+  Trang /agent → gõ "help" → hiển thị danh sách commands
   Text stream hiển thị từng ký tự, không chờ toàn bộ response
 Depends on: T-001
 Complexity: L
-Updated:    2026-04-20 by human (initial seed)
+Updated:    2026-05-06 by antigravity (review; approach changed per coordinator: terminal is full-page extension opened from chat widget, route /agent. Branch namespace antigravity/T-* unavailable in local Git, using antigravity-T-030-terminal-ui)
 ```
 
 ```

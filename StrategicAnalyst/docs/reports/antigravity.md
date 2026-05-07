@@ -60,3 +60,65 @@ Chờ PhuocLoi review + merge branch `antigravity/T-001-astro-scaffold` → `mai
 
 **Lighthouse result:**
 - Performance: 100 / Accessibility: 100 / SEO: 100 (Expected, zero JS SSG)
+
+---
+
+## Session 2026-05-05 21:40 — T-030 Terminal UI
+
+**Tasks touched:** T-030
+
+**Status changes:**
+- T-030: todo → in_progress → review
+
+**Commits:**
+- none (workspace had pre-existing uncommitted planning/data changes; avoided mixing them into a task commit)
+
+**Done:**
+- [x] Added Preact Terminal island mounted on `/terminal` with `client:visible`
+- [x] Added prompt input, command history navigation, `Ctrl+L` clear, and `Esc` close
+- [x] Added incremental mock streaming output for local commands
+- [x] Added `DataPart` fallback rendering for future Generative UI handoff in T-032
+- [x] Added `<noscript>` static fallback linking to `/projects`
+
+**Verification:**
+- `cd app && npm run build` → pass, generated `/terminal/index.html`
+- `npm ls react` → `(empty)`
+- Terminal chunk: `dist/_astro/Terminal.DMSQxbLX.js` = 16,132 bytes raw
+
+**Decisions made:** none
+
+**Blockers:** none
+
+**Next step for next session:**
+T-031 can wire `/api/chat` to Gemini/Vercel AI SDK and replace the local mock response path.
+
+---
+
+## Session 2026-05-06 — T-030 Approach Change
+
+**Tasks touched:** T-030
+
+**Status changes:**
+- T-030: review → review (scope adjusted)
+
+**Commits:**
+- none yet
+
+**Done:**
+- [x] Reworked terminal from a separate Preact island/page into the expanded agent chat surface
+- [x] Kept compact `ChatWidget.astro` as the floating chat panel
+- [x] Added expand action `>_` in the chat header linking to `/agent`
+- [x] Added `/agent` full-page terminal chat with mock streaming, command history, `Ctrl+L`, and data-part fallback
+
+**Verification:**
+- `cd app && npm run build` → pass, generated `/agent/index.html`
+- `dist/index.html` contains widget expand link `href="/agent"`
+- `dist/agent/index.html` contains `agent://investigator/session` and does not render the floating chat FAB
+- `npm ls react` → `(empty)`
+
+**Decisions made:** none
+
+**Blockers:** none
+
+**Next step for next session:**
+Wire `/agent` to `/api/chat` in T-031; keep compact widget as a lightweight launcher.

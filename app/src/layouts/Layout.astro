@@ -11,9 +11,10 @@ import ShapeGestureFX from '../components/ShapeGestureFX.astro';
 interface Props {
 	title?: string;
 	lang?: 'vi' | 'en';
+	hideChatWidget?: boolean;
 }
 
-const { title = "The Investigator Terminal", lang = 'en' } = Astro.props;
+const { title = "The Investigator Terminal", lang = 'en', hideChatWidget = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -45,7 +46,7 @@ const { title = "The Investigator Terminal", lang = 'en' } = Astro.props;
 		<!-- Foreground FX (z high) -->
 		<LightningCanvas />
 		<ShapeGestureFX />
-		<ChatWidget lang={lang} />
+		{!hideChatWidget && <ChatWidget lang={lang} />}
 		<CustomCursor />
 		<RevealOnScroll />
 	</body>

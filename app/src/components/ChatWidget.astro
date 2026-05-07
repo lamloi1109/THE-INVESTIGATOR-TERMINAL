@@ -1,14 +1,9 @@
 ---
 /**
- * ChatWidget.astro — Floating chat FAB + slide-in panel.
- * Source: design/index.html lines 472-647 (CSS), 804-998 (markup + script).
+ * ChatWidget.astro - compact floating agent chat.
  *
- * Open/close + dummy echo reply (real AI stream lands at T-031). Echoes the
- * first 60 chars of each user message ~600ms later as the "Investigator Agent"
- * with a clear preview-mode disclaimer, so the panel feels live without any
- * backend.
- *
- * T-024, D-005. Budget: ~2KB gzipped (vanilla, no Preact runtime).
+ * The terminal experience is the expanded agent chat page at /agent. The widget
+ * stays lightweight and links to that full page via the >_ expand action.
  */
 interface Props {
   lang?: 'vi' | 'en';
@@ -17,19 +12,19 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 
 const t = {
-  open: lang === 'vi' ? 'Mở chat' : 'Chat with Agent',
+  open: lang === 'vi' ? 'Mo chat' : 'Chat with Agent',
+  expand: lang === 'vi' ? 'Mo trang agent' : 'Open Agent page',
   agentName: 'Investigator Agent',
-  status: lang === 'vi' ? 'AI · Online' : 'AI · Online',
-  placeholder: lang === 'vi' ? 'Nhắn tin với agent...' : 'Type a message...',
+  status: 'AI · Online',
+  placeholder: lang === 'vi' ? 'Nhan tin voi agent...' : 'Type a message...',
   welcome: lang === 'vi'
-    ? 'Xin chào! Tôi là AI Agent của Lam Loi. Bạn muốn biết gì về tôi — dự án, tech stack hay kinh nghiệm làm việc? 🚀'
-    : "Hi! I'm Lam Loi's AI Agent. Ask me about projects, tech stack, or work experience — preview mode for now. 🚀",
-  close: lang === 'vi' ? 'Đóng' : 'Close',
-  // Stub reply pieces (interpolated client-side with the echo).
-  stubPrefix: lang === 'vi' ? 'Đã nhận: ' : 'Got it: ',
+    ? 'Xin chao! Toi la AI Agent cua Lam Loi. Ban muon biet gi ve du an, tech stack hay kinh nghiem lam viec?'
+    : "Hi! I'm Lam Loi's AI Agent. Ask me about projects, tech stack, or work experience.",
+  close: lang === 'vi' ? 'Dong' : 'Close',
+  stubPrefix: lang === 'vi' ? 'Da nhan: ' : 'Got it: ',
   stubSuffix: lang === 'vi'
-    ? '. Phản hồi AI thật sẽ kích hoạt ở task T-031.'
-    : '. The real AI response activates at T-031.',
+    ? '. Mo trang agent de dung terminal day du.'
+    : '. Open the Agent page for the full terminal view.',
 };
 ---
 
@@ -62,6 +57,9 @@ const t = {
       </div>
       <div class="text-[11px] text-text-secondary tracking-[0.05em] mt-px">{t.status}</div>
     </div>
+    <a href="/agent" class="chat-expand" aria-label={t.expand} title={t.expand}>
+      <span aria-hidden="true">&gt;_</span>
+    </a>
     <button type="button" id="chatClose" class="chat-close" aria-label={t.close} title={t.close}>
       <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
         <path d="M3 3l8 8M11 3l-8 8" />
@@ -69,7 +67,7 @@ const t = {
     </button>
   </div>
 
-  <div class="chat-messages" id="chatMessages">
+  <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-relevant="additions text">
     <div class="msg msg-agent">{t.welcome}</div>
   </div>
 
@@ -90,8 +88,6 @@ const t = {
   </form>
 </div>
 
-<!-- Stub reply pieces consumed by the inline script. Server-rendered so we
-     don't have to duplicate the Astro `lang` decision in JS. -->
 <script
   type="application/json"
   id="chat-stub-strings"
@@ -100,7 +96,6 @@ const t = {
 />
 
 <style>
-  /* FAB — gradient circle, bottom-right */
   .chat-fab {
     position: fixed;
     bottom: 32px;
@@ -109,7 +104,6 @@ const t = {
     width: 56px; height: 56px;
     border-radius: 50%;
     border: none;
-    cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     color: #0A0A0A;
     background: linear-gradient(135deg, #00FF9F, #00E5FF, #FF00FF);
@@ -123,7 +117,6 @@ const t = {
   .chat-fab svg { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
   .chat-fab.open svg { transform: rotate(45deg); }
 
-  /* Panel */
   .chat-panel {
     position: fixed;
     bottom: 100px;
@@ -170,19 +163,24 @@ const t = {
   }
   .chat-header-info { flex: 1; min-width: 0; }
 
+  .chat-expand,
   .chat-close {
     background: transparent;
     border: 1px solid rgba(0,229,255,0.2);
     border-radius: 8px;
-    width: 28px; height: 28px;
+    width: 30px; height: 30px;
     display: flex; align-items: center; justify-content: center;
     color: #9CA3AF;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
+    text-decoration: none;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 12px;
+    transition: color 0.2s, border-color 0.2s, background 0.2s;
   }
+  .chat-expand:hover,
   .chat-close:hover {
     color: #00E5FF;
     border-color: rgba(0,229,255,0.5);
+    background: rgba(0,229,255,0.06);
   }
 
   .chat-messages {
@@ -250,7 +248,6 @@ const t = {
     border: none;
     background: linear-gradient(135deg, #00FF9F, #00E5FF);
     color: #0A0A0A;
-    cursor: pointer;
     display: flex; align-items: center; justify-content: center;
     transition: transform 0.2s, box-shadow 0.2s;
   }
@@ -260,10 +257,8 @@ const t = {
   }
   .chat-send:disabled, .chat-input:disabled {
     opacity: 0.4;
-    cursor: not-allowed;
   }
 
-  /* Typing indicator — three dots that fade in sequence while waiting */
   .msg-typing {
     display: flex;
     gap: 5px;
@@ -282,7 +277,20 @@ const t = {
   .msg-typing span:nth-child(3) { animation-delay: 0.4s; }
   @keyframes typingDot {
     0%, 80%, 100% { opacity: 0.3; transform: scale(1); }
-    40%           { opacity: 1;   transform: scale(1.3); }
+    40% { opacity: 1; transform: scale(1.3); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chat-fab,
+    .chat-panel,
+    .chat-expand,
+    .chat-close,
+    .chat-send {
+      transition: none;
+    }
+    .msg-typing span {
+      animation: none;
+    }
   }
 </style>
 
@@ -296,28 +304,21 @@ const t = {
     const sendBtn = document.getElementById('chatSend');
     const messages = document.getElementById('chatMessages');
     const stubEl = document.getElementById('chat-stub-strings');
-    if (!fab || !panel || !form || !input || !messages) return;
+    if (!fab || !panel || !form || !input || !messages || !sendBtn) return;
 
-    let stub = { prefix: 'Got it: ', suffix: '. Real AI lands at T-031.' };
+    let stub = { prefix: 'Got it: ', suffix: '. Open the Agent page for the full terminal view.' };
     try {
       if (stubEl && stubEl.textContent) stub = JSON.parse(stubEl.textContent);
-    } catch (_e) { /* keep default */ }
+    } catch (_e) {
+      /* keep default */
+    }
 
     function setOpen(open) {
       panel.classList.toggle('open', open);
       fab.classList.toggle('open', open);
       fab.setAttribute('aria-expanded', String(open));
-      if (open) setTimeout(() => input.focus(), 350);
+      if (open) setTimeout(() => input.focus(), 250);
     }
-
-    fab.addEventListener('click', () => {
-      setOpen(!panel.classList.contains('open'));
-    });
-    closeBtn?.addEventListener('click', () => setOpen(false));
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && panel.classList.contains('open')) setOpen(false);
-    });
 
     function scrollToBottom() {
       messages.scrollTop = messages.scrollHeight;
@@ -345,11 +346,17 @@ const t = {
     function refreshSendDisabled() {
       sendBtn.disabled = input.value.trim().length === 0;
     }
+
+    fab.addEventListener('click', () => setOpen(!panel.classList.contains('open')));
+    closeBtn?.addEventListener('click', () => setOpen(false));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && panel.classList.contains('open')) setOpen(false);
+    });
     input.addEventListener('input', refreshSendDisabled);
     refreshSendDisabled();
 
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
       const value = input.value.trim();
       if (!value) return;
 
@@ -358,7 +365,7 @@ const t = {
       refreshSendDisabled();
 
       const typing = appendTyping();
-      const echo = value.length > 60 ? value.slice(0, 60) + '…' : value;
+      const echo = value.length > 60 ? value.slice(0, 60) + '...' : value;
       setTimeout(() => {
         typing.remove();
         appendMessage('agent', stub.prefix + '"' + echo + '"' + stub.suffix);

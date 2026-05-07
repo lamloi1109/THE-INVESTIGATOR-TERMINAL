@@ -1,0 +1,520 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+export const prerender = true;
+---
+
+<Layout title="Investigator Agent - Terminal Chat" lang="en" hideChatWidget>
+  <main class="agent-page" aria-labelledby="agent-title">
+    <section class="agent-shell" role="region" aria-label="Agent terminal chat">
+      <header class="agent-header">
+        <a href="/" class="agent-back" aria-label="Back to portfolio">←</a>
+        <div class="agent-identity">
+          <div class="agent-dot fx-pulse-dot" aria-hidden="true"></div>
+          <div>
+            <h1 id="agent-title">Investigator Agent</h1>
+            <p>Full-page chat · Terminal extension · Mock stream until T-031</p>
+          </div>
+        </div>
+        <div class="agent-badge">&gt;_ terminal</div>
+      </header>
+
+      <div class="agent-console-bar" aria-hidden="true">
+        <span></span><span></span><span></span>
+        <strong>agent://investigator/session</strong>
+      </div>
+
+      <div class="agent-messages" id="agentMessages" role="log" aria-live="polite" aria-relevant="additions text">
+        <article class="agent-line system">
+          <div class="agent-role">system</div>
+          <pre>Investigator Terminal ready.
+Type help, projects, skills, status, or ask a natural language question.
+This page is the expanded agent chat surface; API wiring lands in T-031.</pre>
+        </article>
+      </div>
+
+      <form class="agent-input-row" id="agentForm" aria-label="Agent terminal input">
+        <label for="agentInput" class="agent-prompt" aria-hidden="true">&gt;</label>
+        <input
+          id="agentInput"
+          class="agent-input"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          maxlength="500"
+          placeholder="Type help, projects, skills, status..."
+          aria-label="Type a message or terminal command"
+        />
+        <span class="agent-caret" aria-hidden="true"></span>
+        <button type="submit" class="agent-run" id="agentRun" aria-label="Send command">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="15" y1="1" x2="6" y2="10" />
+            <polygon points="15 1 10 15 6 10 1 5 15 1" />
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <noscript>
+      <section class="agent-noscript" aria-label="Agent fallback">
+        <h2>Agent chat requires JavaScript</h2>
+        <p>The static portfolio remains available without the agent terminal.</p>
+        <a href="/projects">View static CV at /projects</a>
+      </section>
+    </noscript>
+  </main>
+</Layout>
+
+<style>
+  .agent-page {
+    position: relative;
+    z-index: 2;
+    min-height: 100vh;
+    padding: 96px 24px 40px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .agent-shell {
+    width: min(1120px, 100%);
+    min-height: min(760px, calc(100vh - 136px));
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(0, 229, 255, 0.22);
+    border-radius: 18px;
+    background:
+      linear-gradient(135deg, rgba(0, 229, 255, 0.06), rgba(0, 255, 159, 0.03) 45%, rgba(255, 0, 255, 0.04)),
+      rgba(10, 10, 10, 0.92);
+    box-shadow: 0 0 64px rgba(0, 229, 255, 0.1), 0 28px 80px rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  .agent-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 18px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.14);
+    background: rgba(17, 24, 39, 0.52);
+  }
+
+  .agent-back {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(0, 229, 255, 0.22);
+    border-radius: 10px;
+    color: var(--color-cyan);
+    text-decoration: none;
+    font-size: 20px;
+  }
+
+  .agent-identity {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .agent-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--color-green);
+    flex: 0 0 auto;
+  }
+
+  .agent-identity h1 {
+    margin: 0;
+    font-family: var(--font-headline);
+    font-size: 24px;
+    line-height: 1;
+    color: var(--color-text-primary);
+  }
+
+  .agent-identity p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  .agent-badge {
+    padding: 6px 10px;
+    border: 1px solid rgba(0, 255, 159, 0.18);
+    border-radius: 999px;
+    color: var(--color-green);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .agent-console-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-bottom: 1px solid rgba(0,229,255,0.08);
+    background: rgba(17,24,39,0.48);
+    color: #9CA3AF;
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 12px;
+  }
+  .agent-console-bar span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+  .agent-console-bar span:nth-child(1) { background: #FF00FF; }
+  .agent-console-bar span:nth-child(2) { background: #00E5FF; }
+  .agent-console-bar span:nth-child(3) { background: #00FF9F; }
+  .agent-console-bar strong {
+    margin-left: 4px;
+    color: #00FF9F;
+  }
+
+  .agent-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px;
+    background:
+      repeating-linear-gradient(0deg, transparent, transparent 5px, rgba(0,229,255,0.025) 6px),
+      rgba(0,0,0,0.08);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0,229,255,0.25) transparent;
+  }
+
+  .agent-line {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.035);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
+
+  .agent-role {
+    color: var(--color-text-secondary);
+    font-size: 11px;
+    text-transform: uppercase;
+    padding-top: 2px;
+  }
+  .agent-line.user .agent-role { color: var(--color-green); }
+  .agent-line.agent .agent-role { color: var(--color-cyan); }
+
+  .agent-line pre,
+  .agent-data pre {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    color: var(--color-text-body);
+    font: inherit;
+    line-height: 1.7;
+  }
+
+  .agent-data {
+    margin-top: 12px;
+    border: 1px solid rgba(0, 229, 255, 0.16);
+    border-radius: 12px;
+    padding: 12px;
+    background: rgba(17, 24, 39, 0.48);
+  }
+  .agent-data strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-green);
+    font-family: var(--font-headline);
+    font-size: 13px;
+  }
+
+  .agent-input-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px 16px;
+    border-top: 1px solid rgba(0, 229, 255, 0.14);
+    background: rgba(10, 10, 10, 0.78);
+  }
+
+  .agent-prompt {
+    color: var(--color-green);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 20px;
+    line-height: 1;
+  }
+
+  .agent-input {
+    min-width: 0;
+    width: 100%;
+    border: 1px solid rgba(0, 229, 255, 0.16);
+    border-radius: 10px;
+    padding: 11px 12px;
+    background: rgba(17, 24, 39, 0.52);
+    color: var(--color-text-primary);
+    font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    font-size: 14px;
+    outline: none;
+  }
+  .agent-input:focus {
+    border-color: rgba(0, 229, 255, 0.52);
+    box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.08);
+  }
+
+  .agent-caret {
+    width: 8px;
+    height: 18px;
+    background: var(--color-green);
+    animation: agentBlink 1s steps(2, start) infinite;
+  }
+
+  .agent-run {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 10px;
+    padding: 0;
+    color: #0A0A0A;
+    background: linear-gradient(135deg, #00FF9F, #00E5FF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .agent-run:disabled,
+  .agent-input:disabled {
+    opacity: 0.45;
+  }
+
+  .agent-noscript {
+    position: absolute;
+    inset: auto 24px 24px;
+    z-index: 4;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 14px;
+    background: rgba(10,10,10,0.92);
+  }
+
+  @keyframes agentBlink {
+    0%, 45% { opacity: 1; }
+    46%, 100% { opacity: 0; }
+  }
+
+  @media (max-width: 768px) {
+    .agent-page {
+      padding: 0;
+    }
+    .agent-shell {
+      min-height: 100vh;
+      border-radius: 0;
+      border-left: 0;
+      border-right: 0;
+    }
+    .agent-header {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+    .agent-badge,
+    .agent-caret {
+      display: none;
+    }
+    .agent-line {
+      grid-template-columns: 1fr;
+      gap: 4px;
+    }
+    .agent-input-row {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .agent-caret {
+      animation: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const form = document.getElementById('agentForm');
+    const input = document.getElementById('agentInput');
+    const run = document.getElementById('agentRun');
+    const messages = document.getElementById('agentMessages');
+    if (!form || !input || !run || !messages) return;
+
+    let history = [];
+    let historyIndex = null;
+    let streamTimer = null;
+
+    const helpText = `Available commands:
+help      Show this command list
+projects  Preview structured project data
+skills    Show core technical stack
+status    Show current integration status
+clear     Clear terminal output
+
+Natural language prompts are accepted in mock mode. Real AI streaming lands in T-031.`;
+
+    function scrollToBottom() {
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function appendLine(role, text) {
+      const article = document.createElement('article');
+      article.className = 'agent-line ' + role;
+      const roleEl = document.createElement('div');
+      roleEl.className = 'agent-role';
+      roleEl.textContent = role === 'user' ? 'you' : role === 'agent' ? 'agent' : 'system';
+      const body = document.createElement('div');
+      const pre = document.createElement('pre');
+      pre.textContent = text;
+      body.appendChild(pre);
+      article.append(roleEl, body);
+      messages.appendChild(article);
+      scrollToBottom();
+      return { article, body, pre };
+    }
+
+    function appendData(body, part) {
+      const wrap = document.createElement('div');
+      wrap.className = 'agent-data';
+      const title = document.createElement('strong');
+      title.textContent = 'data:' + part.type;
+      const json = document.createElement('pre');
+      json.textContent = JSON.stringify(part.data, null, 2);
+      wrap.append(title, json);
+      body.appendChild(wrap);
+    }
+
+    function getReply(command) {
+      const normalized = command.trim().toLowerCase();
+      if (normalized === 'help') return { text: helpText };
+      if (normalized === 'status') {
+        return {
+          text: 'Agent page is active. The terminal is the expanded chat surface. Local streaming and data-part fallback are ready for T-031/T-032.',
+        };
+      }
+      if (normalized === 'projects' || normalized.includes('project')) {
+        return {
+          text: 'Structured project preview. T-032 will map these data parts to richer UI components.',
+          dataParts: [
+            {
+              type: 'project_list',
+              data: [
+                { title: 'Realtime Environment Monitor', tags: ['C#', 'WebSocket', 'Realtime'] },
+                { title: 'AI Internal Server', tags: ['vLLM', 'LightRAG', 'Qdrant'] },
+                { title: 'The Investigator Terminal', tags: ['Astro', 'Agent Chat', 'AI SDK'] },
+              ],
+            },
+          ],
+        };
+      }
+      if (normalized === 'skills' || normalized.includes('skill') || normalized.includes('tech stack')) {
+        return {
+          text: 'Core stack: AI systems, backend automation, realtime applications, and Astro frontend delivery.',
+          dataParts: [
+            {
+              type: 'skill_list',
+              data: {
+                ai: ['vLLM', 'LightRAG', 'LangGraph', 'RAG'],
+                backend: ['C#/.NET', 'Python', 'WebSocket', 'SQL'],
+                frontend: ['Astro', 'Tailwind CSS', 'Agent UI'],
+              },
+            },
+          ],
+        };
+      }
+      return {
+        text: `Mock response for: "${command}". Gemini-backed streaming will replace this local path in T-031.`,
+      };
+    }
+
+    function streamReply(text, dataParts) {
+      if (streamTimer) window.clearInterval(streamTimer);
+      let index = 0;
+      const line = appendLine('agent', '');
+      input.disabled = true;
+      run.disabled = true;
+
+      streamTimer = window.setInterval(() => {
+        index += 1;
+        line.pre.textContent = text.slice(0, index);
+        scrollToBottom();
+
+        if (index >= text.length) {
+          window.clearInterval(streamTimer);
+          streamTimer = null;
+          if (Array.isArray(dataParts)) {
+            for (const part of dataParts) appendData(line.body, part);
+          }
+          input.disabled = false;
+          run.disabled = input.value.trim().length === 0;
+          input.focus();
+          scrollToBottom();
+        }
+      }, 22);
+    }
+
+    function refreshRunDisabled() {
+      run.disabled = input.value.trim().length === 0;
+    }
+
+    input.addEventListener('input', refreshRunDisabled);
+    input.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'l') {
+        event.preventDefault();
+        messages.innerHTML = '';
+        appendLine('system', 'Investigator Terminal ready.');
+        return;
+      }
+      if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (history.length === 0) return;
+        historyIndex = historyIndex === null ? history.length - 1 : Math.max(0, historyIndex - 1);
+        input.value = history[historyIndex];
+        refreshRunDisabled();
+      }
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (historyIndex === null) return;
+        historyIndex += 1;
+        if (historyIndex >= history.length) {
+          historyIndex = null;
+          input.value = '';
+        } else {
+          input.value = history[historyIndex];
+        }
+        refreshRunDisabled();
+      }
+    });
+    refreshRunDisabled();
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!value) return;
+      input.value = '';
+      refreshRunDisabled();
+      history.push(value);
+      historyIndex = null;
+
+      if (value.toLowerCase() === 'clear') {
+        messages.innerHTML = '';
+        appendLine('system', 'Investigator Terminal ready.');
+        return;
+      }
+
+      appendLine('user', value);
+      const reply = getReply(value);
+      streamReply(reply.text, reply.dataParts);
+    });
+
+    setTimeout(() => input.focus(), 120);
+  })();
+</script>
