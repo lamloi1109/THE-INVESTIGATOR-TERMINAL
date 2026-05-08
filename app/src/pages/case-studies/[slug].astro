@@ -1,0 +1,536 @@
+---
+/**
+ * [slug].astro — Case Study detail page (SSG, dynamic routes)
+ * Task: T-022
+ *
+ * Fetches all projects from Google Sheets (merged schema v2.0),
+ * filters those with case study content (slug + problem + solution + result non-empty),
+ * and generates a static page per slug via getStaticPaths().
+ *
+ * Layout: long-form — problem → solution → result → tech_stack.
+ * Typography optimised for readability: max-width ~65ch, line-height ≥1.6.
+ * SEO: JSON-LD structured data (TechArticle schema.org).
+ * Zero JS — pure Astro component (D-005 fallback guarantee, PRD S6).
+ */
+import Layout from '../../layouts/Layout.astro';
+import { fetchSheet } from '../../lib/sheets';
+import type { ProjectData } from '../../lib/sheets';
+import { getProjectsWithCaseStudy } from '../../data/projects';
+
+export const prerender = true;
+
+interface CaseStudyData {
+  slug: string;
+  title_vi: string;
+  title_en: string;
+  description_vi: string;
+  description_en: string;
+  tags: string[];
+  date: string;
+  problem_vi: string;
+  problem_en: string;
+  solution_vi: string;
+  solution_en: string;
+  result_vi: string;
+  result_en: string;
+  tech_stack: string[];
+  repo_url?: string;
+  live_url?: string;
+}
+
+export async function getStaticPaths() {
+  let caseStudies: CaseStudyData[] = [];
+
+  try {
+    const projects = await fetchSheet('Projects');
+    caseStudies = projects
+      .filter((p) => !!(p.slug && p.problem_vi && p.solution_vi && p.result_vi))
+      .map((p) => ({
+        slug: p.slug!,
+        title_vi: p.title_vi,
+        title_en: p.title_en,
+        description_vi: p.description_vi,
+        description_en: p.description_en,
+        tags: p.tags || [],
+        date: p.date || '',
+        problem_vi: p.problem_vi || '',
+        problem_en: p.problem_en || p.problem_vi || '',
+        solution_vi: p.solution_vi || '',
+        solution_en: p.solution_en || p.solution_vi || '',
+        result_vi: p.result_vi || '',
+        result_en: p.result_en || p.result_vi || '',
+        tech_stack: p.tech_stack || [],
+        repo_url: p.repo_url,
+        live_url: p.live_url,
+      }));
+  } catch (error) {
+    console.warn('[case-studies] Google Sheets unavailable during prerender; using static project fallback.', error);
+  }
+
+  if (caseStudies.length === 0) {
+    caseStudies = getProjectsWithCaseStudy().map((p) => ({
+      slug: p.slug,
+      title_vi: p.name,
+      title_en: p.name,
+      description_vi: p.desc,
+      description_en: p.desc,
+      tags: p.tags,
+      date: '',
+      problem_vi: p.problem || '',
+      problem_en: p.problem || '',
+      solution_vi: p.solution || '',
+      solution_en: p.solution || '',
+      result_vi: p.result || '',
+      result_en: p.result || '',
+      tech_stack: p.techStack || p.tags,
+      repo_url: p.repoUrl,
+      live_url: p.liveUrl,
+    }));
+  }
+
+  return caseStudies.map((cs) => ({
+    params: { slug: cs.slug },
+    props: { caseStudy: cs },
+  }));
+}
+
+// --- Props from getStaticPaths ---
+interface Props {
+  caseStudy: CaseStudyData;
+}
+const { caseStudy } = Astro.props;
+
+// Default UI language — matches index.astro pattern
+const currentLang: 'vi' | 'en' = 'vi';
+
+// Bilingual field selector
+const t = (vi: string | undefined, en: string | undefined) =>
+  currentLang === 'vi' ? (vi || en || '') : (en || vi || '');
+
+const title = t(caseStudy.title_vi, caseStudy.title_en);
+const description = t(caseStudy.description_vi, caseStudy.description_en);
+const problem = t(caseStudy.problem_vi, caseStudy.problem_en);
+const solution = t(caseStudy.solution_vi, caseStudy.solution_en);
+const result = t(caseStudy.result_vi, caseStudy.result_en);
+const techStack = caseStudy.tech_stack || [];
+const tags = caseStudy.tags || [];
+
+// JSON-LD structured data (TechArticle)
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": title,
+  "description": description,
+  "author": {
+    "@type": "Person",
+    "name": "Lam Phuoc Loi",
+    "url": "https://investigator-terminal.vercel.app"
+  },
+  "datePublished": caseStudy.date || undefined,
+  "keywords": [...tags, ...techStack].join(', '),
+  "articleSection": "Case Study",
+  "proficiencyLevel": "Expert",
+};
+
+// Section labels
+const tProblem = currentLang === 'vi' ? 'Bối cảnh & Vấn đề' : 'Context & Problem';
+const tSolution = currentLang === 'vi' ? 'Giải pháp & Kiến trúc' : 'Solution & Architecture';
+const tResult = currentLang === 'vi' ? 'Kết quả & Tác động' : 'Results & Impact';
+const tTechStack = currentLang === 'vi' ? 'Công nghệ sử dụng' : 'Technology Stack';
+const tBack = currentLang === 'vi' ? '← Quay lại dự án' : '← Back to Projects';
+const tCaseStudy = currentLang === 'vi' ? 'Phân tích dự án' : 'Case Study';
+---
+
+<Layout title={`${title} — Case Study | The Investigator`} lang={currentLang}>
+  {/* JSON-LD structured data for SEO */}
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+  <main class="relative z-[2] w-full">
+    <article class="case-study" aria-labelledby="cs-title">
+      {/* Back link */}
+      <div class="cs-nav reveal">
+        <a href="/projects" class="cs-back-link" id="cs-back-link">
+          {tBack}
+        </a>
+      </div>
+
+      {/* Header */}
+      <header class="cs-header reveal">
+        <div class="section-label">{tCaseStudy}</div>
+        <h1 class="cs-title" id="cs-title">{title}</h1>
+        <p class="cs-description">{description}</p>
+
+        {/* Meta: date + tags */}
+        <div class="cs-meta">
+          {caseStudy.date && (
+            <time class="cs-date" datetime={caseStudy.date}>
+              {caseStudy.date}
+            </time>
+          )}
+          {tags.length > 0 && (
+            <div class="cs-tags">
+              {tags.map((tag) => (
+                <span class="cs-tag">{tag}</span>
+              ))}
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* Divider */}
+      <div class="divider"></div>
+
+      {/* Problem Section */}
+      <section class="cs-section reveal" aria-labelledby="cs-problem-title">
+        <div class="cs-section-indicator">
+          <span class="cs-section-number">01</span>
+          <span class="cs-section-line"></span>
+        </div>
+        <div class="cs-section-content">
+          <h2 class="cs-section-title" id="cs-problem-title">{tProblem}</h2>
+          <div class="cs-prose">
+            {problem.split('\n').filter(Boolean).map((para) => (
+              <p>{para}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Solution Section */}
+      <section class="cs-section reveal" aria-labelledby="cs-solution-title">
+        <div class="cs-section-indicator">
+          <span class="cs-section-number">02</span>
+          <span class="cs-section-line"></span>
+        </div>
+        <div class="cs-section-content">
+          <h2 class="cs-section-title" id="cs-solution-title">{tSolution}</h2>
+          <div class="cs-prose">
+            {solution.split('\n').filter(Boolean).map((para) => (
+              <p>{para}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Result Section */}
+      <section class="cs-section reveal" aria-labelledby="cs-result-title">
+        <div class="cs-section-indicator">
+          <span class="cs-section-number">03</span>
+          <span class="cs-section-line"></span>
+        </div>
+        <div class="cs-section-content">
+          <h2 class="cs-section-title" id="cs-result-title">{tResult}</h2>
+          <div class="cs-prose">
+            {result.split('\n').filter(Boolean).map((para) => (
+              <p>{para}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Tech Stack Section */}
+      {techStack.length > 0 && (
+        <section class="cs-section cs-tech-section reveal" aria-labelledby="cs-tech-title">
+          <div class="cs-section-indicator">
+            <span class="cs-section-number">04</span>
+            <span class="cs-section-line"></span>
+          </div>
+          <div class="cs-section-content">
+            <h2 class="cs-section-title" id="cs-tech-title">{tTechStack}</h2>
+            <div class="cs-tech-grid">
+              {techStack.map((tech) => (
+                <span class="cs-tech-pill">{tech}</span>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Links (repo + live) */}
+      {(caseStudy.repo_url || caseStudy.live_url) && (
+        <div class="cs-links reveal">
+          {caseStudy.repo_url && (
+            <a href={caseStudy.repo_url} target="_blank" rel="noopener noreferrer" class="cs-link-btn" id="cs-repo-link">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              {currentLang === 'vi' ? 'Mã nguồn' : 'Source Code'}
+            </a>
+          )}
+          {caseStudy.live_url && (
+            <a href={caseStudy.live_url} target="_blank" rel="noopener noreferrer" class="cs-link-btn cs-link-btn--live" id="cs-live-link">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/>
+                <polyline points="15 3 21 3 21 9"/>
+                <line x1="10" y1="14" x2="21" y2="3"/>
+              </svg>
+              {currentLang === 'vi' ? 'Xem Demo' : 'Live Demo'}
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Footer nav */}
+      <div class="cs-footer-nav reveal">
+        <a href="/" class="cs-back-link" id="cs-home-link">
+          {currentLang === 'vi' ? '← Trang chủ' : '← Home'}
+        </a>
+      </div>
+    </article>
+  </main>
+</Layout>
+
+<style>
+  /* ── Case Study Layout ────────────────────────────────────── */
+  .case-study {
+    position: relative;
+    z-index: 2;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 120px 48px 80px;
+  }
+  @media (max-width: 768px) {
+    .case-study { padding: 100px 24px 64px; }
+  }
+
+  /* ── Navigation ─────────────────────────────────────────── */
+  .cs-nav {
+    margin-bottom: 48px;
+  }
+  .cs-back-link {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-cyan);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: color 0.2s ease, opacity 0.2s ease;
+    opacity: 0.8;
+  }
+  .cs-back-link:hover {
+    color: var(--color-green);
+    opacity: 1;
+  }
+
+  /* ── Header ─────────────────────────────────────────────── */
+  .cs-header {
+    margin-bottom: 48px;
+  }
+  .cs-title {
+    font-family: var(--font-headline);
+    font-size: clamp(32px, 3.5vw, 48px);
+    font-weight: 700;
+    line-height: 1.1;
+    background: linear-gradient(90deg, #fff 60%, rgba(0,229,255,0.6));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .cs-description {
+    font-family: var(--font-body);
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    max-width: 65ch;
+  }
+
+  /* ── Meta (date + tags) ─────────────────────────────────── */
+  .cs-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 20px;
+  }
+  .cs-date {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    padding: 4px 12px;
+    border-radius: 99px;
+    background: rgba(0, 229, 255, 0.06);
+    border: 1px solid rgba(0, 229, 255, 0.12);
+    letter-spacing: 0.04em;
+  }
+  .cs-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .cs-tag {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--color-text-secondary);
+  }
+
+  /* ── Content Sections (problem / solution / result) ─────── */
+  .cs-section {
+    display: flex;
+    gap: 24px;
+    padding: 48px 0;
+  }
+  .cs-section + .cs-section {
+    border-top: 1px solid rgba(0, 229, 255, 0.06);
+  }
+
+  /* Section number indicator */
+  .cs-section-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    padding-top: 4px;
+  }
+  .cs-section-number {
+    font-family: var(--font-headline);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-cyan);
+    opacity: 0.6;
+    letter-spacing: 0.05em;
+  }
+  .cs-section-line {
+    width: 1px;
+    flex: 1;
+    min-height: 40px;
+    background: linear-gradient(180deg, rgba(0, 229, 255, 0.2), transparent);
+  }
+
+  /* Section content */
+  .cs-section-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .cs-section-title {
+    font-family: var(--font-headline);
+    font-size: clamp(22px, 2.5vw, 28px);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  /* ── Prose (long-form text) ─────────────────────────────── */
+  .cs-prose {
+    max-width: 65ch;
+  }
+  .cs-prose p {
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.75;
+    color: var(--color-text-body);
+    margin-bottom: 16px;
+  }
+  .cs-prose p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ── Tech Stack Pills ───────────────────────────────────── */
+  .cs-tech-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .cs-tech-pill {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
+    border-radius: 99px;
+    background: rgba(17, 24, 39, 0.6);
+    border: 1px solid rgba(0, 229, 255, 0.12);
+    color: var(--color-cyan);
+    letter-spacing: 0.02em;
+    transition: background 0.3s ease, border-color 0.3s ease;
+  }
+  .cs-tech-pill:hover {
+    background: rgba(0, 229, 255, 0.08);
+    border-color: rgba(0, 229, 255, 0.3);
+  }
+
+  /* ── External Links ─────────────────────────────────────── */
+  .cs-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 48px;
+    border-top: 1px solid rgba(0, 229, 255, 0.06);
+  }
+  .cs-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: var(--color-surface-strong);
+    border: 1px solid rgba(0, 229, 255, 0.2);
+    color: var(--color-text-primary);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    transition: all 0.2s ease;
+  }
+  .cs-link-btn:hover {
+    color: var(--color-cyan);
+    border-color: rgba(0, 229, 255, 0.5);
+    box-shadow: 0 0 16px rgba(0, 229, 255, 0.15);
+    transform: translateY(-2px);
+  }
+  .cs-link-btn--live {
+    background: linear-gradient(135deg, rgba(0, 255, 159, 0.1), rgba(0, 229, 255, 0.1));
+    border-color: rgba(0, 255, 159, 0.2);
+  }
+  .cs-link-btn--live:hover {
+    color: var(--color-green);
+    border-color: rgba(0, 255, 159, 0.5);
+    box-shadow: 0 0 16px rgba(0, 255, 159, 0.15);
+  }
+
+  /* ── Footer Navigation ──────────────────────────────────── */
+  .cs-footer-nav {
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(0, 229, 255, 0.06);
+  }
+
+  /* ── Responsive: mobile collapse indicator to top ──────── */
+  @media (max-width: 640px) {
+    .cs-section {
+      flex-direction: column;
+      gap: 12px;
+    }
+    .cs-section-indicator {
+      flex-direction: row;
+      gap: 12px;
+    }
+    .cs-section-line {
+      width: auto;
+      height: 1px;
+      min-height: 0;
+      min-width: 40px;
+      flex: 1;
+      background: linear-gradient(90deg, rgba(0, 229, 255, 0.2), transparent);
+    }
+  }
+
+  /* ── Reduced motion ─────────────────────────────────────── */
+  @media (prefers-reduced-motion: reduce) {
+    .cs-tech-pill,
+    .cs-link-btn,
+    .cs-back-link {
+      transition: none;
+    }
+    .cs-link-btn:hover {
+      transform: none;
+    }
+  }
+</style>

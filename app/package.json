@@ -12,9 +12,11 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@ai-sdk/google": "^3.0.67",
     "@astrojs/preact": "^5.1.1",
     "@astrojs/vercel": "^10.0.4",
     "@tailwindcss/vite": "^4.2.4",
+    "ai": "^6.0.175",
     "astro": "^6.1.8",
     "preact": "^10.29.1",
     "tailwindcss": "^4.2.4"
