@@ -19,26 +19,63 @@ export interface ProjectData {
   date: string;
   highlights_vi: string[]; // Parsed from newline-separated string
   highlights_en: string[]; // Parsed from newline-separated string
+  // Case study fields (optional — if filled, project gets detail page)
+  slug?: string;
+  icon?: string;
+  icon_variant?: string;
+  problem_vi?: string;
+  problem_en?: string;
+  solution_vi?: string;
+  solution_en?: string;
+  result_vi?: string;
+  result_en?: string;
+  tech_stack?: string[]; // Parsed from comma-separated string
+  repo_url?: string;
+  live_url?: string;
 }
 
-export interface CaseStudyData {
+export interface ExperienceData {
   id: string;
-  slug: string;
-  title_vi: string;
-  title_en: string;
-  problem_vi: string;
-  problem_en: string;
-  solution_vi: string;
-  solution_en: string;
-  result_vi: string;
-  result_en: string;
-  tech_stack: string[]; // Parsed from comma-separated string
+  company_vi: string;
+  company_en: string;
+  role_vi: string;
+  role_en: string;
+  period: string;
+  badge_vi?: string;
+  badge_en?: string;
+  achievements_vi: string[]; // Parsed from newline-separated string
+  achievements_en: string[]; // Parsed from newline-separated string
+  order: number;
+}
+
+export interface TechStackData {
+  id: string;
+  group_vi: string;
+  group_en: string;
+  label: string;
+  variant: string; // g/c/p/w
+  order: number;
+}
+
+export interface EducationData {
+  id: string;
+  icon: string;
+  icon_variant: string;
+  degree_vi: string;
+  degree_en: string;
+  school_vi: string;
+  school_en: string;
+  year_vi: string;
+  year_en: string;
+  order: number;
 }
 
 type SheetTypes = {
   'Profile': ProfileEntry;
   'Projects': ProjectData;
-  'CaseStudies': CaseStudyData;
+  'Experience': ExperienceData;
+  'TechStack': TechStackData;
+  'Education': EducationData;
 };
 
 // --- Config Variables ---
@@ -50,7 +87,7 @@ async function fetchWithRetry(url: string, retries = 3, baseDelay = 1000): Promi
   for (let i = 0; i <= retries; i++) {
     const res = await fetch(url);
     if (res.ok) return res;
-    
+
     if (res.status === 429 || res.status >= 500) {
       if (i === retries) throw new Error(`Google Sheets API failed after ${retries} retries.`);
       const delay = baseDelay * Math.pow(2, i);
@@ -90,11 +127,15 @@ export async function fetchSheet<K extends keyof SheetTypes>(sheetName: K): Prom
         if (key === 'tags' || key === 'tech_stack') {
           // Comma-split, remove whitespace, filter empty strings
           obj[key] = rawValue ? rawValue.split(',').map(s => s.trim()).filter(Boolean) : [];
-        } 
-        else if (key.startsWith('highlights_')) {
+        }
+        else if (key.startsWith('highlights_') || key.startsWith('achievements_')) {
           // Newline-split, clean up markdown dash "- ", filter empty strings
           obj[key] = rawValue ? rawValue.split('\n').map(s => s.replace(/^- /, '').trim()).filter(Boolean) : [];
-        } 
+        }
+        else if (key === 'order') {
+          // Parse to number for sort ordering
+          obj[key] = rawValue ? parseInt(rawValue, 10) : 0;
+        }
         else {
           // Standard fields (id, title_vi, description_en, etc.)
           obj[key] = rawValue;

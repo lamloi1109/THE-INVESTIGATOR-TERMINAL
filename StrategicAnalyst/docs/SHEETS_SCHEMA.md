@@ -5,7 +5,7 @@
 > Sheet ID lưu trong `app/.env` (`GOOGLE_SHEET_ID`). Không commit ID vào repo.
 
 **Related:**
-- Tasks: T-010 (design + seed), T-011 (API client), T-020/T-021/T-022 (consume)
+- Tasks: T-010 (design + seed), T-011 (API client), T-025 (content sections), T-026 (schema v2)
 - Decisions: D-001 (Sheets làm CMS), D-004 (song ngữ qua cột `_vi`/`_en`)
 
 ---
@@ -23,57 +23,120 @@ Key-value store cho thông tin CV cá nhân. Mỗi row = 1 trường.
 **Keys khuyến nghị (seed tối thiểu):**
 `name`, `title`, `summary`, `email`, `location`, `github`, `linkedin`.
 
+**Keys cho Contact CTA (optional):**
+`contact_cta_title_vi`, `contact_cta_title_en`, `contact_cta_body_vi`, `contact_cta_body_en`, `contact_cta_button_vi`, `contact_cta_button_en`.
+
 **Parse convention:** map thành `Record<string, { vi: string; en: string }>` để lookup O(1).
 
 ---
 
 ## Sheet 2: `Projects`
 
-Danh sách projects portfolio. Render ở trang `/projects` (T-021) dưới dạng card grid.
+Danh sách projects portfolio + case study content. Render card grid trên homepage và trang chi tiết `/projects/[slug]`.
+
+**Core fields (card display):**
 
 | Column           | Type              | Required | Note                                   |
 |------------------|-------------------|----------|----------------------------------------|
-| `id`             | string (kebab)    | ✅       | unique. Ví dụ: `investigator-terminal` |
+| `id`             | string (kebab)    | ✅       | unique. Ví dụ: `ai-internal-server`   |
 | `title_vi`       | string            | ✅       |                                        |
 | `title_en`       | string            | ✅       |                                        |
 | `description_vi` | string            | ✅       | 1–2 câu, ≤ 200 ký tự                   |
 | `description_en` | string            | ✅       |                                        |
-| `tags`           | comma-separated   | ✅       | Ví dụ: `astro,preact,gemini`           |
+| `tags`           | comma-separated   | ✅       | Ví dụ: `vLLM,LangGraph,Qdrant`        |
 | `date`           | YYYY-MM           | ✅       | Ví dụ: `2026-04`                       |
-| `highlights_vi`  | newline-separated | optional | Mỗi dòng = 1 bullet. Dùng **Alt+Enter** trong cell |
+| `icon`           | string            | optional | Emoji cho card. Ví dụ: `🤖`           |
+| `icon_variant`   | string            | optional | `cyan` / `green` / `pink`              |
+| `highlights_vi`  | newline-separated | optional | Mỗi dòng = 1 bullet (Alt+Enter)       |
 | `highlights_en`  | newline-separated | optional |                                        |
+
+**Case study fields (optional — nếu điền → project có trang detail):**
+
+| Column           | Type              | Required | Note                                   |
+|------------------|-------------------|----------|----------------------------------------|
+| `slug`           | string (kebab)    | optional | URL-safe. Ví dụ: `ai-internal-server` |
+| `problem_vi`     | long text         | optional | Bối cảnh + vấn đề (2–4 câu)           |
+| `problem_en`     | long text         | optional |                                        |
+| `solution_vi`    | long text         | optional | Giải pháp + kiến trúc (3–5 đoạn)      |
+| `solution_en`    | long text         | optional |                                        |
+| `result_vi`      | long text         | optional | Kết quả + metrics                      |
+| `result_en`      | long text         | optional |                                        |
+| `tech_stack`     | comma-separated   | optional | Tech chi tiết (khác `tags` trên card)  |
+| `repo_url`       | string            | optional | GitHub / source link                   |
+| `live_url`       | string            | optional | Demo link                              |
+
+**Logic:** Nếu `slug` + `problem_vi` + `solution_vi` + `result_vi` đều non-empty → tạo trang `/projects/[slug]`. Card trên homepage hiển thị "Xem phân tích →".
 
 **Parse convention:**
 ```ts
 tags: row.tags.split(',').map(s => s.trim()).filter(Boolean)
-highlights_vi: row.highlights_vi.split('\n').map(s => s.trim()).filter(Boolean)
+tech_stack: row.tech_stack?.split(',').map(s => s.trim()).filter(Boolean) ?? []
+highlights_vi: row.highlights_vi?.split('\n').map(s => s.replace(/^- /, '').trim()).filter(Boolean) ?? []
 ```
 
-**Seed tối thiểu:** 3 projects.
+**Seed tối thiểu:** 3 projects, trong đó ít nhất 2 có case study content.
 
 ---
 
-## Sheet 3: `CaseStudies`
+## Sheet 3: `Experience`
 
-Long-form deep-dive cho projects selected. Render ở `/case-studies/[slug]` (T-022) dưới dạng trang chi tiết kiểu blog.
+Kinh nghiệm làm việc. Render ở section Experience trên homepage.
 
-| Column        | Type              | Required | Note                              |
-|---------------|-------------------|----------|-----------------------------------|
-| `id`          | string (kebab)    | ✅       | unique                            |
-| `slug`        | string (kebab)    | ✅       | URL-safe, unique, `[a-z0-9-]+`    |
-| `title_vi`    | string            | ✅       |                                   |
-| `title_en`    | string            | ✅       |                                   |
-| `problem_vi`  | long text         | ✅       | 2–4 câu bối cảnh + vấn đề         |
-| `problem_en`  | long text         | ✅       |                                   |
-| `solution_vi` | long text         | ✅       | 3–5 đoạn, có thể nhiều dòng       |
-| `solution_en` | long text         | ✅       |                                   |
-| `result_vi`   | long text         | ✅       | Số liệu cụ thể nếu có             |
-| `result_en`   | long text         | ✅       |                                   |
-| `tech_stack`  | comma-separated   | ✅       | Ví dụ: `astro,preact,vercel`      |
+| Column             | Type              | Required | Note                                   |
+|--------------------|-------------------|----------|----------------------------------------|
+| `id`               | string (kebab)    | ✅       | unique. Ví dụ: `current-company`      |
+| `company_vi`       | string            | ✅       | Tên công ty                            |
+| `company_en`       | string            | ✅       |                                        |
+| `role_vi`          | string            | ✅       | Chức danh                              |
+| `role_en`          | string            | ✅       |                                        |
+| `period`           | string            | ✅       | Ví dụ: `2023 – Present`               |
+| `badge_vi`         | string            | optional | Ví dụ: `Full-time`                    |
+| `badge_en`         | string            | optional |                                        |
+| `achievements_vi`  | newline-separated | ✅       | Mỗi dòng = 1 thành tựu (Alt+Enter)   |
+| `achievements_en`  | newline-separated | ✅       |                                        |
+| `order`            | number            | ✅       | Sort key, thấp = hiển thị trước       |
 
-**Parse convention:** giống Projects. `slug` phải hợp lệ URL → lowercase, hyphen-only.
+**Parse convention:**
+```ts
+achievements_vi: row.achievements_vi.split('\n').map(s => s.replace(/^- /, '').trim()).filter(Boolean)
+order: parseInt(row.order, 10)
+```
 
-**Seed tối thiểu:** 2 case studies.
+---
+
+## Sheet 4: `TechStack`
+
+Tech stack pills, nhóm theo category. Render ở section Tech Stack trên homepage.
+
+| Column       | Type           | Required | Note                                   |
+|--------------|----------------|----------|----------------------------------------|
+| `id`         | string (kebab) | ✅       | unique. Ví dụ: `vllm`                 |
+| `group_vi`   | string         | ✅       | Ví dụ: `AI / ML`                      |
+| `group_en`   | string         | ✅       | Ví dụ: `AI / ML`                      |
+| `label`      | string         | ✅       | Tên hiển thị. Ví dụ: `vLLM`           |
+| `variant`    | string         | ✅       | `g` (green/AI), `c` (cyan/Backend), `p` (pink/Frontend), `w` (white/Tools) |
+| `order`      | number         | ✅       | Sort key trong group                   |
+
+**Group thứ tự:** AI/ML → Backend & Infrastructure → Frontend → Tools & Practices.
+
+---
+
+## Sheet 5: `Education`
+
+Học vấn. Render ở section Education trên homepage.
+
+| Column         | Type           | Required | Note                                   |
+|----------------|----------------|----------|----------------------------------------|
+| `id`           | string (kebab) | ✅       | unique. Ví dụ: `university-vn`        |
+| `icon`         | string         | ✅       | Emoji. Ví dụ: `🎓`                    |
+| `icon_variant` | string         | ✅       | `cyan` / `green`                       |
+| `degree_vi`    | string         | ✅       | Ví dụ: `Kỹ thuật / Công nghệ thông tin` |
+| `degree_en`    | string         | ✅       |                                        |
+| `school_vi`    | string         | ✅       | Ví dụ: `Đại học — Việt Nam`           |
+| `school_en`    | string         | ✅       |                                        |
+| `year_vi`      | string         | ✅       | Ví dụ: `Đã tốt nghiệp`               |
+| `year_en`      | string         | ✅       |                                        |
+| `order`        | number         | ✅       | Sort key                               |
 
 ---
 
@@ -87,9 +150,11 @@ Long-form deep-dive cho projects selected. Render ở `/case-studies/[slug]` (T-
 
 **Multi-value fields:**
 - **Short enums** (`tags`, `tech_stack`) → comma-separated. Lý do: dễ nhập trong Sheets, không có dấu phẩy trong từng item.
-- **Long bullets** (`highlights_*`) → newline-separated (Alt+Enter). Lý do: câu dài có thể chứa dấu phẩy, comma-split sẽ sai.
+- **Long bullets** (`highlights_*`, `achievements_*`) → newline-separated (Alt+Enter). Lý do: câu dài có thể chứa dấu phẩy, comma-split sẽ sai.
 
 **Empty cells:** Coi như `null`. Client filter trước khi render.
+
+**Order field:** Dùng integer cho sort. Cho phép chèn giữa bằng cách dùng khoảng 10-step (10, 20, 30...).
 
 ---
 
@@ -107,3 +172,4 @@ Long-form deep-dive cho projects selected. Render ở `/case-studies/[slug]` (T-
 | Version | Date       | Change                                   |
 |---------|------------|------------------------------------------|
 | 1.0     | 2026-04-21 | Initial schema (T-010). Song ngữ per D-004. |
+| 2.0     | 2026-05-04 | Merge CaseStudies vào Projects (optional case study fields). Thêm sheets Experience, TechStack, Education. Xoá sheet CaseStudies. |
