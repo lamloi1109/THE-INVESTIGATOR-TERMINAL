@@ -21,10 +21,16 @@ Key-value store cho thông tin CV cá nhân. Mỗi row = 1 trường.
 | `value_en` | string | ✅       | `Phuoc Loi Lam`                            |
 
 **Keys khuyến nghị (seed tối thiểu):**
-`name`, `title`, `summary`, `email`, `location`, `github`, `linkedin`.
 
-**Keys cho Contact CTA (optional):**
-`contact_cta_title_vi`, `contact_cta_title_en`, `contact_cta_body_vi`, `contact_cta_body_en`, `contact_cta_button_vi`, `contact_cta_button_en`.
+| Group | Keys | Component dùng |
+|-------|------|----------------|
+| Identity | `name`, `email`, `location`, `github_url`, `linkedin_url`, `resume_url` | Hero, Contact |
+| Hero copy (v2.1) | `hero_badge`, `hero_tagline`, `hero_about_label`, `hero_about_body`, `hero_status` | Hero.astro |
+| Contact CTA | `contact_cta_title`, `contact_cta_body`, `contact_cta_button` | Contact.astro |
+
+`hero_about_body` cho phép HTML inline (`<strong>…</strong>`) — escape với `&amp;` khi cần.
+
+**Legacy keys (deprecated trong v2.1):** `title`, `summary` — bị thay bằng `hero_badge` + `hero_tagline` + `hero_about_body` để map 1-1 với Hero.astro props. Nếu sheet hiện tại còn dùng, parse vẫn không lỗi (key dư bị ignore), chỉ là không có component đọc.
 
 **Parse convention:** map thành `Record<string, { vi: string; en: string }>` để lookup O(1).
 
@@ -32,7 +38,7 @@ Key-value store cho thông tin CV cá nhân. Mỗi row = 1 trường.
 
 ## Sheet 2: `Projects`
 
-Danh sách projects portfolio + case study content. Render card grid trên homepage và trang chi tiết `/projects/[slug]`.
+Danh sách projects portfolio + case study content. Render card grid trên homepage section `#projects` (Projects.astro) và trang chi tiết `/case-studies/[slug]` (case-studies/[slug].astro).
 
 **Core fields (card display):**
 
@@ -65,7 +71,7 @@ Danh sách projects portfolio + case study content. Render card grid trên homep
 | `repo_url`       | string            | optional | GitHub / source link                   |
 | `live_url`       | string            | optional | Demo link                              |
 
-**Logic:** Nếu `slug` + `problem_vi` + `solution_vi` + `result_vi` đều non-empty → tạo trang `/projects/[slug]`. Card trên homepage hiển thị "Xem phân tích →".
+**Logic:** Nếu `slug` + `problem_vi` + `solution_vi` + `result_vi` đều non-empty → `getStaticPaths()` của `case-studies/[slug].astro` tạo trang `/case-studies/{slug}`. Card trên homepage có thể link tới đó (hiện Projects.astro hardcode card, chưa wire — xem T-026 tương lai).
 
 **Parse convention:**
 ```ts
@@ -173,3 +179,4 @@ Học vấn. Render ở section Education trên homepage.
 |---------|------------|------------------------------------------|
 | 1.0     | 2026-04-21 | Initial schema (T-010). Song ngữ per D-004. |
 | 2.0     | 2026-05-04 | Merge CaseStudies vào Projects (optional case study fields). Thêm sheets Experience, TechStack, Education. Xoá sheet CaseStudies. |
+| 2.1     | 2026-05-09 | Profile: thêm Hero copy keys (`hero_badge`, `hero_tagline`, `hero_about_label`, `hero_about_body`, `hero_status`); chuẩn hoá URL keys (`github_url`, `linkedin_url`, `resume_url`). Sửa case-study route reference từ `/projects/[slug]` → `/case-studies/[slug]` (post-T-021 superseded). Thêm seed CSV mẫu trong `StrategicAnalyst/docs/seeds/`. |

@@ -1,0 +1,15 @@
+key,value_vi,value_en
+name,Lâm Phước Lợi,Phuoc Loi Lam
+email,lamloi12a1@gmail.com,lamloi12a1@gmail.com
+location,"TP. Hồ Chí Minh, Việt Nam","Ho Chi Minh City, Vietnam"
+github_url,https://github.com/lamloi1109,https://github.com/lamloi1109
+linkedin_url,https://www.linkedin.com/in/phuoc-loi-lam,https://www.linkedin.com/in/phuoc-loi-lam
+resume_url,/resume.pdf,/resume.pdf
+hero_badge,Kỹ sư AI & Lập trình Fullstack,AI Engineer & Fullstack Developer
+hero_tagline,Xây dựng tương lai với AI và phát triển Full-Stack,Building the Future with AI & Full-Stack Development
+hero_about_label,Giới thiệu,About Me
+hero_about_body,"Tôi là một <strong>Kỹ sư AI & Full-Stack Developer</strong> đam mê xây dựng các hệ thống thông minh giải quyết vấn đề thực tế. Chuyên sâu về <strong>tích hợp LLM, agentic pipelines</strong>, và ứng dụng web có khả năng mở rộng — nơi nghiên cứu chuyên sâu gặp gỡ code production.","I'm an <strong>AI Engineer &amp; Full-Stack Developer</strong> passionate about building intelligent systems that solve real-world problems. I specialise in <strong>LLM integrations, agentic pipelines</strong>, and scalable web applications — where deep research meets production-grade code."
+hero_status,● Sẵn sàng làm việc,● Available for work
+contact_cta_title,Có dự án thú vị?,Got an interesting project?
+contact_cta_body,"Tôi đang tìm cơ hội làm AI Engineer / Full-Stack. Nếu bạn cần một người vừa nghiên cứu được, vừa ship được code production — hãy nhắn.","I'm looking for AI Engineer / Full-Stack roles. If you need someone who can both research and ship production code — let's talk."
+contact_cta_button,Gửi email,Email me
