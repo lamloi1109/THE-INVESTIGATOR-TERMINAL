@@ -2,7 +2,7 @@
  * projects.ts — Centralized project data + case study content.
  *
  * Hardcoded for now (Google Sheets wiring deferred).
- * Projects with `problem` + `solution` + `result` get a detail page at `/projects/[slug]`.
+ * Projects with `problem` + `solution` + `result` get a detail page at `/case-studies/[slug]`.
  *
  * Source: app/src/components/Projects.astro (migrated here for reuse across
  * homepage cards + detail page routes).

@@ -41,11 +41,11 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 ```
 Task ID:    T-021
 Title:      Trang Projects listing (SSG)
-Status:     in_progress
+Status:     superseded
 Owner:      claude_code
 Branch:     claude/lucid-lederberg-c27f86
 Assigned:   CLAUDE_CODE
-Files:      app/src/pages/projects/index.astro
+Files:      app/src/pages/projects/index.astro (đã gỡ)
 Acceptance:
   [ ] SSG, prerender = true
   [ ] Render danh sách projects từ Sheets (fallback projects.ts khi unavailable, giống pattern T-022)
@@ -57,6 +57,7 @@ Depends on: T-011
 Complexity: S
 Updated:    2026-04-20 by human (initial seed)
             2026-05-08 by claude_code (claimed; reuses fallback pattern từ T-022 case-study page)
+            2026-05-09 by claude_code (SUPERSEDED — user feedback: pivot sang one-page portfolio. Section #projects trên homepage (Projects.astro) đảm nhận listing role; case study detail vẫn giữ tại /case-studies/[slug] qua T-022. Page /projects/index.astro đã xóa.)
 ```
 
 ```
