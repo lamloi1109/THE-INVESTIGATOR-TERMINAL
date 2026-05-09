@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+/* Smooth in-page anchor scroll for navbar #projects/#tech/... links.
+   Honour reduced-motion preference. */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
 /* ==========================================================================
    "The Investigator" — Cyberpunk / AI Terminal design tokens
    Source: design/index.html
@@ -130,6 +137,8 @@ body::after {
   padding: 100px 48px;
   max-width: 1200px;
   margin: 0 auto;
+  /* Offset fixed 64px header when anchor-scrolling (#projects, #tech, etc.) */
+  scroll-margin-top: 80px;
 }
 @media (max-width: 768px) {
   .section { padding: 64px 24px; }
