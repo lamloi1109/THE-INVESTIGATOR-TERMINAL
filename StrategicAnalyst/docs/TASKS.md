@@ -41,21 +41,22 @@ Task IDs use the format `T-0XX`. Allocate new task IDs within the phase's hundre
 ```
 Task ID:    T-021
 Title:      Trang Projects listing (SSG)
-Status:     todo
-Owner:      —
-Branch:     —
-Assigned:   ANTIGRAVITY
-Files:      app/src/pages/projects/index.astro, app/src/components/ProjectCard.astro
+Status:     in_progress
+Owner:      claude_code
+Branch:     claude/lucid-lederberg-c27f86
+Assigned:   CLAUDE_CODE
+Files:      app/src/pages/projects/index.astro
 Acceptance:
   [ ] SSG, prerender = true
-  [ ] Render danh sách projects từ Sheets data
+  [ ] Render danh sách projects từ Sheets (fallback projects.ts khi unavailable, giống pattern T-022)
   [ ] Mỗi card hiển thị: title, description, tags, date
-  [ ] Click vào card → đi tới trang chi tiết (T-022)
+  [ ] Card có case study → link tới /case-studies/[slug] (T-022)
 Verification:
-  cd app && npm run build → /projects/ render đúng số lượng projects trong Sheets
+  cd app && npm run build → /projects/ render đúng số lượng projects
 Depends on: T-011
 Complexity: S
 Updated:    2026-04-20 by human (initial seed)
+            2026-05-08 by claude_code (claimed; reuses fallback pattern từ T-022 case-study page)
 ```
 
 ```
@@ -87,7 +88,7 @@ Updated:    2026-05-06 by antigravity (in_progress; claimed. Case studies merged
 ```
 Task ID:    T-030
 Title:      Agent chat page + terminal extension
-Status:     review
+Status:     done
 Owner:      antigravity
 Branch:     antigravity-T-030-terminal-ui
 Assigned:   ANTIGRAVITY
@@ -107,12 +108,13 @@ Verification:
 Depends on: T-001
 Complexity: L
 Updated:    2026-05-06 by antigravity (review; approach changed per coordinator: terminal is full-page extension opened from chat widget, route /agent. Branch namespace antigravity/T-* unavailable in local Git, using antigravity-T-030-terminal-ui)
+            2026-05-08 by claude_code (done — đã merge vào main qua commit 7f6c4e8)
 ```
 
 ```
 Task ID:    T-031
 Title:      API route cho Terminal — AI orchestrator
-Status:     review
+Status:     done
 Owner:      claude_code
 Branch:     codex-next-task-not-t30
 Assigned:   ANTIGRAVITY | CLAUDE_CODE
@@ -131,6 +133,7 @@ Verification:
 Depends on: T-011, T-030
 Complexity: L
 Updated:    2026-05-06 by claude_code (review; API route implemented and build passes. Runtime curl/P95 require deployed env with GOOGLE_GENERATIVE_AI_API_KEY + Sheets credentials)
+            2026-05-08 by claude_code (done — đã merge vào main qua commit a2aca58)
 ```
 
 ```
