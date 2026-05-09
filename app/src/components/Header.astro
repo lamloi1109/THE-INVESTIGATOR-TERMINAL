@@ -17,18 +17,18 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 
 const path = Astro.url.pathname;
-const isActive = (href: string) => {
-  if (href === '/') return path === '/';
-  return path.startsWith(href);
-};
+// Section nav links anchor to homepage sections (one-page portfolio pattern).
+// "active" only marks Home when we're literally on `/` — anchor links don't
+// drive `pathname`, so they get hover-only styling.
+const isActive = (href: string) => href === '/' && path === '/';
 
 const nav = [
-  { href: '/',           label_vi: 'Trang chủ',  label_en: 'Home' },
-  { href: '/projects',   label_vi: 'Dự án',      label_en: 'Projects' },
-  { href: '/tech-stack', label_vi: 'Tech Stack', label_en: 'Tech Stack' },
-  { href: '/experience', label_vi: 'Kinh nghiệm',label_en: 'Experience' },
-  { href: '/education',  label_vi: 'Học vấn',    label_en: 'Education' },
-  { href: '/contact',    label_vi: 'Liên hệ',    label_en: 'Contact' },
+  { href: '/',            label_vi: 'Trang chủ',  label_en: 'Home' },
+  { href: '/#projects',   label_vi: 'Dự án',      label_en: 'Projects' },
+  { href: '/#tech',       label_vi: 'Tech Stack', label_en: 'Tech Stack' },
+  { href: '/#experience', label_vi: 'Kinh nghiệm',label_en: 'Experience' },
+  { href: '/#education',  label_vi: 'Học vấn',    label_en: 'Education' },
+  { href: '/#contact',    label_vi: 'Liên hệ',    label_en: 'Contact' },
 ];
 ---
 
