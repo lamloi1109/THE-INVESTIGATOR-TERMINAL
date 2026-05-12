@@ -3,12 +3,17 @@
  * Contact.astro — "Liên hệ" section: 4 contact cards + closing CTA
  * Source: design/index.html lines 1731-1760 (markup) + 1558-1573 + 1827-1859 (CSS).
  *
- * Cards: Email (cyan) / LinkedIn (green) / GitHub (white) / Location (pink).
- * On hover, a skewed cyan stripe sweeps left → right (border shimmer).
- *
- * CTA card uses the brand tri-gradient title and a primary button. Email
- * placeholder is hardcoded — confirm with user before launch.
+ * T-026: reads Profile keys (email, linkedin_url, github_url, location,
+ * contact_cta_*) via `getProfile()` — falls back to committed defaults when
+ * Sheets unavailable. 4 contact cards are derived from profile fields; their
+ * static styling (icon variant) stays in the component.
  */
+import { getProfile, type Lang } from '../lib/profile';
+
+interface Props { lang?: Lang; }
+const { lang = 'vi' } = Astro.props;
+
+const profile = await getProfile(lang);
 
 interface ContactCard {
   href: string;
@@ -18,42 +23,47 @@ interface ContactCard {
   value: string;
 }
 
+// Strip protocol for display in cards (linkedin.com/in/foo, github.com/bar)
+const stripProto = (url: string) => url.replace(/^https?:\/\//, '');
+
 const cards: ContactCard[] = [
   {
-    href: 'mailto:lamloi12a1@gmail.com',
+    href: `mailto:${profile.email}`,
     icon: '✉️',
     iconVariant: 'cyan',
     label: 'Email',
-    value: 'lamloi12a1@gmail.com',
+    value: profile.email,
   },
   {
-    href: 'https://linkedin.com/in/lamloi',
+    href: profile.linkedin_url,
     icon: '💼',
     iconVariant: 'green',
     label: 'LinkedIn',
-    value: 'linkedin.com/in/lamloi',
+    value: stripProto(profile.linkedin_url),
   },
   {
-    href: 'https://github.com/lamloi1109',
+    href: profile.github_url,
     icon: '🐙',
     iconVariant: 'white',
     label: 'GitHub',
-    value: 'github.com/lamloi1109',
+    value: stripProto(profile.github_url),
   },
   {
     href: '#',
     icon: '📍',
     iconVariant: 'pink',
     label: 'Location',
-    value: 'Việt Nam 🇻🇳',
+    value: profile.location,
   },
 ];
+
+const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
 ---
 
 <section class="section" id="contact" aria-labelledby="contact-title">
   <div class="reveal">
     <div class="section-label">Reach out</div>
-    <div class="section-title" id="contact-title">Liên hệ</div>
+    <div class="section-title" id="contact-title">{tSection}</div>
   </div>
   <div class="contact-grid reveal">
     {cards.map((c) => (
@@ -73,9 +83,9 @@ const cards: ContactCard[] = [
   </div>
 
   <div class="contact-cta reveal">
-    <h3>Cùng build something?</h3>
-    <p>Mình luôn mở cho các cơ hội thú vị — AI systems, fullstack projects, hay một buổi tech talk.</p>
-    <a href="mailto:lamloi12a1@gmail.com" class="contact-cta-btn">Gửi lời chào ✦</a>
+    <h3>{profile.contact_cta_title}</h3>
+    <p>{profile.contact_cta_body}</p>
+    <a href={`mailto:${profile.email}`} class="contact-cta-btn">{profile.contact_cta_button}</a>
   </div>
 </section>
 
@@ -110,7 +120,7 @@ const cards: ContactCard[] = [
     box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
   }
 
-  /* Border shimmer FX: skewed cyan stripe sweeps left → right on hover */
+  /* Border shimmer FX */
   .contact-card::before {
     content: '';
     position: absolute;
@@ -204,7 +214,6 @@ const cards: ContactCard[] = [
     box-shadow: 0 0 36px rgba(0, 255, 159, 0.5);
     transform: scale(1.04) translateY(-1px);
   }
-  /* Cosmic ripple on click */
   .contact-cta-btn::after {
     content: '';
     position: absolute;

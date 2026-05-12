@@ -3,16 +3,19 @@
  * TechStack.astro — "Tech Stack" section, 4 categorised pill groups
  * Source: design/index.html lines 1652-1701 (markup) + 1527-1543 + 1813-1824 (CSS).
  *
- * Each pill is a glass-morph chip with a coloured glow dot. Variant dot
- * colour signals category: green (AI/ML), cyan (Backend), pink (Frontend),
- * white (Tools). On hover, a radial-gradient halo follows the cursor inside
- * the pill (CSS vars --mx/--my updated by mousemove listener).
+ * T-026: fetchSheet('TechStack') with hardcoded fallback. Pills bucketed by
+ * `group_<lang>`, ordered by `order` within each group, group order preserves
+ * first-seen-in-sheet sequence.
  */
+import { fetchSheet } from '../lib/sheets';
+
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
 
 interface Pill { label: string; variant: 'g' | 'c' | 'p' | 'w'; }
 interface Group { label: string; pills: Pill[]; }
 
-const groups: Group[] = [
+const FALLBACK_VI: Group[] = [
   {
     label: 'AI / ML',
     pills: [
@@ -26,7 +29,7 @@ const groups: Group[] = [
     ],
   },
   {
-    label: 'Backend & Infrastructure',
+    label: 'Backend & Hạ tầng',
     pills: [
       { label: 'Python',    variant: 'c' },
       { label: 'C# / .NET', variant: 'c' },
@@ -47,7 +50,7 @@ const groups: Group[] = [
     ],
   },
   {
-    label: 'Tools & Practices',
+    label: 'Công cụ & Phương pháp',
     pills: [
       { label: 'Git',           variant: 'w' },
       { label: 'Docker',        variant: 'w' },
@@ -57,12 +60,36 @@ const groups: Group[] = [
     ],
   },
 ];
+
+let groups: Group[] = [];
+try {
+  const rows = await fetchSheet('TechStack');
+  const buckets: Record<string, Pill[]> = {};
+  const groupOrder: string[] = [];
+  const sorted = rows.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  for (const r of sorted) {
+    const groupLabel = (lang === 'vi' ? (r.group_vi || r.group_en) : (r.group_en || r.group_vi)) || '';
+    if (!groupLabel || !r.label) continue;
+    const variant = (['g', 'c', 'p', 'w'].includes(r.variant) ? r.variant : 'w') as Pill['variant'];
+    if (!(groupLabel in buckets)) {
+      buckets[groupLabel] = [];
+      groupOrder.push(groupLabel);
+    }
+    buckets[groupLabel].push({ label: r.label, variant });
+  }
+  groups = groupOrder.map((label) => ({ label, pills: buckets[label] }));
+} catch (error) {
+  console.warn('[TechStack] Sheets unavailable; using fallback.', error);
+}
+if (groups.length === 0) groups = FALLBACK_VI;
+
+const tSection = lang === 'vi' ? 'Tech Stack' : 'Tech Stack';
 ---
 
 <section class="section" id="tech" aria-labelledby="tech-title">
   <div class="reveal">
     <div class="section-label">Skills</div>
-    <div class="section-title" id="tech-title">Tech Stack</div>
+    <div class="section-title" id="tech-title">{tSection}</div>
   </div>
   {groups.map((group) => (
     <div class="tech-group reveal">
@@ -119,7 +146,6 @@ const groups: Group[] = [
     transform: translateY(-2px);
   }
 
-  /* Radial glow follows cursor inside pill */
   .tech-pill::before {
     content: '';
     position: absolute;

@@ -3,62 +3,45 @@
  * Hero.astro — "The Investigator" cyberpunk hero
  * Source: design/index.html lines 747-797
  *
- * Centered single-column hero. Badge -> gradient name -> subtitle ->
- * glassmorphic info-card (about + portrait status-ring) -> 3 CTAs ->
- * scroll indicator. All animations CSS-only via fx-fade-up-delay-* classes.
- *
- * Bilingual props preserved (D-004). English defaults match design copy.
+ * T-026: props now take pre-resolved strings (single language) instead of
+ * bilingual `_vi`/`_en` pairs. Caller (index.astro) does the resolution via
+ * `getProfile(lang)`. Defaults kept as last-ditch fallback if some prop is
+ * empty.
  */
 interface Props {
-  name: string;                  // Display name (no i18n — proper noun)
-  badge_vi?: string;             // "AI Engineer & Fullstack Developer"
-  badge_en?: string;
-  tagline_vi?: string;           // Subtitle under name
-  tagline_en?: string;
-  aboutLabel_vi?: string;        // "About Me" / "Giới thiệu"
-  aboutLabel_en?: string;
-  aboutBody_vi?: string;         // Plain text — strong emphasis applied via separate aboutHighlights
-  aboutBody_en?: string;
-  status_vi?: string;            // "● Available for work"
-  status_en?: string;
-  projectsHref?: string;         // Default /#projects
-  contactHref?: string;          // Default /#contact
-  resumeHref?: string;           // Default /resume.pdf
-  portraitSrc?: string;          // Default /portrait.png
+  name: string;                  // Display name (proper noun — no i18n)
+  badge?: string;
+  tagline?: string;
+  aboutLabel?: string;
+  aboutBody?: string;            // HTML allowed (set:html)
+  status?: string;
+  projectsHref?: string;
+  contactHref?: string;
+  resumeHref?: string;
+  portraitSrc?: string;
   portraitAlt?: string;
   lang?: 'vi' | 'en';
 }
 
 const {
   name,
-  badge_vi = "Kỹ sư AI & Lập trình Fullstack",
-  badge_en = "AI Engineer & Fullstack Developer",
-  tagline_vi = "Xây dựng tương lai với AI và phát triển Full-Stack",
-  tagline_en = "Building the Future with AI & Full-Stack Development",
-  aboutLabel_vi = "Giới thiệu",
-  aboutLabel_en = "About Me",
-  aboutBody_vi = "Tôi là một <strong>Kỹ sư AI & Full-Stack Developer</strong> đam mê xây dựng các hệ thống thông minh giải quyết vấn đề thực tế. Chuyên sâu về <strong>tích hợp LLM, agentic pipelines</strong>, và ứng dụng web có khả năng mở rộng — nơi nghiên cứu chuyên sâu gặp gỡ code production.",
-  aboutBody_en = "I'm an <strong>AI Engineer &amp; Full-Stack Developer</strong> passionate about building intelligent systems that solve real-world problems. I specialise in <strong>LLM integrations, agentic pipelines</strong>, and scalable web applications — where deep research meets production-grade code.",
-  status_vi = "● Sẵn sàng làm việc",
-  status_en = "● Available for work",
-  projectsHref = "/#projects",
-  contactHref = "/#contact",
-  resumeHref = "/resume.pdf",
-  portraitSrc = "/portrait.png",
-  portraitAlt = "",
-  lang = "en",
+  badge = 'AI Engineer & Fullstack Developer',
+  tagline = 'Building the Future with AI & Full-Stack Development',
+  aboutLabel = 'About Me',
+  aboutBody = "I'm an <strong>AI Engineer &amp; Full-Stack Developer</strong>.",
+  status = '● Available for work',
+  projectsHref = '/#projects',
+  contactHref = '/#contact',
+  resumeHref = '/resume.pdf',
+  portraitSrc = '/portrait.png',
+  portraitAlt = '',
+  lang = 'en',
 } = Astro.props;
 
-const badge = lang === "vi" ? badge_vi : badge_en;
-const tagline = lang === "vi" ? tagline_vi : tagline_en;
-const aboutLabel = lang === "vi" ? aboutLabel_vi : aboutLabel_en;
-const aboutBody = lang === "vi" ? aboutBody_vi : aboutBody_en;
-const status = lang === "vi" ? status_vi : status_en;
-
-const tProjects = lang === "vi" ? "Xem dự án" : "View Projects";
-const tContact = lang === "vi" ? "Liên hệ" : "Contact Me";
-const tResume = lang === "vi" ? "CV" : "Resume";
-const tScroll = lang === "vi" ? "Cuộn" : "Scroll";
+const tProjects = lang === 'vi' ? 'Xem dự án' : 'View Projects';
+const tContact = lang === 'vi' ? 'Liên hệ' : 'Contact Me';
+const tResume = lang === 'vi' ? 'CV' : 'Resume';
+const tScroll = lang === 'vi' ? 'Cuộn' : 'Scroll';
 ---
 
 <section
@@ -121,7 +104,6 @@ const tScroll = lang === "vi" ? "Cuộn" : "Scroll";
 
     <!-- Buttons -->
     <div class="fx-fade-up-delay-6 flex flex-wrap items-center justify-center gap-3.5 mt-10">
-      <!-- Secondary: View Projects -->
       <a
         href={projectsHref}
         aria-label={tProjects}
@@ -130,7 +112,6 @@ const tScroll = lang === "vi" ? "Cuộn" : "Scroll";
         {tProjects} &nbsp;→
       </a>
 
-      <!-- Primary: Contact (gradient) -->
       <a
         href={contactHref}
         aria-label={tContact}
@@ -140,7 +121,6 @@ const tScroll = lang === "vi" ? "Cuộn" : "Scroll";
         {tContact}
       </a>
 
-      <!-- Secondary: Resume -->
       <a
         href={resumeHref}
         target={resumeHref.endsWith('.pdf') ? '_blank' : undefined}
@@ -156,7 +136,6 @@ const tScroll = lang === "vi" ? "Cuộn" : "Scroll";
     </div>
   </div>
 
-  <!-- Scroll indicator (absolute bottom) -->
   <div class="fx-fade-in-late absolute bottom-9 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 text-text-secondary text-xs tracking-[0.08em]">
     <span class="fx-bounce-arrow text-lg leading-none" aria-hidden="true">↓</span>
     <span>{tScroll}</span>
