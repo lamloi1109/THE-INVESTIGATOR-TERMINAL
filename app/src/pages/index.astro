@@ -1,4 +1,10 @@
 ---
+/**
+ * index.astro — Homepage (SSG)
+ * T-026: fetches Profile sheet centrally and passes resolved strings to Hero.
+ * Other sections (Experience/TechStack/Education/Contact) own their own
+ * fetchSheet() calls — Sheets SWR cache de-duplicates concurrent loads.
+ */
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import Experience from '../components/Experience.astro';
@@ -6,41 +12,40 @@ import Projects from '../components/Projects.astro';
 import TechStack from '../components/TechStack.astro';
 import Education from '../components/Education.astro';
 import Contact from '../components/Contact.astro';
-
-// FIXTURE — replace with fetchSheet('Profile') when wiring lands.
-// import { fetchSheet } from '../lib/sheets';
-// const profiles = await fetchSheet('Profile');
-// Map array -> object: profiles.reduce((acc, r) => ({ ...acc, [r.key]: r }), {});
+import { getProfile, type Lang } from '../lib/profile';
 
 export const prerender = true;
 
 // Default UI language. VI matches design/index.html mockup verbatim.
-const currentLang: 'vi' | 'en' = 'vi';
+const currentLang: Lang = 'vi';
 
-const profileFixture = {
-  // 'name' is a proper noun — no i18n.
-  name: 'Lam Phuoc Loi',
-};
+const profile = await getProfile(currentLang);
 ---
 
-<Layout title={`${profileFixture.name} — The Investigator`} lang={currentLang}>
+<Layout title={`${profile.name} — The Investigator`} lang={currentLang}>
   <main class="relative z-[2] w-full">
     <Hero
-      name={profileFixture.name}
+      name={profile.name}
+      badge={profile.hero_badge}
+      tagline={profile.hero_tagline}
+      aboutLabel={profile.hero_about_label}
+      aboutBody={profile.hero_about_body}
+      status={profile.hero_status}
+      resumeHref={profile.resume_url}
       lang={currentLang}
     />
     <div class="divider"></div>
-    <Experience />
+    <Experience lang={currentLang} />
     <div class="divider"></div>
     <Projects />
     <div class="divider"></div>
-    <TechStack />
+    <TechStack lang={currentLang} />
     <div class="divider"></div>
-    <Education />
+    <Education lang={currentLang} />
     <div class="divider"></div>
-    <Contact />
+    <Contact lang={currentLang} />
     <footer class="footer">
-      Built with ⚡ by Lam Loi · The Investigator Terminal © 2026
+      Built with ⚡ by {profile.name} · The Investigator Terminal © 2026
     </footer>
   </main>
 </Layout>

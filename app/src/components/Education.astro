@@ -1,12 +1,15 @@
 ---
 /**
- * Education.astro — "Học vấn" section, 2 cards
+ * Education.astro — "Học vấn" section
  * Source: design/index.html lines 1705-1727 (markup) + 1545-1556 + 1841-1844 (CSS).
  *
- * Each card: emoji icon (cyan or green tint) + degree (Rajdhani 19px) +
- * school (cyan 14px) + year (secondary 12px). Hover triggers an orbital
- * ring outline via stacked box-shadows.
+ * T-026: fetchSheet('Education') with hardcoded fallback. Rows sorted by
+ * `order` ascending. icon_variant only consumes `cyan` / `green`.
  */
+import { fetchSheet } from '../lib/sheets';
+
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'vi' } = Astro.props;
 
 interface Edu {
   icon: string;
@@ -16,7 +19,7 @@ interface Edu {
   year: string;
 }
 
-const items: Edu[] = [
+const FALLBACK_VI: Edu[] = [
   {
     icon: '🎓',
     iconVariant: 'cyan',
@@ -32,12 +35,38 @@ const items: Edu[] = [
     year: '2022 – Present · Ongoing',
   },
 ];
+
+function pickVariant(raw: string | undefined, fallback: 'cyan' | 'green'): 'cyan' | 'green' {
+  if (raw === 'cyan' || raw === 'green') return raw;
+  return fallback;
+}
+
+let items: Edu[] = [];
+try {
+  const rows = await fetchSheet('Education');
+  items = rows
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((r, i) => ({
+      icon: r.icon || '🎓',
+      iconVariant: pickVariant(r.icon_variant, i % 2 === 0 ? 'cyan' : 'green'),
+      degree: lang === 'vi' ? (r.degree_vi || r.degree_en) : (r.degree_en || r.degree_vi),
+      school: lang === 'vi' ? (r.school_vi || r.school_en) : (r.school_en || r.school_vi),
+      year: lang === 'vi' ? (r.year_vi || r.year_en) : (r.year_en || r.year_vi),
+    }))
+    .filter((e) => e.degree);
+} catch (error) {
+  console.warn('[Education] Sheets unavailable; using fallback.', error);
+}
+if (items.length === 0) items = FALLBACK_VI;
+
+const tSection = lang === 'vi' ? 'Học vấn' : 'Education';
 ---
 
 <section class="section" id="education" aria-labelledby="education-title">
   <div class="reveal">
     <div class="section-label">Background</div>
-    <div class="section-title" id="education-title">Học vấn</div>
+    <div class="section-title" id="education-title">{tSection}</div>
   </div>
   {items.map((e) => (
     <div class="edu-card reveal">

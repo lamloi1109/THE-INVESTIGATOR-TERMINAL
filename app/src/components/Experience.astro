@@ -3,36 +3,86 @@
  * Experience.astro — "Kinh nghiệm làm việc" section
  * Source: design/index.html lines 1579-1600 (markup) + 1485-1506 + 1783-1797 (CSS).
  *
- * Single card layout (1fr auto): role+achievements on left, employment-type
- * badge on right. Bullets are terminal-log style (Inter 13.5px) with a
- * green ▸ prefix and hover highlight.
- *
- * Content is hardcoded VI per user decision (T-025/handoff). Bilingual props
- * can be added later when wiring Sheets fixtures.
+ * T-026: fetchSheet('Experience') with hardcoded VI fallback (S6 guarantee).
+ * Rows sorted by `order` ascending. Achievements support inline <strong>
+ * via set:html (bullets newline-separated in Sheets, Alt+Enter).
  */
+import { fetchSheet } from '../lib/sheets';
+
+interface Props {
+  lang?: 'vi' | 'en';
+}
+const { lang = 'vi' } = Astro.props;
+
+interface ExpItem {
+  company: string;
+  role: string;
+  period: string;
+  badge?: string;
+  achievements: string[];
+}
+
+const FALLBACK_VI: ExpItem[] = [
+  {
+    company: 'Công ty hiện tại',
+    role: 'AI Engineer & Full-Stack Developer',
+    period: '2023 – Present',
+    badge: 'Full-time',
+    achievements: [
+      'Fix hàng tá bug — từ khó tới dễ, trải đều mọi layer của hệ thống',
+      '<strong>Excel Direct Read:</strong> đọc dữ liệu trực tiếp từ .xlsx không cần convert sang .txt — loại bỏ bước xử lý trung gian',
+      '<strong>Multi-sheet XML Mail:</strong> gửi email kèm Excel multi-sheet dạng XML — vấn đề hơn <strong>10 năm chưa ai giải được</strong> (cách cũ: nhúng raw HTML vào body)',
+      '<strong>Realtime Environment Monitor:</strong> thay thế sort toàn thư mục bằng Windows File Watcher API + WebSocket broadcast — không cần polling',
+      '<strong>QR Production Scanner:</strong> ứng dụng quét QR quản lý sản xuất bình ắc quy, tích hợp tính hiệu suất theo ca/dây chuyền',
+      '<strong>AI Internal Server:</strong> OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Redis · Qdrant · MinIO — vibe coding + self-research',
+      'Làm việc với user thật, mỗi lỗi ảnh hưởng trực tiếp đến dây chuyền sản xuất',
+    ],
+  },
+];
+
+let items: ExpItem[] = [];
+try {
+  const rows = await fetchSheet('Experience');
+  items = rows
+    .slice()
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((r) => ({
+      company: lang === 'vi' ? (r.company_vi || r.company_en) : (r.company_en || r.company_vi),
+      role: lang === 'vi' ? (r.role_vi || r.role_en) : (r.role_en || r.role_vi),
+      period: r.period || '',
+      badge: lang === 'vi' ? (r.badge_vi || r.badge_en) : (r.badge_en || r.badge_vi),
+      achievements: lang === 'vi'
+        ? (r.achievements_vi || r.achievements_en || [])
+        : (r.achievements_en || r.achievements_vi || []),
+    }))
+    .filter((i) => i.company && i.role);
+} catch (error) {
+  console.warn('[Experience] Sheets unavailable; using fallback.', error);
+}
+if (items.length === 0) items = FALLBACK_VI;
+
+const tSection = lang === 'vi' ? 'Kinh nghiệm làm việc' : 'Work Experience';
 ---
 
 <section class="section" id="experience" aria-labelledby="experience-title">
   <div class="reveal">
     <div class="section-label">Work</div>
-    <div class="section-title" id="experience-title">Kinh nghiệm làm việc</div>
+    <div class="section-title" id="experience-title">{tSection}</div>
   </div>
-  <div class="exp-card reveal">
-    <div>
-      <div class="exp-company">Công ty hiện tại</div>
-      <div class="exp-role">AI Engineer &amp; Full-Stack Developer · 2023 – Present</div>
-      <ul class="exp-achievements">
-        <li>Fix hàng tá bug — từ khó tới dễ, trải đều mọi layer của hệ thống</li>
-        <li><strong>Excel Direct Read:</strong> đọc dữ liệu trực tiếp từ .xlsx không cần convert sang .txt — loại bỏ bước xử lý trung gian</li>
-        <li><strong>Multi-sheet XML Mail:</strong> gửi email kèm Excel multi-sheet dạng XML — vấn đề hơn <strong>10 năm chưa ai giải được</strong> (cách cũ: nhúng raw HTML vào body)</li>
-        <li><strong>Realtime Environment Monitor:</strong> thay thế sort toàn thư mục bằng Windows File Watcher API + WebSocket broadcast — không cần polling</li>
-        <li><strong>QR Production Scanner:</strong> ứng dụng quét QR quản lý sản xuất bình ắc quy, tích hợp tính hiệu suất theo ca/dây chuyền</li>
-        <li><strong>AI Internal Server:</strong> OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Redis · Qdrant · MinIO — vibe coding + self-research</li>
-        <li>Làm việc với user thật, mỗi lỗi ảnh hưởng trực tiếp đến dây chuyền sản xuất</li>
-      </ul>
+  {items.map((item) => (
+    <div class="exp-card reveal">
+      <div>
+        <div class="exp-company">{item.company}</div>
+        <div class="exp-role">{item.role} · {item.period}</div>
+        <ul class="exp-achievements">
+          {item.achievements.map((a) => (
+            <li set:html={a} />
+          ))}
+        </ul>
+      </div>
+      {item.badge && <span class="exp-badge">● {item.badge}</span>}
     </div>
-    <span class="exp-badge">● Full-time</span>
-  </div>
+  ))}
 </section>
 
 <style>

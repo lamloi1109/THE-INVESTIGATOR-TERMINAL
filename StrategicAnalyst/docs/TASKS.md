@@ -159,6 +159,40 @@ Complexity: L
 Updated:    2026-04-20 by human (initial seed)
 ```
 
+```
+Task ID:    T-026
+Title:      Wire homepage components → Google Sheets (Hero/Experience/TechStack/Education/Contact)
+Status:     review
+Owner:      claude_code
+Branch:     claude/T-026-wire-sheets
+Assigned:   CLAUDE_CODE
+Files:      app/src/lib/profile.ts (new),
+            app/src/components/Hero.astro,
+            app/src/components/Experience.astro,
+            app/src/components/TechStack.astro,
+            app/src/components/Education.astro,
+            app/src/components/Contact.astro,
+            app/src/pages/index.astro
+Acceptance:
+  [x] `lib/profile.ts`: getProfile(lang) trả về object resolved cho 14 keys (identity + Hero copy + Contact CTA), fallback per-key khi Sheets unavailable
+  [x] Experience.astro: fetchSheet('Experience'), sort by `order`, fallback giữ data hiện tại
+  [x] TechStack.astro: fetchSheet('TechStack'), bucket theo `group_<lang>`, sort by `order`
+  [x] Education.astro: fetchSheet('Education'), sort by `order`, fallback 2 cards
+  [x] Contact.astro: dùng Profile keys (email/linkedin_url/github_url/location + contact_cta_*)
+  [x] index.astro: fetch Profile centrally, pass resolved strings vào Hero props (Hero không còn _vi/_en pairs)
+  [x] Build pass: dist/index.html chứa fallback strings khi env vars missing
+  [x] S6 guarantee: trang vẫn render đầy đủ khi Sheets API outage
+Verification:
+  cd app && npm run build → exit 0
+  grep "Kỹ sư AI" dist/index.html → match (Hero badge fallback)
+  grep "exp-achievements" dist/index.html → ≥ 1 (Experience fallback)
+  grep "tech-group-label" dist/index.html → 4 groups (TechStack fallback)
+  Khi GOOGLE_SHEET_ID + GOOGLE_API_KEY có giá trị → content từ Sheets thay thế fallback
+Depends on: T-011 (sheets.ts), T-025 (component layout), Schema v2.1 PR
+Complexity: M
+Updated:    2026-05-09 by claude_code (review — implemented + build verified với fallback path. Runtime với Sheets seeded yêu cầu env vars trên Vercel.)
+```
+
 ---
 
 ## Phase 4: Hardening & Polish
