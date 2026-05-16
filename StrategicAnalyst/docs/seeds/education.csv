@@ -1,0 +1,3 @@
+id,icon,icon_variant,degree_vi,degree_en,school_vi,school_en,year_vi,year_en,order
+university-vn,🎓,cyan,Kỹ thuật / Công nghệ thông tin,Engineering / Information Technology,Đại học — Việt Nam,University — Vietnam,Đã tốt nghiệp,Graduated,10
+self-taught,💡,green,Tự học AI / Full-Stack,Self-taught AI / Full-Stack,"vLLM, LangGraph, RAG, Astro — vibe coding","vLLM, LangGraph, RAG, Astro — vibe coding",Liên tục,Ongoing,20

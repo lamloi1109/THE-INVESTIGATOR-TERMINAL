@@ -1,0 +1,25 @@
+id,group_vi,group_en,label,variant,order
+vllm,AI / ML,AI / ML,vLLM,g,10
+langgraph,AI / ML,AI / ML,LangGraph,g,20
+lightrag,AI / ML,AI / ML,LightRAG,g,30
+openwebui,AI / ML,AI / ML,OpenWebUI,g,40
+docling,AI / ML,AI / ML,Docling,g,50
+llm-integration,AI / ML,AI / ML,LLM Integration,g,60
+agentic-pipelines,AI / ML,AI / ML,Agentic Pipelines,g,70
+python,Backend & Hạ tầng,Backend & Infrastructure,Python,c,10
+csharp-dotnet,Backend & Hạ tầng,Backend & Infrastructure,C# / .NET,c,20
+redis,Backend & Hạ tầng,Backend & Infrastructure,Redis,c,30
+qdrant,Backend & Hạ tầng,Backend & Infrastructure,Qdrant,c,40
+minio,Backend & Hạ tầng,Backend & Infrastructure,MinIO,c,50
+websocket,Backend & Hạ tầng,Backend & Infrastructure,WebSocket,c,60
+rest-api,Backend & Hạ tầng,Backend & Infrastructure,REST API,c,70
+javascript,Frontend,Frontend,JavaScript,p,10
+html-css,Frontend,Frontend,HTML / CSS,p,20
+canvas-api,Frontend,Frontend,Canvas API,p,30
+react,Frontend,Frontend,React,p,40
+astro,Frontend,Frontend,Astro,p,50
+tailwind,Frontend,Frontend,Tailwind,p,60
+git,Công cụ & Phương pháp,Tools & Practices,Git,w,10
+docker,Công cụ & Phương pháp,Tools & Practices,Docker,w,20
+linux,Công cụ & Phương pháp,Tools & Practices,Linux,w,30
+vibe-coding,Công cụ & Phương pháp,Tools & Practices,Vibe Coding,w,40

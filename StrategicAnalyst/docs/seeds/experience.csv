@@ -1,0 +1,14 @@
+id,company_vi,company_en,role_vi,role_en,period,badge_vi,badge_en,achievements_vi,achievements_en,order
+current-company,Công ty TNHH ABC,ABC Co. Ltd,Kỹ sư AI & Full-Stack,AI & Full-Stack Engineer,2023 – Hiện tại,Full-time,Full-time,"Triển khai hạ tầng AI nội bộ on-premise (vLLM + RAG + agent workflow)
+Phục vụ 20+ kỹ sư đồng thời với latency < 2s/token
+Build app quan trắc realtime dùng FileSystemWatcher + WebSocket (latency < 200ms)
+Hệ thống email Excel multi-sheet phá giới hạn 10+ năm của legacy
+App QR theo dõi sản xuất bình ắc quy theo ca/ngày/line
+Tự research full stack AI: vLLM, LangGraph, LightRAG, Qdrant, MinIO
+Đóng gói toàn bộ qua Docker Compose, document hoá end-to-end","Deployed on-premise AI infrastructure (vLLM + RAG + agent workflow)
+Served 20+ concurrent engineers at < 2s/token latency
+Built realtime monitoring app using FileSystemWatcher + WebSocket (< 200ms latency)
+Multi-sheet Excel email system that broke a 10+ year legacy limitation
+QR-based battery production tracking by shift/day/line
+Self-researched the full AI stack: vLLM, LangGraph, LightRAG, Qdrant, MinIO
+Packaged everything via Docker Compose, documented end-to-end",10

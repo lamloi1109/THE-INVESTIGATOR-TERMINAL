@@ -1,0 +1,73 @@
+id,title_vi,title_en,description_vi,description_en,tags,date,icon,icon_variant,highlights_vi,highlights_en,slug,problem_vi,problem_en,solution_vi,solution_en,result_vi,result_en,tech_stack,repo_url,live_url
+realtime-env-monitor,Realtime Environment Monitor,Realtime Environment Monitor,"App quan trắc realtime dùng Windows File Watcher + WebSocket. Dữ liệu từ datalogger hiển thị ngay khi file được ghi vào thư mục — không cần polling.","Realtime monitoring app using Windows File Watcher + WebSocket. Data from the datalogger shows up the moment a file is written — no polling needed.","C# / .NET,WebSocket,File Watcher,Realtime",2024-08,📡,cyan,"- Latency < 200ms từ ghi file đến dashboard
+- CPU giảm 80% so với polling
+- Multi-client qua WebSocket multiplexing","- Latency < 200ms from file write to dashboard
+- 80% CPU reduction vs polling
+- Multi-client via WebSocket multiplexing",realtime-env-monitor,"Nhà máy sử dụng datalogger ghi dữ liệu môi trường (nhiệt độ, độ ẩm, áp suất) ra file CSV mỗi 5 giây. Hệ thống cũ dùng polling định kỳ 30 giây để đọc file mới — gây trễ hiển thị, mất data giữa 2 lần poll, và tốn CPU vì liên tục scan thư mục. Kỹ sư vận hành muốn thấy số liệu ngay lập tức trên dashboard mà không cần refresh trang.","The factory uses dataloggers writing environment data (temperature, humidity, pressure) to CSV files every 5 seconds. The legacy system polled every 30s — causing display lag, data loss between polls, and high CPU from constant directory scans. Operators wanted instant dashboard updates without refresh.","Thay thế polling bằng Windows File Watcher API (FileSystemWatcher trong C# .NET). Khi datalogger ghi file mới, FileSystemWatcher bắt event Created/Changed ngay lập tức và parse CSV.
+
+Dữ liệu được push qua WebSocket tới tất cả client đang kết nối, không cần client poll server. Kiến trúc:
+
+▸ FileSystemWatcher monitor thư mục đích
+▸ CSV Parser xử lý file mới trong < 50ms
+▸ WebSocket Hub broadcast dữ liệu tới dashboard
+▸ Dashboard render chart realtime (cập nhật không flicker)
+
+Backend dùng ASP.NET Core với SignalR cho WebSocket management. Frontend là SPA nhẹ với chart library render dữ liệu streaming.","Replaced polling with Windows File Watcher API (FileSystemWatcher in C# .NET). When the datalogger writes a new file, FileSystemWatcher catches the Created/Changed event instantly and parses the CSV.
+
+Data is pushed via WebSocket to all connected clients — no client polling. Architecture:
+
+▸ FileSystemWatcher monitors the target directory
+▸ CSV Parser handles new files in < 50ms
+▸ WebSocket Hub broadcasts data to dashboards
+▸ Dashboard renders realtime charts (no flicker on update)
+
+Backend uses ASP.NET Core with SignalR for WebSocket management. Frontend is a lightweight SPA with a streaming chart library.","▸ Độ trễ từ khi datalogger ghi file đến khi hiển thị trên dashboard: < 200ms (giảm từ 30s xuống 150×)
+▸ CPU usage giảm 80% so với polling (không còn scan thư mục liên tục)
+▸ Không mất data giữa các lần đọc — mọi file đều được xử lý
+▸ Hỗ trợ nhiều dashboard client đồng thời qua WebSocket multiplexing
+▸ Được deploy và chạy ổn định trong môi trường sản xuất 24/7","▸ Latency from file write to dashboard: < 200ms (down from 30s, 150× faster)
+▸ CPU usage reduced 80% vs polling (no more constant directory scans)
+▸ Zero data loss between reads — every file processed
+▸ Multiple dashboard clients supported concurrently via WebSocket multiplexing
+▸ Deployed and running stably in 24/7 production","C#,.NET,ASP.NET Core,SignalR,WebSocket,FileSystemWatcher,CSV Parser",,
+ai-internal-server,AI Internal Server,AI Internal Server,"Hạ tầng AI nội bộ đầy đủ stack: OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Qdrant · MinIO · Redis. Tự research + vibe coding.","Full-stack on-premise AI infrastructure: OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Qdrant · MinIO · Redis. Self-researched + vibe-coded.","vLLM,LangGraph,LightRAG,Qdrant,MinIO",2024-10,🤖,green,"- 20+ concurrent users, < 2s/token
+- RAG accuracy > 85%
+- Zero data leakage (on-premise)","- 20+ concurrent users, < 2s/token
+- RAG accuracy > 85%
+- Zero data leakage (on-premise)",ai-internal-server,"Công ty cần triển khai AI nội bộ nhưng không muốn gửi dữ liệu nhạy cảm ra ngoài (compliance). Các giải pháp SaaS (ChatGPT, Claude) bị chặn bởi chính sách bảo mật. Nhân viên cần chatbot thông minh để tra cứu tài liệu kỹ thuật, tổng hợp báo cáo, và hỗ trợ code — tất cả phải chạy on-premise.","The company needed internal AI but couldn't send sensitive data out (compliance). SaaS solutions (ChatGPT, Claude) were blocked by security policy. Employees needed an intelligent chatbot for technical document lookup, report synthesis, and code assistance — all on-premise.","Xây dựng full-stack AI server on-premise với các component:
+
+▸ vLLM: Serve model LLM (Qwen, Llama) với GPU inference, hỗ trợ batching + continuous generation
+▸ OpenWebUI: Giao diện chat cho nhân viên, tương tự ChatGPT nhưng nội bộ
+▸ LightRAG: Retrieval-Augmented Generation cho tài liệu kỹ thuật (manual, SOP, báo cáo)
+▸ LangGraph: Orchestrate multi-step agent workflows (phân tích đơn hàng, tổng hợp báo cáo)
+▸ Docling: Parse PDF/DOCX/PPTX thành structured text cho RAG pipeline
+▸ Qdrant: Vector database cho semantic search trên tài liệu
+▸ MinIO: Object storage cho file upload + document management
+▸ Redis: Cache layer cho session + frequent queries
+
+Toàn bộ hệ thống đóng gói bằng Docker Compose, deploy trên server có GPU (NVIDIA A100/RTX 4090). Tự research và implement từ đầu đến cuối.","Built a full-stack on-premise AI server with these components:
+
+▸ vLLM: Serves the LLM (Qwen, Llama) with GPU inference, batching + continuous generation
+▸ OpenWebUI: ChatGPT-like internal chat UI for employees
+▸ LightRAG: Retrieval-Augmented Generation for technical docs (manuals, SOPs, reports)
+▸ LangGraph: Orchestrates multi-step agent workflows (order analysis, report synthesis)
+▸ Docling: Parses PDF/DOCX/PPTX into structured text for the RAG pipeline
+▸ Qdrant: Vector database for semantic search over documents
+▸ MinIO: Object storage for file upload + document management
+▸ Redis: Cache layer for sessions + frequent queries
+
+Whole system packaged as Docker Compose, deployed on a GPU server (NVIDIA A100/RTX 4090). Self-researched and implemented end-to-end.","▸ Serve 20+ người dùng nội bộ đồng thời với latency < 2s/token
+▸ RAG accuracy > 85% trên tài liệu kỹ thuật công ty
+▸ Giảm 70% thời gian tra cứu tài liệu cho kỹ sư
+▸ Zero data leakage — toàn bộ chạy on-premise, không ra internet
+▸ Chi phí vận hành chỉ là điện + phần cứng, không có API billing hàng tháng
+▸ Được ban lãnh đạo approve và expand cho các phòng ban khác","▸ Serves 20+ concurrent internal users with < 2s/token latency
+▸ RAG accuracy > 85% on company technical docs
+▸ 70% reduction in engineer document-lookup time
+▸ Zero data leakage — fully on-premise, no internet egress
+▸ Operating cost = electricity + hardware only, no monthly API bills
+▸ Approved by leadership and expanding to other departments","vLLM,OpenWebUI,LightRAG,LangGraph,Docling,Qdrant,MinIO,Redis,Docker Compose,NVIDIA GPU",,
+qr-production-scanner,QR Production Scanner,QR Production Scanner,"Ứng dụng quét QR quản lý sản xuất bình ắc quy tại xưởng. Theo dõi công đoạn, tính hiệu suất theo ca/ngày/dây chuyền.","QR scanning app for battery production management. Tracks workflow stages, computes efficiency per shift/day/line.","QR Code,Production,Analytics",2024-03,📱,pink,,,,,,,,,,,,
+excel-multi-sheet-mailer,Excel Multi-Sheet Mailer,Excel Multi-Sheet Mailer,"Gửi email kèm Excel multi-sheet qua XML — phá vỡ giới hạn 10+ năm của hệ thống cũ vốn chỉ nhúng HTML thô vào body mail.","Sends emails with multi-sheet Excel via XML — broke a 10+ year limitation of the legacy system that only embedded raw HTML in the mail body.","XML,Excel,SMTP",2024-01,📊,green,,,,,,,,,,,,
+excel-direct-import,Excel Direct Import,Excel Direct Import,"Đọc dữ liệu trực tiếp từ .xlsx không qua bước convert trung gian, giảm sai sót và tăng tốc pipeline xử lý dữ liệu đầu vào.","Reads .xlsx data directly without intermediate conversion, reducing errors and speeding up the input pipeline.","Python,openpyxl,Data Pipeline",2023-11,📂,cyan,,,,,,,,,,,,
+investigator-terminal,The Investigator Terminal,The Investigator Terminal,"Portfolio này — particle plexus, custom cursor, scan-lines, AI chat agent. Astro + Tailwind v4, vanilla canvas FX.","This portfolio — particle plexus, custom cursor, scan-lines, AI chat agent. Astro + Tailwind v4, vanilla canvas FX.","Astro,Canvas API,AI Agent",2026-04,⚡,pink,,,,,,,,,,,,
