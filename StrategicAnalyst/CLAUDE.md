@@ -90,7 +90,8 @@ T-001 (code scaffold) and T-010 (Sheets schema) can start in parallel.
 
 ## Documentation Conventions
 
-- Task specs keep the canonical block format: `Task ID`, `Title`, `Assigned`, `Files`, `Acceptance`, `Verification`, `Depends on`, `Complexity` (S/M/L).
+- Task specs keep the canonical block format: `Task ID`, `Title`, `Status`, `Owner`, `Branch`, `Assigned`, `Files`, `Acceptance`, `Verification`, `Depends on`, `Complexity` (S/M/L), `Updated`. See `docs/TASKS.md` for the Status state machine and claim protocol.
 - New tasks get IDs in the phase's hundred range (next Phase 2 task → `T-023`).
 - Don't downgrade complexity just to fit a sprint — keep it honest.
-- When a risk materialises, append the incident + new mitigation to the Risk Register; don't overwrite history.
+- When a risk materialises, append the incident + new mitigation to `docs/RISKS.md` (Incident Log section); don't overwrite history.
+- Code paths in task `Files` field use the `app/` prefix (monorepo layout per D-002). Planning files stay under `StrategicAnalyst/`.
