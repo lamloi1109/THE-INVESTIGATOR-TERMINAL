@@ -9,6 +9,7 @@ import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
 import Experience from '../components/Experience.astro';
 import Projects from '../components/Projects.astro';
+import Showcase from '../components/Showcase.astro';
 import TechStack from '../components/TechStack.astro';
 import Education from '../components/Education.astro';
 import Contact from '../components/Contact.astro';
@@ -40,6 +41,8 @@ const profile = await getProfile(currentLang);
     <Experience lang={currentLang} />
     <div class="divider"></div>
     <Projects lang={currentLang} />
+    <div class="divider"></div>
+    <Showcase lang={currentLang} />
     <div class="divider"></div>
     <TechStack lang={currentLang} />
     <div class="divider"></div>

@@ -26,6 +26,7 @@ const isActive = (href: string) => href === home && path === home;
 const nav = [
   { href: home,                  label_vi: 'Trang chủ',  label_en: 'Home' },
   { href: `${home}#projects`,    label_vi: 'Dự án',      label_en: 'Projects' },
+  { href: `${home}#showcase`,    label_vi: 'Hoạt động',  label_en: 'Showcase' },
   { href: `${home}#tech`,        label_vi: 'Tech Stack', label_en: 'Tech Stack' },
   { href: `${home}#experience`,  label_vi: 'Kinh nghiệm',label_en: 'Experience' },
   { href: `${home}#education`,   label_vi: 'Học vấn',    label_en: 'Education' },
@@ -44,7 +45,7 @@ const nav = [
   </a>
 
   <!-- Nav links (desktop) -->
-  <ul class="hidden md:flex items-center gap-8 list-none">
+  <ul class="hidden md:flex items-center gap-6 list-none">
     {nav.map((item) => {
       const label = lang === 'vi' ? item.label_vi : item.label_en;
       const active = isActive(item.href);
