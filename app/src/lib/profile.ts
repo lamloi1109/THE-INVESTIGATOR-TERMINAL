@@ -6,13 +6,17 @@
  * Keeping it local prevents an older Google Sheet from replacing current contact
  * details or experience during a production build.
  */
+import resumeUrl from '../../../Lam_Phuoc_Loi_IT_Engineer_CV.pdf?url';
+
+export { resumeUrl };
+
 /** Canonical bilingual profile fields sourced from the supplied CV. */
 const FALLBACK: Record<string, { vi: string; en: string }> = {
   name:               { vi: 'Lâm Phước Lợi',   en: 'Phuoc Loi Lam' },
   email:              { vi: 'phuocloi1109.work@gmail.com', en: 'phuocloi1109.work@gmail.com' },
   phone:              { vi: '085 766 8241', en: '+84 85 766 8241' },
   location:           { vi: 'TP. Hồ Chí Minh, Việt Nam', en: 'Ho Chi Minh City, Vietnam' },
-  resume_url:         { vi: 'mailto:phuocloi1109.work@gmail.com', en: 'mailto:phuocloi1109.work@gmail.com' },
+  resume_url:         { vi: resumeUrl, en: resumeUrl },
   hero_badge:         { vi: 'IT Engineer · Manufacturing Applications', en: 'IT Engineer · Manufacturing Applications' },
   hero_tagline:       { vi: 'C#/.NET · Oracle SQL · Tích hợp hệ thống sản xuất', en: 'C#/.NET · Oracle SQL · Manufacturing Systems Integration' },
   hero_about_label:   { vi: 'Giới thiệu',      en: 'About Me' },
