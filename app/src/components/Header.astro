@@ -17,18 +17,19 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 
 const path = Astro.url.pathname;
+const home = lang === 'vi' ? '/vi' : '/';
 // Section nav links anchor to homepage sections (one-page portfolio pattern).
 // "active" only marks Home when we're literally on `/` — anchor links don't
 // drive `pathname`, so they get hover-only styling.
-const isActive = (href: string) => href === '/' && path === '/';
+const isActive = (href: string) => href === home && path === home;
 
 const nav = [
-  { href: '/',            label_vi: 'Trang chủ',  label_en: 'Home' },
-  { href: '/#projects',   label_vi: 'Dự án',      label_en: 'Projects' },
-  { href: '/#tech',       label_vi: 'Tech Stack', label_en: 'Tech Stack' },
-  { href: '/#experience', label_vi: 'Kinh nghiệm',label_en: 'Experience' },
-  { href: '/#education',  label_vi: 'Học vấn',    label_en: 'Education' },
-  { href: '/#contact',    label_vi: 'Liên hệ',    label_en: 'Contact' },
+  { href: home,                  label_vi: 'Trang chủ',  label_en: 'Home' },
+  { href: `${home}#projects`,    label_vi: 'Dự án',      label_en: 'Projects' },
+  { href: `${home}#tech`,        label_vi: 'Tech Stack', label_en: 'Tech Stack' },
+  { href: `${home}#experience`,  label_vi: 'Kinh nghiệm',label_en: 'Experience' },
+  { href: `${home}#education`,   label_vi: 'Học vấn',    label_en: 'Education' },
+  { href: `${home}#contact`,     label_vi: 'Liên hệ',    label_en: 'Contact' },
 ];
 ---
 
@@ -37,7 +38,7 @@ const nav = [
   aria-label={lang === 'vi' ? 'Điều hướng chính' : 'Primary'}
 >
   <!-- Brand: gradient "The Investigator" + blinking cursor -->
-  <a href="/" class="flex items-center gap-0.5 no-underline" aria-label="The Investigator — Home">
+  <a href={home} class="flex items-center gap-0.5 no-underline" aria-label="Phuoc Loi Lam — Home">
     <span class="font-headline text-xl font-bold tracking-tight gradient-text">Lâm Phước Lợi</span>
     <span class="fx-blink inline-block w-[2px] h-[18px] bg-green ml-[3px] align-middle" aria-hidden="true"></span>
   </a>
@@ -84,16 +85,14 @@ const nav = [
       </svg>
     </a>
 
-    <button
-      type="button"
-      title={lang === 'vi' ? 'Cài đặt' : 'Settings'}
-      aria-label={lang === 'vi' ? 'Cài đặt' : 'Settings'}
-      class="w-9 h-9 rounded-lg border border-border bg-surface backdrop-blur-sm flex items-center justify-center text-text-secondary hover:text-cyan hover:border-border-hover hover:shadow-[0_0_12px_rgba(0,229,255,0.2)] transition-all duration-300 cursor-pointer"
+    <a
+      href={lang === 'vi' ? '/' : '/vi'}
+      hreflang={lang === 'vi' ? 'en' : 'vi'}
+      title={lang === 'vi' ? 'View in English' : 'Xem bằng tiếng Việt'}
+      aria-label={lang === 'vi' ? 'View in English' : 'Xem bằng tiếng Việt'}
+      class="h-9 min-w-9 px-2 rounded-lg border border-border bg-surface backdrop-blur-sm flex items-center justify-center text-xs font-semibold text-text-secondary hover:text-cyan hover:border-border-hover hover:shadow-[0_0_12px_rgba(0,229,255,0.2)] transition-all duration-300 no-underline"
     >
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M7 2l1 2h2l-1.5 1.5.5 2L7 6.5 5 7.5l.5-2L4 4h2z" />
-        <circle cx="7" cy="7" r="5.5" />
-      </svg>
-    </button>
+      {lang === 'vi' ? 'EN' : 'VI'}
+    </a>
   </div>
 </nav>

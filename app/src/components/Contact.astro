@@ -35,21 +35,14 @@ const cards: ContactCard[] = [
     href: `tel:${profile.phone.replace(/\s/g, '')}`,
     icon: '☎️',
     iconVariant: 'green',
-    label: 'Điện thoại',
+    label: lang === 'vi' ? 'Điện thoại' : 'Phone',
     value: profile.phone,
-  },
-  {
-    href: profile.company_url,
-    icon: '🏭',
-    iconVariant: 'white',
-    label: 'Vị trí ứng tuyển',
-    value: 'CSVC · Môi trường sản xuất thép',
   },
   {
     href: '#',
     icon: '📍',
     iconVariant: 'pink',
-    label: 'Địa điểm',
+    label: lang === 'vi' ? 'Địa điểm' : 'Location',
     value: profile.location,
   },
 ];

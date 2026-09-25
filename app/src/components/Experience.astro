@@ -20,7 +20,7 @@ interface ExpItem {
   achievements: string[];
 }
 
-const items: ExpItem[] = [
+const itemsVi: ExpItem[] = [
   {
     company: 'Lê Long Vietnam',
     role: 'IT Specialist',
@@ -46,6 +46,35 @@ const items: ExpItem[] = [
     ],
   },
 ];
+
+const itemsEn: ExpItem[] = [
+  {
+    company: 'Le Long Vietnam',
+    role: 'IT Specialist',
+    period: '07/2023 – Present',
+    badge: 'Current',
+    achievements: [
+      'Develop and maintain <strong>C#/.NET WinForms</strong> applications for battery manufacturing, including traceability, acid-filling monitoring, voltage/resistance measurement, and environmental monitoring.',
+      'Design and maintain <strong>Oracle, MySQL, and SQLite</strong> databases; contribute to Pentaho ETL workflows for production data synchronisation and reporting.',
+      'Integrate applications with <strong>PLCs and Keyence QR scanners</strong> to capture production and measurement data and provide real-time monitoring.',
+      'Maintain the QR010 production traceability system, support production users, and enable line-efficiency reporting through <strong>SAP BI Launch Pad</strong>.',
+      'Develop T100 ERP and PHP API workflows for product CO₂ tracking, linking orders, finished products, and component-level CO₂ data.',
+      'Design an event-driven environmental monitoring workflow using file-system events and socket communication, replacing repeated directory polling.',
+      'Research an on-premise AI knowledge assistant using vLLM, LightRAG, LangGraph, Qdrant, Neo4j, Redis, MinIO, and Docker.',
+    ],
+  },
+  {
+    company: 'SeaTek',
+    role: 'Back-End Intern',
+    period: '05/2022 – 08/2022',
+    achievements: [
+      'Supported website development using <strong>SOAP/Zimbra API</strong> for desktop email functionality and Firebase authentication.',
+      'Supported server application setup, including <strong>Oracle Database</strong> and <strong>Microsoft SQL Server</strong> installation on Intel NUC hardware.',
+    ],
+  },
+];
+
+const items = lang === 'vi' ? itemsVi : itemsEn;
 
 const tSection = lang === 'vi' ? 'Kinh nghiệm làm việc' : 'Work Experience';
 ---

@@ -13,7 +13,7 @@ const { lang = 'vi' } = Astro.props;
 interface Pill { label: string; variant: 'g' | 'c' | 'p' | 'w'; }
 interface Group { label: string; pills: Pill[]; }
 
-const groups: Group[] = [
+const groupsVi: Group[] = [
   {
     label: 'Ngôn ngữ lập trình',
     pills: [
@@ -47,6 +47,20 @@ const groups: Group[] = [
     ],
   },
 ];
+
+const englishLabels = [
+  'Programming Languages',
+  'Applications & Tools',
+  'Databases',
+  'Industrial Integration & AI',
+];
+const groups = groupsVi.map((group, index) => ({
+  label: lang === 'vi' ? group.label : englishLabels[index],
+  pills: group.pills.map((pill) => ({
+    ...pill,
+    label: lang === 'en' && pill.label === 'JavaScript (cơ bản)' ? 'JavaScript (Basic)' : pill.label,
+  })),
+}));
 
 const tSection = lang === 'vi' ? 'Tech Stack' : 'Tech Stack';
 ---

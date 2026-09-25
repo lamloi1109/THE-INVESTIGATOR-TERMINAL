@@ -16,7 +16,10 @@ interface Project {
   tags: string[];
 }
 
-const projects: Project[] = [
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'en' } = Astro.props;
+
+const projectsVi: Project[] = [
   {
     icon: '🏭',
     iconVariant: 'cyan',
@@ -46,12 +49,42 @@ const projects: Project[] = [
     tags: ['T100 ERP', 'PHP API', 'Oracle SQL', 'Manufacturing'],
   },
 ];
+
+const projectsEn: Project[] = [
+  {
+    icon: '🏭', iconVariant: 'cyan',
+    name: 'QR010 · Battery Production Traceability System',
+    desc: 'Developed and improved a QR-based application tracing battery movement from casing through acid filling and final packaging, integrated with databases and BI workflows.',
+    tags: ['C#/.NET WinForms', 'Oracle SQL', 'MySQL', 'Pentaho ETL', 'SAP BI'],
+  },
+  {
+    icon: '🧪', iconVariant: 'green',
+    name: 'VSF017 · Acid Filling Monitoring System',
+    desc: 'Collected acid-filling measurements from production equipment, validated results against process specifications, visualised weight data, and generated monitoring and CPK records.',
+    tags: ['C#/.NET WinForms', 'SQLite', 'Oracle SQL', 'PLC Integration'],
+  },
+  {
+    icon: '🌡️', iconVariant: 'pink',
+    name: 'Event-Driven Environment Monitor',
+    desc: 'Designed an environmental data workflow based on file-system events and socket communication to replace repeated directory polling.',
+    tags: ['C#/.NET', 'File System Events', 'Socket', 'Realtime'],
+  },
+  {
+    icon: '🌱', iconVariant: 'green',
+    name: 'Production CO₂ Tracking',
+    desc: 'Developed T100 ERP and PHP API workflows connecting orders, finished products, and component-level CO₂ data for traceability and reporting.',
+    tags: ['T100 ERP', 'PHP API', 'Oracle SQL', 'Manufacturing'],
+  },
+];
+
+const projects = lang === 'vi' ? projectsVi : projectsEn;
+const sectionTitle = lang === 'vi' ? 'Dự án nổi bật' : 'Selected Projects';
 ---
 
 <section class="section" id="projects" aria-labelledby="projects-title">
   <div class="reveal">
     <div class="section-label">Portfolio</div>
-    <div class="section-title" id="projects-title">Dự án nổi bật</div>
+    <div class="section-title" id="projects-title">{sectionTitle}</div>
   </div>
   <div class="projects-grid">
     {projects.map((p) => (
