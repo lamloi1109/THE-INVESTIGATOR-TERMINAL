@@ -16,8 +16,8 @@ import { getProfile, type Lang } from '../lib/profile';
 
 export const prerender = true;
 
-// English is the default language; Vietnamese is available at /vi.
-const currentLang: Lang = 'en';
+// Vietnamese translation of the default English portfolio.
+const currentLang: Lang = 'vi';
 
 const profile = await getProfile(currentLang);
 ---
@@ -32,8 +32,8 @@ const profile = await getProfile(currentLang);
       aboutBody={profile.hero_about_body}
       status={profile.hero_status}
       resumeHref={profile.resume_url}
-      projectsHref="/#projects"
-      contactHref="/#contact"
+      projectsHref="/vi#projects"
+      contactHref="/vi#contact"
       lang={currentLang}
     />
     <div class="divider"></div>

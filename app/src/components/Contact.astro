@@ -23,9 +23,6 @@ interface ContactCard {
   value: string;
 }
 
-// Strip protocol for display in cards (linkedin.com/in/foo, github.com/bar)
-const stripProto = (url: string) => url.replace(/^https?:\/\//, '');
-
 const cards: ContactCard[] = [
   {
     href: `mailto:${profile.email}`,
@@ -35,24 +32,17 @@ const cards: ContactCard[] = [
     value: profile.email,
   },
   {
-    href: profile.linkedin_url,
-    icon: '💼',
+    href: `tel:${profile.phone.replace(/\s/g, '')}`,
+    icon: '☎️',
     iconVariant: 'green',
-    label: 'LinkedIn',
-    value: stripProto(profile.linkedin_url),
-  },
-  {
-    href: profile.github_url,
-    icon: '🐙',
-    iconVariant: 'white',
-    label: 'GitHub',
-    value: stripProto(profile.github_url),
+    label: lang === 'vi' ? 'Điện thoại' : 'Phone',
+    value: profile.phone,
   },
   {
     href: '#',
     icon: '📍',
     iconVariant: 'pink',
-    label: 'Location',
+    label: lang === 'vi' ? 'Địa điểm' : 'Location',
     value: profile.location,
   },
 ];
@@ -74,7 +64,7 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
         rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
       >
         <div class={`contact-icon contact-icon-${c.iconVariant}`} aria-hidden="true">{c.icon}</div>
-        <div>
+        <div class="contact-info">
           <div class="contact-info-label">{c.label}</div>
           <div class="contact-info-value">{c.value}</div>
         </div>
@@ -120,6 +110,13 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
   }
 
+  /* Flex children default to min-width:auto, which made long addresses extend
+     beyond the clipped card. Allow the text column to shrink and wrap instead. */
+  .contact-info {
+    min-width: 0;
+    flex: 1;
+  }
+
   /* Border shimmer FX */
   .contact-card::before {
     content: '';
@@ -162,6 +159,9 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     font-size: 14px;
     font-weight: 500;
     color: var(--color-text-primary);
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   /* CTA card */

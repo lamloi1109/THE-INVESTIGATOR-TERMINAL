@@ -16,56 +16,75 @@ interface Project {
   tags: string[];
 }
 
-const projects: Project[] = [
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'en' } = Astro.props;
+
+const projectsVi: Project[] = [
   {
-    icon: '📡',
+    icon: '🏭',
     iconVariant: 'cyan',
-    name: 'Realtime Environment Monitor',
-    desc: 'App quan trắc realtime dùng Windows File Watcher + WebSocket. Dữ liệu từ datalogger hiển thị ngay khi file được ghi vào thư mục — không cần polling.',
-    tags: ['C# / .NET', 'WebSocket', 'File Watcher', 'Realtime'],
+    name: 'QR010 · Hệ thống truy xuất sản xuất ắc quy',
+    desc: 'Phát triển và cải tiến ứng dụng quét QR theo dõi chuyển động ắc quy từ đóng gói qua châm axit đến hoàn thiện; tích hợp cơ sở dữ liệu và quy trình BI.',
+    tags: ['C#/.NET WinForms', 'Oracle SQL', 'MySQL', 'Pentaho ETL', 'SAP BI'],
   },
   {
-    icon: '🤖',
+    icon: '🧪',
     iconVariant: 'green',
-    name: 'AI Internal Server',
-    desc: 'Hạ tầng AI nội bộ đầy đủ stack: OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Qdrant · MinIO · Redis. Tự research + vibe coding.',
-    tags: ['vLLM', 'LangGraph', 'LightRAG', 'Qdrant', 'MinIO'],
+    name: 'VSF017 · Giám sát châm axit',
+    desc: 'Thu thập dữ liệu châm axit từ thiết bị sản xuất, kiểm tra kết quả theo thông số quy trình, trực quan hóa dữ liệu khối lượng và tạo hồ sơ phục vụ giám sát, đánh giá CPK.',
+    tags: ['C#/.NET WinForms', 'SQLite', 'Oracle SQL', 'PLC Integration'],
   },
   {
-    icon: '📱',
+    icon: '🌡️',
     iconVariant: 'pink',
-    name: 'QR Production Scanner',
-    desc: 'Ứng dụng quét QR quản lý sản xuất bình ắc quy tại xưởng. Theo dõi công đoạn, tính hiệu suất theo ca/ngày/dây chuyền.',
-    tags: ['QR Code', 'Production', 'Analytics'],
+    name: 'Giám sát môi trường hướng sự kiện',
+    desc: 'Thiết kế luồng theo dõi dữ liệu môi trường bằng file-system events và socket communication, thay thế cơ chế kiểm tra thư mục lặp lại.',
+    tags: ['C#/.NET', 'File System Events', 'Socket', 'Realtime'],
   },
   {
-    icon: '📊',
+    icon: '🌱',
     iconVariant: 'green',
-    name: 'Excel Multi-Sheet Mailer',
-    desc: 'Gửi email kèm Excel multi-sheet qua XML — phá vỡ giới hạn 10+ năm của hệ thống cũ vốn chỉ nhúng HTML thô vào body mail.',
-    tags: ['XML', 'Excel', 'SMTP'],
-  },
-  {
-    icon: '📂',
-    iconVariant: 'cyan',
-    name: 'Excel Direct Import',
-    desc: 'Đọc dữ liệu trực tiếp từ .xlsx không qua bước convert trung gian, giảm sai sót và tăng tốc pipeline xử lý dữ liệu đầu vào.',
-    tags: ['Python', 'openpyxl', 'Data Pipeline'],
-  },
-  {
-    icon: '⚡',
-    iconVariant: 'pink',
-    name: 'The Investigator Terminal',
-    desc: 'Portfolio này — particle plexus, custom cursor, scan-lines, AI chat agent. Astro + Tailwind v4, vanilla canvas FX.',
-    tags: ['Astro', 'Canvas API', 'AI Agent'],
+    name: 'Theo dõi CO₂ trong sản xuất',
+    desc: 'Phát triển quy trình ERP T100 và PHP API liên kết đơn hàng, thành phẩm và dữ liệu CO₂ cấp linh kiện để phục vụ truy xuất và báo cáo.',
+    tags: ['T100 ERP', 'PHP API', 'Oracle SQL', 'Manufacturing'],
   },
 ];
+
+const projectsEn: Project[] = [
+  {
+    icon: '🏭', iconVariant: 'cyan',
+    name: 'QR010 · Battery Production Traceability System',
+    desc: 'Developed and improved a QR-based application tracing battery movement from casing through acid filling and final packaging, integrated with databases and BI workflows.',
+    tags: ['C#/.NET WinForms', 'Oracle SQL', 'MySQL', 'Pentaho ETL', 'SAP BI'],
+  },
+  {
+    icon: '🧪', iconVariant: 'green',
+    name: 'VSF017 · Acid Filling Monitoring System',
+    desc: 'Collected acid-filling measurements from production equipment, validated results against process specifications, visualised weight data, and generated monitoring and CPK records.',
+    tags: ['C#/.NET WinForms', 'SQLite', 'Oracle SQL', 'PLC Integration'],
+  },
+  {
+    icon: '🌡️', iconVariant: 'pink',
+    name: 'Event-Driven Environment Monitor',
+    desc: 'Designed an environmental data workflow based on file-system events and socket communication to replace repeated directory polling.',
+    tags: ['C#/.NET', 'File System Events', 'Socket', 'Realtime'],
+  },
+  {
+    icon: '🌱', iconVariant: 'green',
+    name: 'Production CO₂ Tracking',
+    desc: 'Developed T100 ERP and PHP API workflows connecting orders, finished products, and component-level CO₂ data for traceability and reporting.',
+    tags: ['T100 ERP', 'PHP API', 'Oracle SQL', 'Manufacturing'],
+  },
+];
+
+const projects = lang === 'vi' ? projectsVi : projectsEn;
+const sectionTitle = lang === 'vi' ? 'Dự án nổi bật' : 'Selected Projects';
 ---
 
 <section class="section" id="projects" aria-labelledby="projects-title">
   <div class="reveal">
     <div class="section-label">Portfolio</div>
-    <div class="section-title" id="projects-title">Dự án nổi bật</div>
+    <div class="section-title" id="projects-title">{sectionTitle}</div>
   </div>
   <div class="projects-grid">
     {projects.map((p) => (
