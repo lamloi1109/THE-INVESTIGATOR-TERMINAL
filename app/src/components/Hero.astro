@@ -8,6 +8,8 @@
  * `getProfile(lang)`. Defaults kept as last-ditch fallback if some prop is
  * empty.
  */
+import avatarUrl from '../../../avt.jpg?url';
+
 interface Props {
   name: string;                  // Display name (proper noun — no i18n)
   badge?: string;
@@ -33,7 +35,7 @@ const {
   projectsHref = '/#projects',
   contactHref = '/#contact',
   resumeHref = '/resume.pdf',
-  portraitSrc = '/portrait.png',
+  portraitSrc = avatarUrl,
   portraitAlt = '',
   lang = 'en',
 } = Astro.props;
@@ -93,7 +95,7 @@ const tScroll = lang === 'vi' ? 'Cuộn' : 'Scroll';
             height="64"
             loading="eager"
             decoding="async"
-            class="w-full h-full object-cover rounded-full block"
+            class="w-full h-full object-cover object-[50%_36%] rounded-full block"
           />
         </div>
         <div class="text-[11px] font-semibold text-green tracking-[0.05em] whitespace-nowrap text-center">

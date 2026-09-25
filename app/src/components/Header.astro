@@ -44,7 +44,7 @@ const nav = [
   </a>
 
   <!-- Nav links (desktop) -->
-  <ul class="hidden md:flex items-center gap-8 list-none">
+  <ul class="hidden md:flex items-center gap-6 list-none">
     {nav.map((item) => {
       const label = lang === 'vi' ? item.label_vi : item.label_en;
       const active = isActive(item.href);
