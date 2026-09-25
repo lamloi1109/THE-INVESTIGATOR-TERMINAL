@@ -59,7 +59,7 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     {cards.map((c) => (
       <a
         href={c.href}
-        class="contact-card"
+        class:list={['contact-card', c.href.startsWith('mailto:') && 'contact-card-email']}
         target={c.href.startsWith('http') ? '_blank' : undefined}
         rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
       >
@@ -82,7 +82,7 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
 <style>
   .contact-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: minmax(360px, 1.45fr) repeat(2, minmax(220px, 1fr));
     gap: 16px;
     margin-bottom: 40px;
   }
@@ -110,8 +110,8 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
   }
 
-  /* Flex children default to min-width:auto, which made long addresses extend
-     beyond the clipped card. Allow the text column to shrink and wrap instead. */
+  /* Keep the text column flexible while the wider email card preserves its
+     address on one line. */
   .contact-info {
     min-width: 0;
     flex: 1;
@@ -160,8 +160,25 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     font-weight: 500;
     color: var(--color-text-primary);
     line-height: 1.45;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+  }
+  .contact-card-email .contact-info-value {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .contact-card-email {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .contact-grid { grid-template-columns: minmax(0, 1fr); }
+    .contact-card-email { grid-column: auto; }
+    .contact-card { padding: 20px; }
+    .contact-card-email .contact-info-value { font-size: 13px; }
   }
 
   /* CTA card */
