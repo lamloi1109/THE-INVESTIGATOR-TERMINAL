@@ -2,78 +2,47 @@
  * profile.ts — Centralised Profile sheet fetch + fallback.
  * Task: T-026
  *
- * Profile is a key/value store (one row per field). This helper:
- * 1. Tries fetchSheet('Profile') — returns bilingual `{key, value_vi, value_en}` rows.
- * 2. Maps to `Record<key, {vi, en}>` for O(1) lookup.
- * 3. Layers committed fallback defaults underneath so a missing key (or full
- *    Sheets outage) never crashes prerender — satisfies S6 static guarantee.
- * 4. Exposes `getProfile(lang)` returning a flat object resolved to the chosen
- *    language. Components consume this instead of `_vi`/`_en` pairs.
+ * The verified CV is the source of truth for this application-specific profile.
+ * Keeping it local prevents an older Google Sheet from replacing current contact
+ * details or experience during a production build.
  */
-import { fetchSheet } from './sheets';
-
-/** Canonical key set + VI/EN defaults. Keep in sync with SHEETS_SCHEMA v2.1. */
+/** Canonical bilingual profile fields sourced from the supplied CV. */
 const FALLBACK: Record<string, { vi: string; en: string }> = {
   name:               { vi: 'Lâm Phước Lợi',   en: 'Phuoc Loi Lam' },
-  email:              { vi: 'lamloi12a1@gmail.com', en: 'lamloi12a1@gmail.com' },
+  email:              { vi: 'phuocloi1109.work@gmail.com', en: 'phuocloi1109.work@gmail.com' },
+  phone:              { vi: '085 766 8241', en: '+84 85 766 8241' },
   location:           { vi: 'TP. Hồ Chí Minh, Việt Nam', en: 'Ho Chi Minh City, Vietnam' },
-  github_url:         { vi: 'https://github.com/lamloi1109', en: 'https://github.com/lamloi1109' },
-  linkedin_url:       { vi: 'https://linkedin.com/in/lamloi', en: 'https://linkedin.com/in/lamloi' },
-  resume_url:         { vi: '/resume.pdf',     en: '/resume.pdf' },
-  hero_badge:         { vi: 'Kỹ sư AI & Lập trình Fullstack', en: 'AI Engineer & Fullstack Developer' },
-  hero_tagline:       { vi: 'Xây dựng tương lai với AI và phát triển Full-Stack', en: 'Building the Future with AI & Full-Stack Development' },
+  company_url:        { vi: 'https://www.csvc.com.vn/vi/about-1.html#corp-profile', en: 'https://www.csvc.com.vn/vi/about-1.html#corp-profile' },
+  resume_url:         { vi: 'mailto:phuocloi1109.work@gmail.com', en: 'mailto:phuocloi1109.work@gmail.com' },
+  hero_badge:         { vi: 'IT Engineer · Manufacturing Applications', en: 'IT Engineer · Manufacturing Applications' },
+  hero_tagline:       { vi: 'C#/.NET · Oracle SQL · Tích hợp hệ thống sản xuất', en: 'C#/.NET · Oracle SQL · Manufacturing Systems Integration' },
   hero_about_label:   { vi: 'Giới thiệu',      en: 'About Me' },
   hero_about_body: {
-    vi: 'Tôi là một <strong>Kỹ sư AI & Full-Stack Developer</strong> đam mê xây dựng các hệ thống thông minh giải quyết vấn đề thực tế. Chuyên sâu về <strong>tích hợp LLM, agentic pipelines</strong>, và ứng dụng web có khả năng mở rộng — nơi nghiên cứu chuyên sâu gặp gỡ code production.',
-    en: "I'm an <strong>AI Engineer &amp; Full-Stack Developer</strong> passionate about building intelligent systems that solve real-world problems. I specialise in <strong>LLM integrations, agentic pipelines</strong>, and scalable web applications — where deep research meets production-grade code.",
+    vi: 'Kỹ sư IT có kinh nghiệm trực tiếp phát triển và bảo trì ứng dụng cho <strong>sản xuất và hỗ trợ vận hành</strong>. Nền tảng vững về <strong>C#/.NET, Oracle SQL, MySQL, SQLite, ETL, báo cáo BI</strong> và tích hợp thiết bị công nghiệp; mong muốn đóng góp vào môi trường sản xuất thép hiện đại tại <strong>CSVC</strong>.',
+    en: 'IT Engineer with hands-on experience developing and maintaining <strong>manufacturing and production-support applications</strong>, with a strong background in <strong>C#/.NET, Oracle SQL, ETL, BI reporting</strong>, and industrial device integration.',
   },
   hero_status:        { vi: '● Sẵn sàng làm việc', en: '● Available for work' },
-  contact_cta_title:  { vi: 'Cùng build something?', en: "Let's build something?" },
+  contact_cta_title:  { vi: 'Trao đổi về cơ hội tại CSVC', en: "Let's discuss the opportunity at CSVC" },
   contact_cta_body:   {
-    vi: 'Mình luôn mở cho các cơ hội thú vị — AI systems, fullstack projects, hay một buổi tech talk.',
-    en: 'Always open to interesting opportunities — AI systems, fullstack projects, or a tech talk.',
+    vi: 'Tôi sẵn sàng trao đổi về cách kinh nghiệm phần mềm sản xuất, cơ sở dữ liệu và tích hợp công nghiệp có thể đóng góp cho CSVC.',
+    en: 'I would welcome a conversation about contributing my manufacturing software, database, and industrial integration experience to CSVC.',
   },
-  contact_cta_button: { vi: 'Gửi lời chào ✦',  en: 'Say hello ✦' },
+  contact_cta_button: { vi: 'Liên hệ với tôi ✦',  en: 'Contact me ✦' },
 };
 
 export type ProfileKey = keyof typeof FALLBACK;
 export type Lang = 'vi' | 'en';
 
 /**
- * Resolved profile for a given language. All keys guaranteed non-empty
- * (falls back per-key if Sheets row missing or `value_<lang>` blank).
+ * Resolved profile for a given language. All keys are guaranteed non-empty.
  */
 export type ResolvedProfile = Record<ProfileKey, string>;
 
-let cachedRaw: Record<string, { vi: string; en: string }> | null = null;
-
-async function loadRaw(): Promise<Record<string, { vi: string; en: string }>> {
-  if (cachedRaw) return cachedRaw;
-  try {
-    const rows = await fetchSheet('Profile');
-    const map: Record<string, { vi: string; en: string }> = {};
-    for (const r of rows) {
-      if (!r.key) continue;
-      map[r.key] = {
-        vi: r.value_vi || '',
-        en: r.value_en || '',
-      };
-    }
-    cachedRaw = map;
-  } catch (error) {
-    console.warn('[profile] Sheets unavailable; using hardcoded fallback.', error);
-    cachedRaw = {};
-  }
-  return cachedRaw;
-}
-
 export async function getProfile(lang: Lang = 'vi'): Promise<ResolvedProfile> {
-  const raw = await loadRaw();
   const out = {} as ResolvedProfile;
   for (const k of Object.keys(FALLBACK) as ProfileKey[]) {
-    const sheetVal = raw[k]?.[lang];
     const fallback = FALLBACK[k][lang] || FALLBACK[k].vi;
-    out[k] = sheetVal && sheetVal.trim() ? sheetVal : fallback;
+    out[k] = fallback;
   }
   return out;
 }

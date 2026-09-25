@@ -23,9 +23,6 @@ interface ContactCard {
   value: string;
 }
 
-// Strip protocol for display in cards (linkedin.com/in/foo, github.com/bar)
-const stripProto = (url: string) => url.replace(/^https?:\/\//, '');
-
 const cards: ContactCard[] = [
   {
     href: `mailto:${profile.email}`,
@@ -35,24 +32,24 @@ const cards: ContactCard[] = [
     value: profile.email,
   },
   {
-    href: profile.linkedin_url,
-    icon: '💼',
+    href: `tel:${profile.phone.replace(/\s/g, '')}`,
+    icon: '☎️',
     iconVariant: 'green',
-    label: 'LinkedIn',
-    value: stripProto(profile.linkedin_url),
+    label: 'Điện thoại',
+    value: profile.phone,
   },
   {
-    href: profile.github_url,
-    icon: '🐙',
+    href: profile.company_url,
+    icon: '🏭',
     iconVariant: 'white',
-    label: 'GitHub',
-    value: stripProto(profile.github_url),
+    label: 'Vị trí ứng tuyển',
+    value: 'CSVC · Môi trường sản xuất thép',
   },
   {
     href: '#',
     icon: '📍',
     iconVariant: 'pink',
-    label: 'Location',
+    label: 'Địa điểm',
     value: profile.location,
   },
 ];

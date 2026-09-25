@@ -7,8 +7,6 @@
  * Rows sorted by `order` ascending. Achievements support inline <strong>
  * via set:html (bullets newline-separated in Sheets, Alt+Enter).
  */
-import { fetchSheet } from '../lib/sheets';
-
 interface Props {
   lang?: 'vi' | 'en';
 }
@@ -22,44 +20,32 @@ interface ExpItem {
   achievements: string[];
 }
 
-const FALLBACK_VI: ExpItem[] = [
+const items: ExpItem[] = [
   {
-    company: 'Công ty hiện tại',
-    role: 'AI Engineer & Full-Stack Developer',
-    period: '2023 – Present',
-    badge: 'Full-time',
+    company: 'Lê Long Vietnam',
+    role: 'IT Specialist',
+    period: '07/2023 – Hiện tại',
+    badge: 'Đang làm việc',
     achievements: [
-      'Fix hàng tá bug — từ khó tới dễ, trải đều mọi layer của hệ thống',
-      '<strong>Excel Direct Read:</strong> đọc dữ liệu trực tiếp từ .xlsx không cần convert sang .txt — loại bỏ bước xử lý trung gian',
-      '<strong>Multi-sheet XML Mail:</strong> gửi email kèm Excel multi-sheet dạng XML — vấn đề hơn <strong>10 năm chưa ai giải được</strong> (cách cũ: nhúng raw HTML vào body)',
-      '<strong>Realtime Environment Monitor:</strong> thay thế sort toàn thư mục bằng Windows File Watcher API + WebSocket broadcast — không cần polling',
-      '<strong>QR Production Scanner:</strong> ứng dụng quét QR quản lý sản xuất bình ắc quy, tích hợp tính hiệu suất theo ca/dây chuyền',
-      '<strong>AI Internal Server:</strong> OpenWebUI · vLLM · LightRAG · LangGraph · Docling · Redis · Qdrant · MinIO — vibe coding + self-research',
-      'Làm việc với user thật, mỗi lỗi ảnh hưởng trực tiếp đến dây chuyền sản xuất',
+      'Phát triển và bảo trì ứng dụng <strong>C#/.NET WinForms</strong> phục vụ sản xuất ắc quy: truy xuất nguồn gốc, giám sát châm axit, quản lý điện áp và môi trường.',
+      'Thiết kế, bảo trì cơ sở dữ liệu <strong>Oracle, MySQL và SQLite</strong>; tham gia luồng Pentaho ETL đồng bộ và báo cáo dữ liệu sản xuất.',
+      'Tích hợp ứng dụng với <strong>PLC và máy quét QR Keyence</strong> để thu thập dữ liệu sản xuất, đo lường và cung cấp giám sát thời gian thực.',
+      'Bảo trì hệ thống truy xuất QR010, hỗ trợ người dùng sản xuất và thực hiện báo cáo hiệu suất dây chuyền qua <strong>SAP BI Launch Pad</strong>.',
+      'Phát triển quy trình ERP T100 và PHP API theo dõi CO₂, liên kết đơn hàng, thành phẩm và dữ liệu CO₂ cấp linh kiện.',
+      'Thiết kế luồng giám sát môi trường hướng sự kiện bằng file-system events và socket communication, thay thế polling thư mục lặp lại.',
+      'Nghiên cứu trợ lý tri thức AI on-premise với vLLM, LightRAG, LangGraph, Qdrant, Neo4j, Redis, MinIO và Docker để tra cứu tài liệu nội bộ.',
+    ],
+  },
+  {
+    company: 'SeaTek',
+    role: 'Back-End Intern',
+    period: '05/2022 – 08/2022',
+    achievements: [
+      'Hỗ trợ phát triển website bằng <strong>SOAP/Zimbra API</strong> cho chức năng email desktop và xác thực Firebase.',
+      'Hỗ trợ triển khai server như cài đặt <strong>Oracle Database</strong> và <strong>Microsoft SQL Server</strong> trên phần cứng Intel NUC.',
     ],
   },
 ];
-
-let items: ExpItem[] = [];
-try {
-  const rows = await fetchSheet('Experience');
-  items = rows
-    .slice()
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    .map((r) => ({
-      company: lang === 'vi' ? (r.company_vi || r.company_en) : (r.company_en || r.company_vi),
-      role: lang === 'vi' ? (r.role_vi || r.role_en) : (r.role_en || r.role_vi),
-      period: r.period || '',
-      badge: lang === 'vi' ? (r.badge_vi || r.badge_en) : (r.badge_en || r.badge_vi),
-      achievements: lang === 'vi'
-        ? (r.achievements_vi || r.achievements_en || [])
-        : (r.achievements_en || r.achievements_vi || []),
-    }))
-    .filter((i) => i.company && i.role);
-} catch (error) {
-  console.warn('[Experience] Sheets unavailable; using fallback.', error);
-}
-if (items.length === 0) items = FALLBACK_VI;
 
 const tSection = lang === 'vi' ? 'Kinh nghiệm làm việc' : 'Work Experience';
 ---

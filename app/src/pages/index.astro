@@ -22,7 +22,7 @@ const currentLang: Lang = 'vi';
 const profile = await getProfile(currentLang);
 ---
 
-<Layout title={`${profile.name} — The Investigator`} lang={currentLang}>
+<Layout title={`${profile.name} — IT Engineer | Ứng tuyển CSVC`} lang={currentLang} hideChatWidget>
   <main class="relative z-[2] w-full">
     <Hero
       name={profile.name}
@@ -45,7 +45,7 @@ const profile = await getProfile(currentLang);
     <div class="divider"></div>
     <Contact lang={currentLang} />
     <footer class="footer">
-      Built with ⚡ by {profile.name} · The Investigator Terminal © 2026
+      {profile.name} · IT Engineer · Ứng tuyển CSVC © 2026
     </footer>
   </main>
 </Layout>
