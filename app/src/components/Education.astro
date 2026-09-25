@@ -6,8 +6,6 @@
  * T-026: fetchSheet('Education') with hardcoded fallback. Rows sorted by
  * `order` ascending. icon_variant only consumes `cyan` / `green`.
  */
-import { fetchSheet } from '../lib/sheets';
-
 interface Props { lang?: 'vi' | 'en'; }
 const { lang = 'vi' } = Astro.props;
 
@@ -19,46 +17,15 @@ interface Edu {
   year: string;
 }
 
-const FALLBACK_VI: Edu[] = [
+const items: Edu[] = [
   {
     icon: '🎓',
     iconVariant: 'cyan',
-    degree: 'Kỹ thuật / Công nghệ thông tin',
-    school: 'Đại học — Việt Nam',
-    year: 'Đã tốt nghiệp',
-  },
-  {
-    icon: '⚡',
-    iconVariant: 'green',
-    degree: 'Self-taught AI Engineer',
-    school: 'Online Resources, Research Papers & Production Experience',
-    year: '2022 – Present · Ongoing',
+    degree: lang === 'vi' ? 'Kỹ thuật Truyền thông Dữ liệu và Mạng máy tính' : 'Data Communication and Computer Networks',
+    school: lang === 'vi' ? 'Bậc đại học' : 'Bachelor’s degree',
+    year: lang === 'vi' ? '2018 – 2023 · GPA: 2.98 · Tiếng Anh: Cơ bản' : '2018 – 2023 · GPA: 2.98 · English: Basic',
   },
 ];
-
-function pickVariant(raw: string | undefined, fallback: 'cyan' | 'green'): 'cyan' | 'green' {
-  if (raw === 'cyan' || raw === 'green') return raw;
-  return fallback;
-}
-
-let items: Edu[] = [];
-try {
-  const rows = await fetchSheet('Education');
-  items = rows
-    .slice()
-    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-    .map((r, i) => ({
-      icon: r.icon || '🎓',
-      iconVariant: pickVariant(r.icon_variant, i % 2 === 0 ? 'cyan' : 'green'),
-      degree: lang === 'vi' ? (r.degree_vi || r.degree_en) : (r.degree_en || r.degree_vi),
-      school: lang === 'vi' ? (r.school_vi || r.school_en) : (r.school_en || r.school_vi),
-      year: lang === 'vi' ? (r.year_vi || r.year_en) : (r.year_en || r.year_vi),
-    }))
-    .filter((e) => e.degree);
-} catch (error) {
-  console.warn('[Education] Sheets unavailable; using fallback.', error);
-}
-if (items.length === 0) items = FALLBACK_VI;
 
 const tSection = lang === 'vi' ? 'Học vấn' : 'Education';
 ---

@@ -23,9 +23,6 @@ interface ContactCard {
   value: string;
 }
 
-// Strip protocol for display in cards (linkedin.com/in/foo, github.com/bar)
-const stripProto = (url: string) => url.replace(/^https?:\/\//, '');
-
 const cards: ContactCard[] = [
   {
     href: `mailto:${profile.email}`,
@@ -35,24 +32,17 @@ const cards: ContactCard[] = [
     value: profile.email,
   },
   {
-    href: profile.linkedin_url,
-    icon: '💼',
+    href: `tel:${profile.phone.replace(/\s/g, '')}`,
+    icon: '☎️',
     iconVariant: 'green',
-    label: 'LinkedIn',
-    value: stripProto(profile.linkedin_url),
-  },
-  {
-    href: profile.github_url,
-    icon: '🐙',
-    iconVariant: 'white',
-    label: 'GitHub',
-    value: stripProto(profile.github_url),
+    label: lang === 'vi' ? 'Điện thoại' : 'Phone',
+    value: profile.phone,
   },
   {
     href: '#',
     icon: '📍',
     iconVariant: 'pink',
-    label: 'Location',
+    label: lang === 'vi' ? 'Địa điểm' : 'Location',
     value: profile.location,
   },
 ];
@@ -69,12 +59,12 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     {cards.map((c) => (
       <a
         href={c.href}
-        class="contact-card"
+        class:list={['contact-card', c.href.startsWith('mailto:') && 'contact-card-email']}
         target={c.href.startsWith('http') ? '_blank' : undefined}
         rel={c.href.startsWith('http') ? 'noopener noreferrer' : undefined}
       >
         <div class={`contact-icon contact-icon-${c.iconVariant}`} aria-hidden="true">{c.icon}</div>
-        <div>
+        <div class="contact-info">
           <div class="contact-info-label">{c.label}</div>
           <div class="contact-info-value">{c.value}</div>
         </div>
@@ -92,7 +82,7 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
 <style>
   .contact-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    grid-template-columns: minmax(360px, 1.45fr) repeat(2, minmax(220px, 1fr));
     gap: 16px;
     margin-bottom: 40px;
   }
@@ -118,6 +108,13 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     border-color: var(--color-border-hover);
     transform: translateY(-3px);
     box-shadow: 0 8px 32px rgba(0, 229, 255, 0.08);
+  }
+
+  /* Keep the text column flexible while the wider email card preserves its
+     address on one line. */
+  .contact-info {
+    min-width: 0;
+    flex: 1;
   }
 
   /* Border shimmer FX */
@@ -162,6 +159,26 @@ const tSection = lang === 'vi' ? 'Liên hệ' : 'Contact';
     font-size: 14px;
     font-weight: 500;
     color: var(--color-text-primary);
+    line-height: 1.45;
+  }
+  .contact-card-email .contact-info-value {
+    white-space: nowrap;
+  }
+
+  @media (max-width: 900px) {
+    .contact-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .contact-card-email {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .contact-grid { grid-template-columns: minmax(0, 1fr); }
+    .contact-card-email { grid-column: auto; }
+    .contact-card { padding: 20px; }
+    .contact-card-email .contact-info-value { font-size: 13px; }
   }
 
   /* CTA card */

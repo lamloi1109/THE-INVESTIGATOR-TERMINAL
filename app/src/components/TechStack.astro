@@ -7,81 +7,60 @@
  * `group_<lang>`, ordered by `order` within each group, group order preserves
  * first-seen-in-sheet sequence.
  */
-import { fetchSheet } from '../lib/sheets';
-
 interface Props { lang?: 'vi' | 'en'; }
 const { lang = 'vi' } = Astro.props;
 
 interface Pill { label: string; variant: 'g' | 'c' | 'p' | 'w'; }
 interface Group { label: string; pills: Pill[]; }
 
-const FALLBACK_VI: Group[] = [
+const groupsVi: Group[] = [
   {
-    label: 'AI / ML',
+    label: 'Ngôn ngữ lập trình',
     pills: [
-      { label: 'vLLM',              variant: 'g' },
-      { label: 'LangGraph',         variant: 'g' },
-      { label: 'LightRAG',          variant: 'g' },
-      { label: 'OpenWebUI',         variant: 'g' },
-      { label: 'Docling',           variant: 'g' },
-      { label: 'LLM Integration',   variant: 'g' },
-      { label: 'Agentic Pipelines', variant: 'g' },
+      { label: 'C#', variant: 'g' }, { label: 'SQL', variant: 'g' },
+      { label: 'PHP', variant: 'g' }, { label: 'JavaScript (cơ bản)', variant: 'g' },
     ],
   },
   {
-    label: 'Backend & Hạ tầng',
+    label: 'Ứng dụng & công cụ',
     pills: [
-      { label: 'Python',    variant: 'c' },
-      { label: 'C# / .NET', variant: 'c' },
-      { label: 'Redis',     variant: 'c' },
-      { label: 'Qdrant',    variant: 'c' },
-      { label: 'MinIO',     variant: 'c' },
-      { label: 'WebSocket', variant: 'c' },
-      { label: 'REST API',  variant: 'c' },
+      { label: '.NET WinForms', variant: 'c' }, { label: 'T100 ERP', variant: 'c' },
+      { label: 'Pentaho ETL', variant: 'c' }, { label: 'SAP BI Launch Pad', variant: 'c' },
+      { label: 'Docker', variant: 'c' },
     ],
   },
   {
-    label: 'Frontend',
+    label: 'Cơ sở dữ liệu',
     pills: [
-      { label: 'JavaScript', variant: 'p' },
-      { label: 'HTML / CSS', variant: 'p' },
-      { label: 'Canvas API', variant: 'p' },
-      { label: 'React',      variant: 'p' },
+      { label: 'Oracle', variant: 'p' }, { label: 'MySQL', variant: 'p' },
+      { label: 'SQLite', variant: 'p' }, { label: 'Redis', variant: 'p' },
+      { label: 'Qdrant', variant: 'p' }, { label: 'Neo4j', variant: 'p' }, { label: 'MinIO', variant: 'p' },
     ],
   },
   {
-    label: 'Công cụ & Phương pháp',
+    label: 'Công nghiệp, tích hợp & AI',
     pills: [
-      { label: 'Git',           variant: 'w' },
-      { label: 'Docker',        variant: 'w' },
-      { label: 'Linux',         variant: 'w' },
-      { label: 'Vibe Coding',   variant: 'w' },
-      { label: 'Self-research', variant: 'w' },
+      { label: 'PLC Integration', variant: 'w' }, { label: 'Keyence QR/Barcode', variant: 'w' },
+      { label: 'REST API', variant: 'w' }, { label: 'Socket Communication', variant: 'w' },
+      { label: 'vLLM', variant: 'w' }, { label: 'LightRAG', variant: 'w' },
+      { label: 'LangGraph', variant: 'w' }, { label: 'OpenWebUI', variant: 'w' },
     ],
   },
 ];
 
-let groups: Group[] = [];
-try {
-  const rows = await fetchSheet('TechStack');
-  const buckets: Record<string, Pill[]> = {};
-  const groupOrder: string[] = [];
-  const sorted = rows.slice().sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
-  for (const r of sorted) {
-    const groupLabel = (lang === 'vi' ? (r.group_vi || r.group_en) : (r.group_en || r.group_vi)) || '';
-    if (!groupLabel || !r.label) continue;
-    const variant = (['g', 'c', 'p', 'w'].includes(r.variant) ? r.variant : 'w') as Pill['variant'];
-    if (!(groupLabel in buckets)) {
-      buckets[groupLabel] = [];
-      groupOrder.push(groupLabel);
-    }
-    buckets[groupLabel].push({ label: r.label, variant });
-  }
-  groups = groupOrder.map((label) => ({ label, pills: buckets[label] }));
-} catch (error) {
-  console.warn('[TechStack] Sheets unavailable; using fallback.', error);
-}
-if (groups.length === 0) groups = FALLBACK_VI;
+const englishLabels = [
+  'Programming Languages',
+  'Applications & Tools',
+  'Databases',
+  'Industrial Integration & AI',
+];
+const groups = groupsVi.map((group, index) => ({
+  label: lang === 'vi' ? group.label : englishLabels[index],
+  pills: group.pills.map((pill) => ({
+    ...pill,
+    label: lang === 'en' && pill.label === 'JavaScript (cơ bản)' ? 'JavaScript (Basic)' : pill.label,
+  })),
+}));
 
 const tSection = lang === 'vi' ? 'Tech Stack' : 'Tech Stack';
 ---
