@@ -1,0 +1,70 @@
+---
+import onsiteGuidanceUrl from '../../../39aa4bc9-14bc-4a31-a358-4e2322fa5a27.jpg?url';
+import systemCheckUrl from '../../../63fe33f4-999d-4788-b361-8ce5e182f2fa.jpg?url';
+import teamSupportUrl from '../../../bbe6aa22-795c-43d1-8127-8c79f5f09aff.jpg?url';
+
+interface Props { lang?: 'vi' | 'en'; }
+
+const { lang = 'en' } = Astro.props;
+
+const content = lang === 'vi'
+  ? {
+      eyebrow: 'Showcase',
+      title: 'Hỗ trợ cán bộ tại hiện trường',
+      intro: 'Trực tiếp đồng hành cùng cán bộ vận hành để hướng dẫn sử dụng hệ thống, kiểm tra dữ liệu và xử lý các tình huống phát sinh ngay tại dây chuyền sản xuất.',
+      photos: [
+        { src: onsiteGuidanceUrl, alt: 'Hướng dẫn cán bộ vận hành sử dụng hệ thống tại dây chuyền', caption: 'Hướng dẫn vận hành hệ thống' },
+        { src: systemCheckUrl, alt: 'Kiểm tra hệ thống cùng cán bộ tại thiết bị sản xuất', caption: 'Kiểm tra trực tiếp tại thiết bị' },
+        { src: teamSupportUrl, alt: 'Trao đổi và hỗ trợ đội ngũ tại hiện trường sản xuất', caption: 'Phối hợp xử lý tại hiện trường' },
+      ],
+    }
+  : {
+      eyebrow: 'Showcase',
+      title: 'On-site staff support',
+      intro: 'Working directly with operations staff to guide system usage, verify data, and resolve issues where they happen on the production line.',
+      photos: [
+        { src: onsiteGuidanceUrl, alt: 'Guiding operations staff through the system on the production line', caption: 'System operation guidance' },
+        { src: systemCheckUrl, alt: 'Checking the system with staff at production equipment', caption: 'Hands-on equipment checks' },
+        { src: teamSupportUrl, alt: 'Discussing and resolving issues with the on-site production team', caption: 'On-site team support' },
+      ],
+    };
+---
+
+<section class="section" id="showcase" aria-labelledby="showcase-title">
+  <div class="reveal showcase-heading">
+    <div class="section-label">{content.eyebrow}</div>
+    <div class="section-title" id="showcase-title">{content.title}</div>
+    <p>{content.intro}</p>
+  </div>
+
+  <div class="showcase-grid">
+    {content.photos.map((photo, index) => (
+      <figure class:list={['showcase-card', 'reveal', index === 0 && 'showcase-card-featured']}>
+        <img src={photo.src} alt={photo.alt} loading="lazy" decoding="async" />
+        <figcaption>
+          <span class="showcase-index" aria-hidden="true">0{index + 1}</span>
+          <span>{photo.caption}</span>
+        </figcaption>
+      </figure>
+    ))}
+  </div>
+</section>
+
+<style>
+  .showcase-heading { max-width: 760px; }
+  .showcase-heading .section-title { margin-bottom: 18px; }
+  .showcase-heading p { color: var(--color-text-secondary); line-height: 1.75; margin-bottom: 40px; }
+  .showcase-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  .showcase-card { margin: 0; position: relative; min-height: 260px; border: 1px solid var(--color-border); border-radius: 20px; overflow: hidden; background: var(--color-surface); }
+  .showcase-card-featured { grid-row: span 2; min-height: 538px; }
+  .showcase-card img { width: 100%; height: 100%; position: absolute; inset: 0; object-fit: cover; transition: transform .55s ease, filter .55s ease; filter: saturate(.82); }
+  .showcase-card:hover img { transform: scale(1.035); filter: saturate(1); }
+  .showcase-card::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 48%, rgba(4, 8, 12, .92) 100%); pointer-events: none; }
+  .showcase-card figcaption { position: absolute; z-index: 1; inset: auto 22px 20px; display: flex; align-items: center; gap: 12px; color: var(--color-text-primary); font: 600 15px var(--font-headline); letter-spacing: .02em; }
+  .showcase-index { color: var(--color-green); font: 600 11px var(--font-body); letter-spacing: .12em; }
+  @media (max-width: 720px) {
+    .showcase-grid { grid-template-columns: 1fr; }
+    .showcase-card, .showcase-card-featured { grid-row: auto; min-height: 360px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .showcase-card img { transition: none; } }
+</style>
