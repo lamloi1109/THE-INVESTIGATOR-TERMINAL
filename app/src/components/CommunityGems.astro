@@ -1,0 +1,95 @@
+---
+interface Gem {
+  name: string;
+  description: string;
+  category: string;
+  icon: string;
+  href: string;
+}
+
+interface Props { lang?: 'vi' | 'en'; }
+const { lang = 'en' } = Astro.props;
+
+const links = {
+  masterBi: 'https://gemini.google.com/gem/1xiuCdYkgznv3ZoL4l13VHH_HQHrRcBOE?usp=sharing',
+  tiptop: 'https://gemini.google.com/gem/1wryY3mojpu4d3HBmKLr-XLWqiA3EIP4l?usp=sharing',
+  verifier: 'https://gemini.google.com/gem/1l9KcGVzFTeNWdqWHoDpeUt4cYkq9E0f3?usp=sharing',
+  prompt: 'https://gemini.google.com/gem/15e1KODr6Hf-ZMKnlrGkgNSqgfFuztyf-?usp=sharing',
+  review: 'https://gemini.google.com/gem/1rNg30PP7N_aSCuy0llrVy1uqUciq0Trp?usp=sharing',
+  career: 'https://gemini.google.com/gem/1Pw378mYVnax2nfLfO334FyZ7ZPVDslPw?usp=sharing',
+};
+
+const gemsVi: Gem[] = [
+  { name: 'MASTER BI', description: 'Trợ lý chuyên sâu về Business Intelligence, hỗ trợ phân tích dữ liệu và xây dựng báo cáo hiệu quả.', category: 'Business Intelligence', icon: '◫', href: links.masterBi },
+  { name: 'MASTER TIPTOP ERP', description: 'Đồng hành cùng bạn trong việc tìm hiểu, vận hành và xử lý các bài toán trên hệ thống TIPTOP ERP.', category: 'Enterprise Resource Planning', icon: '⌘', href: links.tiptop },
+  { name: 'AI Content Verifier', description: 'Kiểm tra nội dung do AI tạo ra, phát hiện thông tin thiếu căn cứ và hỗ trợ xác thực độ tin cậy.', category: 'Fact-checking', icon: '✓', href: links.verifier },
+  { name: 'Prompt Enhancer', description: 'Cải thiện cách viết prompt để yêu cầu rõ ràng hơn và nhận được kết quả chất lượng hơn từ AI.', category: 'Prompt Engineering', icon: '✦', href: links.prompt },
+  { name: 'Review Code Vui Tính', description: 'Nhận góp ý code hữu ích, dễ hiểu với một chút hài hước để mỗi lần review bớt căng thẳng.', category: 'Developer Tools', icon: '</>', href: links.review },
+  { name: 'Trợ Lý AI Hướng Nghiệp', description: 'Giúp học sinh khám phá sở thích, năng lực và định hướng những lựa chọn nghề nghiệp phù hợp.', category: 'Education', icon: '↗', href: links.career },
+];
+
+const gemsEn: Gem[] = [
+  { name: 'MASTER BI', description: 'A specialist Business Intelligence assistant for data analysis and effective report building.', category: 'Business Intelligence', icon: '◫', href: links.masterBi },
+  { name: 'MASTER TIPTOP ERP', description: 'A practical companion for understanding, operating, and solving challenges in TIPTOP ERP.', category: 'Enterprise Resource Planning', icon: '⌘', href: links.tiptop },
+  { name: 'AI Content Verifier', description: 'Review AI-generated content, spot unsupported claims, and assess the reliability of information.', category: 'Fact-checking', icon: '✓', href: links.verifier },
+  { name: 'Prompt Enhancer', description: 'Refine your prompts into clearer instructions and get better-quality results from AI.', category: 'Prompt Engineering', icon: '✦', href: links.prompt },
+  { name: 'Funny Code Review', description: 'Get useful, approachable code feedback with a little humour to make reviews less stressful.', category: 'Developer Tools', icon: '</>', href: links.review },
+  { name: 'AI Career Guide for Students', description: 'Help students explore their interests, strengths, and suitable future career paths.', category: 'Education', icon: '↗', href: links.career },
+];
+
+const gems = lang === 'vi' ? gemsVi : gemsEn;
+const copy = lang === 'vi'
+  ? { eyebrow: 'Chia sẻ cộng đồng', title: 'Gemini Gems của tôi', intro: 'Bộ sưu tập trợ lý AI miễn phí được tôi xây dựng để biến kiến thức thành công cụ hữu ích cho mọi người.', action: 'Dùng thử Gem', aria: 'Mở trên Google Gemini' }
+  : { eyebrow: 'Community sharing', title: 'My Gemini Gems', intro: 'A collection of free AI assistants I built to turn practical knowledge into useful tools for everyone.', action: 'Try this Gem', aria: 'Open on Google Gemini' };
+---
+
+<section class="section" id="community" aria-labelledby="community-title">
+  <div class="community-heading reveal">
+    <div>
+      <div class="section-label">{copy.eyebrow}</div>
+      <h2 class="section-title" id="community-title">{copy.title}</h2>
+    </div>
+    <p>{copy.intro}</p>
+  </div>
+
+  <div class="gems-grid">
+    {gems.map((gem, index) => (
+      <article class="gem-card reveal">
+        <div class="gem-topline">
+          <span class="gem-index">{String(index + 1).padStart(2, '0')}</span>
+          <span class="gem-icon" aria-hidden="true">{gem.icon}</span>
+        </div>
+        <span class="gem-category">{gem.category}</span>
+        <h3>{gem.name}</h3>
+        <p>{gem.description}</p>
+        <a href={gem.href} target="_blank" rel="noopener noreferrer" aria-label={`${copy.aria}: ${gem.name}`}>
+          {copy.action}
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13 13 3m-7 0h7v7" /></svg>
+        </a>
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .community-heading { display: grid; grid-template-columns: 1fr minmax(280px, 460px); gap: 48px; align-items: end; margin-bottom: 48px; }
+  .community-heading .section-title { margin-bottom: 0; }
+  .community-heading > p { color: var(--color-text-secondary); font-size: 14px; line-height: 1.75; padding-bottom: 3px; }
+  .gems-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .gem-card { position: relative; min-height: 290px; padding: 24px; display: flex; flex-direction: column; border: 1px solid var(--color-border); border-radius: 18px; overflow: hidden; background: linear-gradient(145deg, rgba(17,24,39,.72), rgba(10,10,10,.68)); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease; }
+  .gem-card::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 100% 0, rgba(0,229,255,.09), transparent 40%); opacity: 0; transition: opacity .3s ease; pointer-events: none; }
+  .gem-card:hover { transform: translateY(-5px); border-color: rgba(0,229,255,.32); box-shadow: 0 18px 45px rgba(0,0,0,.35), 0 0 24px rgba(0,229,255,.05); }
+  .gem-card:hover::before { opacity: 1; }
+  .gem-topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .gem-index { color: rgba(156,163,175,.55); font: 600 11px/1 var(--font-body); letter-spacing: .16em; }
+  .gem-icon { width: 40px; height: 40px; display: grid; place-items: center; border: 1px solid rgba(0,229,255,.22); border-radius: 11px; color: var(--color-cyan); background: rgba(0,229,255,.07); font: 600 14px/1 var(--font-headline); }
+  .gem-category { color: var(--color-green); font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 9px; }
+  .gem-card h3 { color: var(--color-text-primary); font: 700 20px/1.2 var(--font-headline); letter-spacing: .01em; margin-bottom: 10px; }
+  .gem-card > p { color: var(--color-text-secondary); font-size: 12.5px; line-height: 1.65; flex: 1; }
+  .gem-card a { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; width: fit-content; margin-top: 20px; color: var(--color-cyan); font: 600 12px/1 var(--font-body); text-decoration: none; transition: color .2s ease, gap .2s ease; }
+  .gem-card a:hover { color: var(--color-green); gap: 12px; }
+  .gem-card svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  @media (max-width: 900px) { .gems-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 640px) { .community-heading { grid-template-columns: 1fr; gap: 20px; } .gems-grid { grid-template-columns: 1fr; } .gem-card { min-height: 260px; } }
+  @media (prefers-reduced-motion: reduce) { .gem-card, .gem-card::before, .gem-card a { transition: none; } .gem-card:hover { transform: none; } }
+</style>

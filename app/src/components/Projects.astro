@@ -14,6 +14,10 @@ interface Project {
   name: string;
   desc: string;
   tags: string[];
+  progress?: {
+    label: string;
+    status: string;
+  };
 }
 
 interface Props { lang?: 'vi' | 'en'; }
@@ -48,6 +52,14 @@ const projectsVi: Project[] = [
     desc: 'Phát triển quy trình ERP T100 và PHP API liên kết đơn hàng, thành phẩm và dữ liệu CO₂ cấp linh kiện để phục vụ truy xuất và báo cáo.',
     tags: ['T100 ERP', 'PHP API', 'Oracle SQL', 'Manufacturing'],
   },
+  {
+    icon: '⌂',
+    iconVariant: 'pink',
+    name: 'HOMESTAY · Landing Page',
+    desc: 'Dự án part-time đang phát triển: xây dựng landing page giới thiệu HOMESTAY với giao diện hiện đại, trực quan và tương thích trên nhiều thiết bị.',
+    tags: ['Part-time', 'Landing Page', 'Responsive UI'],
+    progress: { label: 'Tiến độ', status: 'Đang thực hiện' },
+  },
 ];
 
 const projectsEn: Project[] = [
@@ -75,6 +87,13 @@ const projectsEn: Project[] = [
     desc: 'Developed T100 ERP and PHP API workflows connecting orders, finished products, and component-level CO₂ data for traceability and reporting.',
     tags: ['T100 ERP', 'PHP API', 'Oracle SQL', 'Manufacturing'],
   },
+  {
+    icon: '⌂', iconVariant: 'pink',
+    name: 'HOMESTAY · Landing Page',
+    desc: 'An in-progress part-time project: building a modern, visual, and responsive landing page to showcase HOMESTAY.',
+    tags: ['Part-time', 'Landing Page', 'Responsive UI'],
+    progress: { label: 'Progress', status: 'In progress' },
+  },
 ];
 
 const projects = lang === 'vi' ? projectsVi : projectsEn;
@@ -92,6 +111,15 @@ const sectionTitle = lang === 'vi' ? 'Dự án nổi bật' : 'Selected Projects
         <div class={`project-icon pi-${p.iconVariant}`} aria-hidden="true">{p.icon}</div>
         <div class="project-name">{p.name}</div>
         <div class="project-desc">{p.desc}</div>
+        {p.progress && (
+          <div class="project-progress" role="status">
+            <div class="progress-copy">
+              <span>{p.progress.label}</span>
+              <strong><i aria-hidden="true"></i>{p.progress.status}</strong>
+            </div>
+            <div class="progress-track" aria-hidden="true"><span></span></div>
+          </div>
+        )}
         <div class="project-tags">
           {p.tags.map((t) => (<span class="tag">{t}</span>))}
         </div>
@@ -169,6 +197,48 @@ const sectionTitle = lang === 'vi' ? 'Dự án nổi bật' : 'Selected Projects
     flex-wrap: wrap;
     gap: 6px;
   }
+  .project-progress {
+    padding: 11px 12px;
+    border: 1px solid rgba(0, 255, 159, 0.16);
+    border-radius: 10px;
+    background: rgba(0, 255, 159, 0.035);
+  }
+  .progress-copy {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 8px;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .progress-copy > span { color: var(--color-text-secondary); }
+  .progress-copy strong { display: inline-flex; align-items: center; gap: 6px; color: var(--color-green); font-weight: 600; }
+  .progress-copy i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-green);
+    box-shadow: 0 0 8px rgba(0, 255, 159, 0.7);
+    animation: progressPulse 1.8s ease-in-out infinite;
+  }
+  .progress-track { height: 3px; overflow: hidden; border-radius: 99px; background: rgba(255, 255, 255, 0.07); }
+  .progress-track span {
+    display: block;
+    width: 45%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, transparent, var(--color-green), var(--color-cyan), transparent);
+    animation: progressFlow 2s ease-in-out infinite;
+  }
+  @keyframes progressFlow {
+    from { transform: translateX(-110%); }
+    to { transform: translateX(245%); }
+  }
+  @keyframes progressPulse {
+    50% { opacity: 0.45; transform: scale(0.8); }
+  }
   .tag {
     font-size: 11px;
     font-weight: 500;
@@ -183,5 +253,6 @@ const sectionTitle = lang === 'vi' ? 'Dự án nổi bật' : 'Selected Projects
     .project-card { transition: none; }
     .project-card:hover { transform: none; }
     .project-card::after { display: none; }
+    .progress-track span, .progress-copy i { animation: none; }
   }
 </style>
